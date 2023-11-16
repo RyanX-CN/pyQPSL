@@ -1,0 +1,199 @@
+{
+    "NIDAQmxDOPluginUI":
+    {
+        "Type": "NIDAQmxDOPluginUI",
+        "stretch": "2; 4; 1",
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "backgroud_color": "#333333",
+                "widgets": [
+                    {
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#333333",
+                        "margins": "0; 30; 0; 0",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#333333",
+                                "spacing": 2,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_device",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "device"
+                                    },
+                                    {
+                                        "ObjectName": "cbox_device",
+                                        "Type": "QPSLComboBox",
+                                        "backgroud_color": "#333333"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#333333",
+                                "spacing": 2,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_terminal",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "terminal"
+                                    },
+                                    {
+                                        "ObjectName": "cbox_terminal",
+                                        "Type": "QPSLComboBox",
+                                        "backgroud_color": "#333333"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#333333",
+                        "margins": "0; 10; 0; 20",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "ObjectName": "sbox_sample_rate",
+                                "Type": "QPSLSpinBox",
+                                "backgroud_color": "#cccccc",
+                                "prefix": "sample rate: ",
+                                "range": "0; 1000000",
+                                "suffix": " /s",
+                                "value": 1000
+                            },
+                            {
+                                "ObjectName": "sbox_sample_number",
+                                "Type": "QPSLSpinBox",
+                                "backgroud_color": "#333333",
+                                "prefix": "sample number: ",
+                                "range": "0; 1000000"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "stretch": "1; 4; 4",
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#666666",
+                        "margins": "0; 50; 15; 50",
+                        "spacing": 50,
+                        "widgets": [
+                            {
+                                "ObjectName": "btn_add_line",
+                                "Type": "QPSLPushButton",
+                                "m_text": "add line"
+                            },
+                            {
+                                "ObjectName": "btn_remove_line",
+                                "Type": "QPSLPushButton",
+                                "m_text": "remove line"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "widgets": [
+                            {
+                                "ObjectName": "plot_line",
+                                "Type": "QPSLPlotWidget"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "tab_lines",
+                        "Type": "QPSLTabWidget",
+                        "backgroud_color": "#e5e5e5",
+                        "titles": [
+                            "line_0"
+                        ],
+                        "widgets": [
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "spacing": 5,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#333333",
+                                        "spacing": 2,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_line",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "line"
+                                            },
+                                            {
+                                                "ObjectName": "cbox_line",
+                                                "Type": "QPSLComboBox",
+                                                "backgroud_color": "#333333"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "sbox_cycle",
+                                        "Type": "QPSLSpinBox",
+                                        "backgroud_color": "#b2b2b2",
+                                        "prefix": "cycle: ",
+                                        "value": 50
+                                    },
+                                    {
+                                        "ObjectName": "sbox_duty",
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#e5e5e5",
+                                        "decimals": 1,
+                                        "prefix": "duty ratio: ",
+                                        "range":"0; 1",
+                                        "value":0.5
+                                    },
+                                    {
+                                        "ObjectName": "sbox_delay",
+                                        "Type": "QPSLSpinBox",
+                                        "backgroud_color": "#b2b2b2",
+                                        "prefix": "delay: "
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "backgroud_color": "#191919",
+                "margins": "0; 20; 0; 20",
+                "spacing": 10,
+                "widgets": [
+                    {
+                        "ObjectName": "btn_init_task",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "init task",
+                        "m_opened_text": "clear task",
+                        "m_text": "init task"
+                    },
+                    {
+                        "ObjectName": "btn_start_task",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "start task",
+                        "m_opened_text": "stop task",
+                        "m_text": "start task"
+                    },
+                    {
+                        "ObjectName": "btn_reset",
+                        "Type": "QPSLPushButton",
+                        "m_text": "reset"
+                    }
+                ]
+            }
+        ]
+    }
+}

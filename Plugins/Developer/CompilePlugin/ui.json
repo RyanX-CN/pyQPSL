@@ -1,0 +1,206 @@
+{
+    "CompilePluginUI": {
+        "Type": "CompilePluginUI",
+        "margins": "10; 10; 10; 10",
+        "spacing": 5,
+        "stretch": "1; 1; 1; 1; 1; 1; 1; 1; 2; 1; 1",
+        "widgets": [
+            {
+                "ObjectName": "box_get_bin_path",
+                "Type": "QPSLGetDirectoryBox",
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/NIDAQmxAIPlugin/bin",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "bin path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_get_include_path",
+                "Type": "QPSLGetDirectoryBox",
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "path": "",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "include path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_get_lib_path",
+                "Type": "QPSLGetDirectoryBox",
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/NIDAQmxAIPlugin/lib",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "lib path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_get_libs_path",
+                "Type": "QPSLGetOpenFileBox",
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "multi_file": true,
+                "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/NIDAQmxAIPlugin/lib/NIDAQmx_x64.lib",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "libs path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_get_source_path",
+                "Type": "QPSLGetOpenFileBox",
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/NIDAQmxAIPlugin/source/QPSL_NIDAQmxAI.cpp",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "source path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_get_target_path",
+                "Type": "QPSLGetOpenFileBox",
+                "as_save": true,
+                "backgroud_color": "#cdcdcd",
+                "margins": "10; 2; 10; 2",
+                "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/NIDAQmxAIPlugin/bin/QPSL_NIDAQmxAI.dll",
+                "spacing": 5,
+                "stretch": "3; 6; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "target path:"
+                    },
+                    {
+                        "Type": "QPSLPushButton",
+                        "m_text": "select"
+                    },
+                    {
+                        "Type": "QPSLIconLabel",
+                        "dynamic": false,
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "frame_shape": 6,
+                "margins": "10; 2; 10; 2",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "text": "compile args:"
+                    },
+                    {
+                        "ObjectName": "edit_compile_args",
+                        "Type": "QPSLLineEdit",
+                        "text": "-O3 -mavx -mavx2"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "button_auto_fill",
+                "Type": "QPSLPushButton",
+                "backgroud_color": "#cdcdcd",
+                "m_text": "auto fill"
+            },
+            {
+                "ObjectName": "edit_command",
+                "Type": "QPSLTextEdit"
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "button_make_command",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "make command"
+                    },
+                    {
+                        "ObjectName": "button_compile",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "compile"
+                    }
+                ]
+            },
+            {
+                "ObjectName": "button_test",
+                "Type": "QPSLPushButton",
+                "backgroud_color": "#cdcdcd",
+                "m_text": "test"
+            }
+        ]
+    }
+}

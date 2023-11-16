@@ -1,0 +1,333 @@
+{
+    "Type": "QPSLHFrameList",
+    "spacing": 5,
+    "stretch": "1; 1",
+    "widgets": [
+        {
+            "Type": "QPSLVFrameList",
+            "backgroud_color": "#999999",
+            "stretch": "2; 2; 2; 4",
+            "widgets": [
+                {
+                    "ObjectName": "frame_NIconfig",
+                    "Type": "QPSLVFrameList",
+                    "backgroud_color": "#999999",
+                    "widgets": [
+                        {
+                            "Type": "QPSLHFrameList",
+                            "backgroud_color": "#999999",
+                            "margins": "0; 10; 0; 10",
+                            "spacing": 10,
+                            "stretch": "1; 1",
+                            "widgets": [
+                                {
+                                    "ObjectName": "btn_device",
+                                    "Type": "QPSLPushButton",
+                                    "backgroud_color": "#666666",
+                                    "m_text": "device"
+                                },
+                                {
+                                    "ObjectName": "cbox_device",
+                                    "Type": "QPSLComboBox",
+                                    "backgroud_color": "#e5e5e5"
+                                }
+                            ]
+                        },
+                        {
+                            "ObjectName": "sbox_number",
+                            "Type": "QPSLHFrameList",
+                            "backgroud_color": "#999999",
+                            "margins": "0; 0; 0; 10",
+                            "spacing": 10,
+                            "stretch": "1; 1",
+                            "widgets": [
+                                {
+                                    "ObjectName": "sbox_rate",
+                                    "Type": "QPSLSpinBox",
+                                    "backgroud_color": "#999999",
+                                    "prefix": "sample rate: ",
+                                    "suffix": " /s"
+                                },
+                                {
+                                    "ObjectName": "sbox_number",
+                                    "Type": "QPSLSpinBox",
+                                    "backgroud_color": "#999999",
+                                    "prefix": "sample number: "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "QPSLTabWidget",
+                    "backgroud_color": "#e5e5e5",
+                    "titles": [
+                        "AOTF(472nm)",
+                        "AOTF(561nm)",
+                        "AOTF(637nm)"
+                    ],
+                    "widgets": [
+                        {
+                            "ObjectName": "tab_AOTF1",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#e5e5e5",
+                            "spacing": 5,
+                            "widgets": [
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#ffffff",
+                                            "prefix": "high level: ",
+                                            "range": "0; 1000"
+                                        },
+                                        {
+                                            "ObjectName": "sbox_delay",
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "delay: ",
+                                            "range": "0; 1000"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "min: ",
+                                            "range": "-5.0; 0.0",
+                                            "suffix": "V"
+                                        },
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "max: ",
+                                            "range": "0.0; 5.0",
+                                            "suffix": "V"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "ObjectName": "tab_AOTF1",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#666666",
+                            "spacing": 5,
+                            "widgets": [
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#ffffff",
+                                            "prefix": "high level: ",
+                                            "range": "0; 1000"
+                                        },
+                                        {
+                                            "ObjectName": "sbox_delay",
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "delay: ",
+                                            "range": "0; 1000"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "min: ",
+                                            "range": "-5.0; 0.0",
+                                            "suffix": "V"
+                                        },
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "max: ",
+                                            "range": "0.0; 5.0",
+                                            "suffix": "V"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "ObjectName": "tab_AOTF1",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#e5e5e5",
+                            "spacing": 5,
+                            "widgets": [
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#ffffff",
+                                            "prefix": "high level: ",
+                                            "range": "0; 1000"
+                                        },
+                                        {
+                                            "ObjectName": "sbox_delay",
+                                            "Type": "QPSLSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "delay: ",
+                                            "range": "0; 1000"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Type": "QPSLHFrameList",
+                                    "backgroud_color": "#e5e5e5",
+                                    "spacing": 5,
+                                    "widgets": [
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "min: ",
+                                            "range": "-5.0; 0.0",
+                                            "suffix": "V"
+                                        },
+                                        {
+                                            "Type": "QPSLDoubleSpinBox",
+                                            "backgroud_color": "#e5e5e5",
+                                            "prefix": "max: ",
+                                            "range": "0.0; 5.0",
+                                            "suffix": "V"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Type": "QPSLTabWidget",
+                    "backgroud_color": "#999999",
+                    "titles": [
+                        "Camera",
+                        "SLM",
+                        "Galvano"
+                    ],
+                    "widgets": [
+                        {
+                            "ObjectName": "tab_camera",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#cccccc",
+                            "widgets": [
+                                {
+                                    "Type": "QPSLSpinBox",
+                                    "backgroud_color": "#cccccc",
+                                    "prefix": "delay: ",
+                                    "range": "0; 1000"
+                                }
+                            ]
+                        },
+                        {
+                            "ObjectName": "tab_SLM",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#b2b2b2",
+                            "widgets": [
+                                {
+                                    "Type": "QPSLSpinBox",
+                                    "backgroud_color": "#b2b2b2",
+                                    "prefix": "dealy: ",
+                                    "range": "0; 1000"
+                                }
+                            ]
+                        },
+                        {
+                            "ObjectName": "tab_Galvano",
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#999999",
+                            "widgets": [
+                                {
+                                    "Type": "QPSLSpinBox",
+                                    "backgroud_color": "#999999",
+                                    "prefix": "dealy: ",
+                                    "range": "0; 1000"
+                                },
+                                {
+                                    "Type": "QPSLDoubleSpinBox",
+                                    "backgroud_color": "#999999",
+                                    "prefix": "max: ",
+                                    "range": "0.0; 5.0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ObjectName": "frame_task",
+                    "Type": "QPSLHFrameList",
+                    "backgroud_color": "#999999",
+                    "margins": "0; 10; 0; 10",
+                    "spacing": 10,
+                    "stretch": "6; 2",
+                    "widgets": [
+                        {
+                            "ObjectName": "plot_wave",
+                            "Type": "QPSLPlotWidget",
+                            "backgroud_color": "#e5e5e5"
+                        },
+                        {
+                            "Type": "QPSLVFrameList",
+                            "backgroud_color": "#333333",
+                            "margins": "0; 20; 0; 20",
+                            "spacing": 10,
+                            "widgets": [
+                                {
+                                    "ObjectName": "btn_init",
+                                    "Type": "QPSLToggleButton",
+                                    "backgroud_color": "#a2a2a2",
+                                    "m_closed_text": "init",
+                                    "m_opened_text": "clear",
+                                    "m_text": "init"
+                                },
+                                {
+                                    "ObjectName": "btn_start",
+                                    "Type": "QPSLToggleButton",
+                                    "backgroud_color": "#a2a2a2",
+                                    "m_closed_text": "start",
+                                    "m_opened_text": "stop",
+                                    "m_text": "start"
+                                },
+                                {
+                                    "ObjectName": "btn_reset",
+                                    "Type": "QPSLPushButton",
+                                    "m_text": "reset"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Type": "QPSLVFrameList",
+            "widgets": [
+                {
+                    "Type": "QPSLListWidget"
+                },
+                {
+                    "Type": "QPSLVFrameList"
+                }
+            ]
+        }
+    ]
+}

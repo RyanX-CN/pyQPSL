@@ -1,0 +1,11 @@
+.vscode
+__pycache__
+build
+Compile
+Log
+Temp
+Plugins/Simple/AGADP/resources/model/120
+Plugins/Developer/UIDesigner/ui.json
+test.py
+Pipfile
+Pipfile.lock

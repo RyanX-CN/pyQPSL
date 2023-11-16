@@ -1,0 +1,102 @@
+{
+    "ZaberPluginUI": {
+        "Type": "ZaberPluginUI",
+        "margins": "10; 10; 10; 10",
+        "port_number": "COM5",
+        "spacing": 10,
+        "stretch": "3; 1; 1",
+        "widgets": [
+            {
+                "ObjectName": "slider",
+                "Type": "QPSLComboSlider",
+                "backgroud_color": "#e0e0e0",
+                "m_decimals": 6,
+                "m_range": "0.0; 25400.0",
+                "m_value": 10428.279386712094
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "frame_shape": 4,
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "toggle_button_open",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "open",
+                        "m_opened_text": "close",
+                        "m_text": "open"
+                    },
+                    {
+                        "ObjectName": "toggle_button_query",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "start query",
+                        "m_opened_text": "querying...",
+                        "m_text": "start query"
+                    },
+                    {
+                        "ObjectName": "button_home",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "home"
+                    },
+                    {
+                        "ObjectName": "button_move_min",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "move min"
+                    },
+                    {
+                        "ObjectName": "button_move_max",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "move max"
+                    },
+                    {
+                        "ObjectName": "button_query_position",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "query position"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "frame_shape": 4,
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "spin_ratio",
+                        "Type": "QPSLDoubleSpinBox",
+                        "decimals": 4,
+                        "prefix": "ratio: ",
+                        "value": 20.9974
+                    },
+                    {
+                        "ObjectName": "spin_native_unit",
+                        "Type": "QPSLDoubleSpinBox",
+                        "suffix": " native unit"
+                    },
+                    {
+                        "ObjectName": "spin_micrometer",
+                        "Type": "QPSLDoubleSpinBox",
+                        "suffix": " micrometer"
+                    },
+                    {
+                        "ObjectName": "button_move_absolute",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "absolute move"
+                    },
+                    {
+                        "ObjectName": "button_move_relative",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "relative move"
+                    }
+                ]
+            }
+        ]
+    }
+}

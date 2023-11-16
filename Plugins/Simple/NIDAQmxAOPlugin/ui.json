@@ -1,0 +1,254 @@
+{
+    "NIDAQmxAOPluginUI": {
+        "Type": "NIDAQmxAOPluginUI",
+        "generators": [
+            {
+                "Cycle": 200000,
+                "Length": 200000,
+                "Max": 5.0,
+                "Min": -5.0,
+                "Phase": 0,
+                "Stage Number": 100,
+                "Type": "Trapezoid Wave"
+            },
+            {
+                "Cycle": 100000,
+                "Length": 200000,
+                "Max": 5.0,
+                "Min": -5.0,
+                "Phase": 0,
+                "Stage Number": 100,
+                "Type": "Trapezoid Wave"
+            }
+        ],
+        "margins": "10; 10; 10; 10",
+        "spacing": 10,
+        "stretch": "1; 3",
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "spacing": 10,
+                "stretch": "5; 5; 4; 4; 4; 4; 14; 4",
+                "widgets": [
+                    {
+                        "ObjectName": "box_device",
+                        "Type": "QPSLHFrameList",
+                        "stretch": "1; 2",
+                        "widgets": [
+                            {
+                                "ObjectName": "button_device",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Device:"
+                            },
+                            {
+                                "ObjectName": "combobox_device",
+                                "Type": "QPSLComboBox"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "stretch": "1; 2",
+                        "widgets": [
+                            {
+                                "ObjectName": "button_terminal",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Terminal:"
+                            },
+                            {
+                                "ObjectName": "combobox_terminal",
+                                "Type": "QPSLComboBox"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "spin_sample_rate",
+                        "Type": "QPSLSpinBox",
+                        "prefix": " Sample Rate:",
+                        "range": "1; 20000000",
+                        "value": 200000
+                    },
+                    {
+                        "ObjectName": "spin_sample_number",
+                        "Type": "QPSLSpinBox",
+                        "prefix": " Sample Number:",
+                        "range": "0; 20000000"
+                    },
+                    {
+                        "ObjectName": "spin_min_val",
+                        "Type": "QPSLDoubleSpinBox",
+                        "prefix": " Min:",
+                        "range": "-10.0; 10.0",
+                        "suffix": " Vol.",
+                        "value": -9.0
+                    },
+                    {
+                        "ObjectName": "spin_max_val",
+                        "Type": "QPSLDoubleSpinBox",
+                        "prefix": " Max:",
+                        "range": "-10.0; 10.0",
+                        "suffix": " Vol.",
+                        "value": 8.0
+                    },
+                    {
+                        "ObjectName": "area_channels",
+                        "Type": "QPSLVScrollArea",
+                        "backgroud_color": "#ffffff",
+                        "frame_shape": 6,
+                        "margins": "5; 5; 5; 5",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#ffffff",
+                                "stretch": "1; 2; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#cdcdcd",
+                                        "m_text": "Channel 1:"
+                                    },
+                                    {
+                                        "Type": "QPSLComboBox",
+                                        "backgroud_color": "#ffffff"
+                                    },
+                                    {
+                                        "Type": "QPSLCheckBox",
+                                        "backgroud_color": "#ffffff",
+                                        "checked": true,
+                                        "text": ""
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "spacing": 5,
+                        "widgets": [
+                            {
+                                "ObjectName": "button_add_channel",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Add"
+                            },
+                            {
+                                "ObjectName": "button_remove_channel",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Remove"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "spacing": 10,
+                "stretch": "4; 1",
+                "widgets": [
+                    {
+                        "ObjectName": "plot_show",
+                        "Type": "QPSLComboCurvePlotWidget",
+                        "spacing": 5,
+                        "stretch": "10; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLPlotWidget"
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "spacing": 5,
+                                "stretch": "10; 1; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHScrollArea",
+                                        "frame_shape": 6,
+                                        "margins": "5; 5; 5; 5",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLCurveDeque",
+                                                "capacity": 80,
+                                                "color": "#ff272b",
+                                                "text": "series 1"
+                                            },
+                                            {
+                                                "Type": "QPSLCurveDeque",
+                                                "capacity": 40,
+                                                "color": "#22ffff",
+                                                "text": "series 2"
+                                            },
+                                            {
+                                                "Type": "QPSLCurveDeque",
+                                                "capacity": 40,
+                                                "color": "#a946ff",
+                                                "text": "series 3"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#cdcdcd",
+                                        "m_text": "add"
+                                    },
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#cdcdcd",
+                                        "m_text": "remove"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "spacing": 5,
+                        "widgets": [
+                            {
+                                "ObjectName": "toggle_button_init_task",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "Init Task",
+                                "m_opened_text": "Clear Task",
+                                "m_text": "Init Task"
+                            },
+                            {
+                                "ObjectName": "toggle_button_start_task",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "Start Task",
+                                "m_opened_text": "Stop Task",
+                                "m_text": "Start Task"
+                            },
+                            {
+                                "ObjectName": "toggle_button_start_show",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "Start Show",
+                                "m_opened_text": "Stop Show",
+                                "m_text": "Start Show"
+                            },
+                            {
+                                "ObjectName": "spin_everyn",
+                                "Type": "QPSLSpinBox",
+                                "prefix": " Everyn:",
+                                "value": 10000
+                            },
+                            {
+                                "ObjectName": "spin_time_window",
+                                "Type": "QPSLDoubleSpinBox",
+                                "prefix": " Time Window:",
+                                "range": "0.001; 60.0",
+                                "suffix": " s.",
+                                "value": 4.0
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

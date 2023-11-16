@@ -1,0 +1,22 @@
+【输入】：输入数据只是示例，我还在找更合适的测试用例
+
+    # vf
+    input_path       # vf视野报告PDF所在的位置
+    fname    # 需要读取的vf视野报告PDF
+    file_dir    # vf视野必须文件
+    thre_dir    # vf视野必须文件
+    
+    # cfp
+    cpf_path         # cfp眼底照位置
+
+    # 深度学习模型
+    model_path      # 深度学习模型位置
+
+【输出】：
+1、患者信息：之前给你的UI界面上的患者信息按照这个来，也不用把txt文件藏在图里了，直接从这里读取即可。性别ID什么的不要了，依据这个来。
+姓名patient_name，生日patient_birth，年龄patient_age，检查日期exam_date，检查时间exam_time，眼别eye
+！注意，因为生日是时间戳的格式，我不知道怎么提取具体年份，所以年龄我先随便附了一个值，应该用2023-出生年份计算；
+             检查日期也是时间戳格式，包含着检查时间，所以检查时间我也先随便附了一个值，应该把检查时间单独提取出来作为一个量
+2、数值：诊断结果diagnosis_result，阴性概率negitive_probility，阳性概率positive_probility
+3、图像：原始眼底照ori_img_cpf，原始视野报告fname，处理后的眼底照roi_cpf，处理后的视野图ori_img_vf，眼底照病灶分析cam_img，视野图病灶分析cam_img
+

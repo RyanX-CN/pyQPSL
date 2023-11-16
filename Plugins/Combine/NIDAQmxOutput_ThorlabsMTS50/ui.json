@@ -1,0 +1,88 @@
+{
+    "NIDAQmxOutput_ThorlabsMTS50_PluginUI": {
+        "Type": "NIDAQmxOutput_ThorlabsMTS50_PluginUI",
+        "composition_json": {
+            "Type": "QPSLVFrameList",
+            "stretch": "1; 1",
+            "widgets": [
+                {
+                    "Type": "QPSLHFrameList",
+                    "widgets": [
+                        {
+                            "ObjectName": "thorlabsmts50_wrap",
+                            "Type": "QPSLFrameWrap"
+                        }
+                    ]
+                },
+                {
+                    "Type": "QPSLHFrameList",
+                    "widgets": [
+                        {
+                            "ObjectName": "nidaqmx_do_wrap",
+                            "Type": "QPSLFrameWrap"
+                        },
+                        {
+                            "ObjectName": "nidaqmx_ao_wrap",
+                            "Type": "QPSLFrameWrap"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tab_json":{
+                "Type":"QPSLVFrameList",
+                "widgets":[
+                    {
+                        "Type":"QPSLTabWidget",
+                        "titles":[
+                        "ThorlabsMTS50Plugin",
+                        "NIDAQmxDOPlugin",
+                        "NIDAQmxAOPlugin"
+                        ],
+                        "widgets":[
+                        {
+                            "ObjectName":"thorlabsmts50_wrap",
+                            "Type":"QPSLFrameWrap"
+                        },
+                        {
+                            "ObjectName":"nidaqmx_do_wrap",
+                            "Type":"QPSLFrameWrap"
+                        },
+                        {
+                            "ObjectName":"nidaqmx_ao_wrap",
+                            "Type":"QPSLFrameWrap"
+                        }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "margins": "10; 10; 10; 20",
+                        "spacing": 25,
+                        "widgets":[
+                            {
+                                "ObjectName":"btn_init_total",
+                                "Type":"QPSLPushButton",
+                                "m_text":"init"
+                            },
+                            {
+                                "ObjectName":"btn_start_total",
+                                "Type":"QPSLToggleButton",
+                                "m_closed_text":"start",
+                                "m_opened_text":"stop"
+                            },
+                            {
+                                "ObjectName":"btn_reset_total",
+                                "Type":"QPSLPushButton",
+                                "m_text":"reset"
+                            }
+                        ]
+                    }
+                ]
+
+        }
+       
+        },
+    
+        "ui_mode": "TabMode"
+    }
+

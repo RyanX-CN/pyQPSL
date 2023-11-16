@@ -1,0 +1,834 @@
+{
+    "OpticalImageDivisorUI": {
+        "Type": "OpticalImageDivisorUI",
+        "stretch": "3; 1",
+        "widgets": [
+            {
+                "ObjectName": "image_3d",
+                "Type": "QPSLVFrameList",
+                "stretch": "30; 3; 1",
+                "widgets": [
+                    {
+                        "Type": "QPSLHFrameList",
+                        "margins": "10; 10; 10; 10",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "ObjectName": "label_image1",
+                                "Type": "QPSLTrackedScalePixmapLabel",
+                                "aspect_ratio_mode": 0
+                            },
+                            {
+                                "ObjectName": "label_image2",
+                                "Type": "QPSLScalePixmapLabel",
+                                "aspect_ratio_mode": 0
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "margins": "10; 0; 10; 0",
+                        "spacing": 10,
+                        "stretch": "8; 1",
+                        "widgets": [
+                            {
+                                "ObjectName": "slider",
+                                "Type": "QPSLSlider",
+                                "range": "0; 10",
+                                "value": 4
+                            },
+                            {
+                                "ObjectName": "button_axis",
+                                "Type": "QPSLPushButton",
+                                "m_text": "axis z"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "margins": "10; 5; 10; 5",
+                        "spacing": 5,
+                        "widgets": [
+                            {
+                                "ObjectName": "spin_low",
+                                "Type": "QPSLSpinBox",
+                                "prefix": "low: ",
+                                "range": "0; 65535"
+                            },
+                            {
+                                "ObjectName": "spin_high",
+                                "Type": "QPSLSpinBox",
+                                "prefix": "high: ",
+                                "range": "0; 65535",
+                                "value": 65535
+                            },
+                            {
+                                "ObjectName": "spin_gray_ratio",
+                                "Type": "QPSLSpinBox",
+                                "prefix": "gray ratio: ",
+                                "range": "0; 65535",
+                                "value": 80
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "2; 2; 2; 2",
+                "spacing": 2,
+                "widgets": [
+                    {
+                        "ObjectName": "spin_divide_down_ratio",
+                        "Type": "QPSLSpinBox",
+                        "prefix": "Divide Down Ratio:",
+                        "range": "0; 10000",
+                        "value": 40
+                    },
+                    {
+                        "ObjectName": "spin_binary_threshold",
+                        "Type": "QPSLSpinBox",
+                        "prefix": "Binary Threshold:",
+                        "range": "0; 65535",
+                        "value": 320
+                    },
+                    {
+                        "ObjectName": "spin_radius",
+                        "Type": "QPSLSpinBox",
+                        "prefix": "Radius:",
+                        "range": "0; 10000",
+                        "value": 5
+                    },
+                    {
+                        "ObjectName": "button_mode",
+                        "Type": "QPSLPushButton",
+                        "m_text": "Show Mode:EDIT"
+                    },
+                    {
+                        "ObjectName": "box_edit",
+                        "Type": "QPSLHFrameList",
+                        "stretch": "2; 1",
+                        "widgets": [
+                            {
+                                "ObjectName": "slider_pen_radius",
+                                "Type": "QPSLSlider",
+                                "range": "0; 500",
+                                "value": 17
+                            },
+                            {
+                                "ObjectName": "checkbox_reserve",
+                                "Type": "QPSLCheckBox",
+                                "text": "Reserve"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "list_segments",
+                        "Type": "QPSLListWidget",
+                        "selection_mode": 2
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "spacing": 2,
+                        "widgets": [
+                            {
+                                "ObjectName": "button_add_segment",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Add"
+                            },
+                            {
+                                "ObjectName": "button_remove_segments",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Remove"
+                            },
+                            {
+                                "ObjectName": "button_reset_segments",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#cdcdcd",
+                                "m_text": "Reset"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_get_division_save_path",
+                        "Type": "QPSLGetOpenFileBox",
+                        "as_save": true,
+                        "backgroud_color": "#cdcdcd",
+                        "path": "C:/Users/oldyan/Desktop/\u5feb\u6377/result.tif",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "text": "Save Path:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "m_text": "Select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "toggle_button_division",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "Start Division",
+                        "m_opened_text": "Stop Division",
+                        "m_text": "Start Division"
+                    }
+                ]
+            }
+        ]
+    },
+    "OpticalImagesUI": {
+        "Type": "OpticalImagesUI",
+        "titles": [
+            "Brain Slice Recon",
+            "Pretreatment",
+            "Whole Brain Slice Recon"
+        ],
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "10; 10; 10; 10",
+                "spacing": 10,
+                "stretch": "9; 24",
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "frame_shape": 1,
+                        "spacing": 2,
+                        "stretch": "2; 7",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 14; 75; False",
+                                "text": " Region 1"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "margins": "2; 2; 2; 2",
+                                "stretch": "4; 10",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "box_reconstruction_get_sample_dcimg_path",
+                                        "Type": "QPSLGetOpenFileBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "D:/softwaredata/vscode_file/pyQPSL/run.bat",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Sample Input Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "stretch": "2; 1",
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "list_reconstruction_sample_points",
+                                                "Type": "QPSLListWidget",
+                                                "backgroud_color": "#19232d",
+                                                "selection_mode": 2
+                                            },
+                                            {
+                                                "Type": "QPSLVFrameList",
+                                                "spacing": 5,
+                                                "stretch": "1; 1; 1",
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "button_reconstruction_show_sample_image",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Show Sample Image"
+                                                    },
+                                                    {
+                                                        "ObjectName": "button_reconstruction_delete_points",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Remove Points"
+                                                    },
+                                                    {
+                                                        "ObjectName": "button_reconstruction_clear_points",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Clear Points"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "frame_shape": 1,
+                        "spacing": 2,
+                        "stretch": "2; 22",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 14; 75; False",
+                                "text": " Region 2"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "margins": "2; 2; 2; 2",
+                                "spacing": 5,
+                                "stretch": "3; 10; 3; 3; 4; 4; 10; 5",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "combo_edit_reconstruction_name_prefix",
+                                        "Type": "QPSLComboLineEdit",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": " Name Prefix:"
+                                            },
+                                            {
+                                                "Type": "QPSLLineEdit"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLVFrameList",
+                                                "spacing": 5,
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "spin_overlap_x",
+                                                        "Type": "QPSLSpinBox",
+                                                        "prefix": "OverLap X:",
+                                                        "range": "0; 1000000",
+                                                        "value": 510
+                                                    },
+                                                    {
+                                                        "ObjectName": "spin_scale_x",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "prefix": "Scale X:",
+                                                        "value": 1.0
+                                                    },
+                                                    {
+                                                        "ObjectName": "spin_resolve_x",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "prefix": "Resolve X:",
+                                                        "suffix": " um."
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLVFrameList",
+                                                "spacing": 5,
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "spin_overlap_y",
+                                                        "Type": "QPSLSpinBox",
+                                                        "prefix": "OverLap Y:"
+                                                    },
+                                                    {
+                                                        "ObjectName": "spin_scale_y",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "prefix": "Scale Y:",
+                                                        "value": 0.812
+                                                    },
+                                                    {
+                                                        "ObjectName": "spin_resolve_y",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "prefix": "Resolve Y:",
+                                                        "suffix": " um.",
+                                                        "value": 3.0
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "spin_block_num",
+                                        "Type": "QPSLSpinBox",
+                                        "prefix": "Block Num:",
+                                        "range": "1; 1000000",
+                                        "value": 100
+                                    },
+                                    {
+                                        "ObjectName": "spin_z_spacing",
+                                        "Type": "QPSLSpinBox",
+                                        "prefix": "Z Spacing:",
+                                        "range": "1; 1000000",
+                                        "value": 1
+                                    },
+                                    {
+                                        "ObjectName": "box_reconstruction_get_input_path",
+                                        "Type": "QPSLGetDirectoryBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "J:/Raw Data/20220830_1/",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Recon Input Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "box_reconstruction_get_save_path",
+                                        "Type": "QPSLGetDirectoryBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "J:/Results/result_dzh/human_brain_slice/22_08_30/recon",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Recon Save Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "list_reconstruction_input_files",
+                                        "Type": "QPSLListWidget",
+                                        "selection_mode": 2
+                                    },
+                                    {
+                                        "ObjectName": "toggle_button_reconstruction",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "Start Reconstruction",
+                                        "m_opened_text": "Stop Reconstruction",
+                                        "m_text": "Start Reconstruction"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "10; 10; 10; 10",
+                "spacing": 10,
+                "stretch": "18; 27",
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "frame_shape": 1,
+                        "spacing": 2,
+                        "stretch": "3; 12; 3",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 14; 75; False",
+                                "text": " Region 1"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "margins": "2; 2; 2; 2",
+                                "spacing": 5,
+                                "stretch": "4; 10; 5",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "box_calibration_get_sample_tiff_path",
+                                        "Type": "QPSLGetOpenFileBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Sample Input Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "stretch": "2; 1",
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "list_calibration_sample_points",
+                                                "Type": "QPSLListWidget",
+                                                "selection_mode": 2
+                                            },
+                                            {
+                                                "Type": "QPSLVFrameList",
+                                                "spacing": 5,
+                                                "stretch": "1; 1; 1",
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "button_calibration_show_sample_image",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Show Sample Image"
+                                                    },
+                                                    {
+                                                        "ObjectName": "button_calibration_delete_points",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Remove Points"
+                                                    },
+                                                    {
+                                                        "ObjectName": "button_calibration_clear_points",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#cdcdcd",
+                                                        "m_text": "Clear Points"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "toggle_button_calibration",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "Start Calibration",
+                                        "m_opened_text": "Stop Calibration",
+                                        "m_text": "Start Calibration"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "margins": "2; 2; 2; 2",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "box_division_get_input_path",
+                                        "Type": "QPSLGetOpenFileBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "C:/Users/oldyan/Desktop/\u5feb\u6377/C1-test.tif",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Division Input Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "frame_shape": 1,
+                        "spacing": 2,
+                        "stretch": "3; 24",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 14; 75; False",
+                                "text": " Region 2"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "margins": "2; 2; 2; 2",
+                                "spacing": 5,
+                                "stretch": "3; 3; 4; 4; 3; 10; 5",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "spin_flatten_thickness",
+                                                "Type": "QPSLSpinBox",
+                                                "prefix": "Thickness:",
+                                                "value": 185
+                                            },
+                                            {
+                                                "ObjectName": "spin_flatten_zsize",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "prefix": "Z size:",
+                                                "value": 2.3
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "button_flatten_use_up_plane",
+                                                "Type": "QPSLRadioButton",
+                                                "is_checked": true,
+                                                "text": "Use Up Plane"
+                                            },
+                                            {
+                                                "ObjectName": "button_flatten_not_use_up_plane",
+                                                "Type": "QPSLRadioButton",
+                                                "text": "Not Use Up Plane"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "box_flatten_get_input_path",
+                                        "Type": "QPSLGetDirectoryBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "J:/Results/result_dzh/human_brain_slice/22_08_30/recon",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Flatten Input Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "box_flatten_get_save_path",
+                                        "Type": "QPSLGetDirectoryBox",
+                                        "backgroud_color": "#cdcdcd",
+                                        "margins": "10; 2; 10; 2",
+                                        "path": "J:/Results/result_dzh/human_brain_slice/22_08_30/flatten",
+                                        "spacing": 5,
+                                        "stretch": "5; 5; 1",
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "box_flattern_get_save_path",
+                                                "Type": "QPSLLabel",
+                                                "text": "Flatten Save Path:"
+                                            },
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Select"
+                                            },
+                                            {
+                                                "Type": "QPSLIconLabel",
+                                                "dynamic": false,
+                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "combo_edit_flatten_name_prefix",
+                                        "Type": "QPSLComboLineEdit",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": " Name Prefix:"
+                                            },
+                                            {
+                                                "Type": "QPSLLineEdit",
+                                                "text": "C2-test"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "list_flatten_input_files",
+                                        "Type": "QPSLListWidget"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "margins": "2; 2; 2; 2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "toggle_button_flatten",
+                                                "Type": "QPSLToggleButton",
+                                                "backgroud_color": "#a2a2a2",
+                                                "m_closed_text": "Start Flatten",
+                                                "m_opened_text": "Stop Flatten",
+                                                "m_text": "Start Flatten"
+                                            },
+                                            {
+                                                "ObjectName": "button_show_flatten_result",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Show Flatten Result"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "10; 10; 10; 10",
+                "spacing": 10,
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "frame_shape": 1,
+                        "margins": "2; 2; 2; 2",
+                        "spacing": 5,
+                        "stretch": "3; 3; 3; 3; 23; 4",
+                        "widgets": [
+                            {
+                                "ObjectName": "box_reconstruction2_get_path",
+                                "Type": "QPSLGetOpenFileBox",
+                                "backgroud_color": "#cdcdcd",
+                                "margins": "10; 2; 10; 2",
+                                "spacing": 5,
+                                "stretch": "5; 5; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "Whole Reconstruction Path:"
+                                    },
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "Select"
+                                    },
+                                    {
+                                        "Type": "QPSLIconLabel",
+                                        "dynamic": false,
+                                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_box_reconstruction2_name_prefix",
+                                "Type": "QPSLComboLineEdit",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "Name Prefix:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "text": "1_27_2_humanbrain_slice_"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_box_reconstruction2_name_suffix",
+                                "Type": "QPSLComboLineEdit",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "Name Suffix:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "text": "_bkgd_illu_cor_flatten.tif"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "button_use_qtw",
+                                        "Type": "QPSLRadioButton",
+                                        "is_checked": true,
+                                        "text": "Destripe"
+                                    },
+                                    {
+                                        "ObjectName": "button_not_use_qtw",
+                                        "Type": "QPSLRadioButton",
+                                        "text": "Not Destripe"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "table_reconstruction2",
+                                "Type": "QPSLTableWidget",
+                                "frame_shape": 6,
+                                "row": 15
+                            },
+                            {
+                                "ObjectName": "toggle_button_reconstruction2",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "Start Whole Reconstruction",
+                                "m_opened_text": "Stop Whole Reconstruction",
+                                "m_text": "Start Whole Reconstruction"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

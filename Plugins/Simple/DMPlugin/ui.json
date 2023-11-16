@@ -1,0 +1,84 @@
+{
+    "DMPluginUI": {
+        "Type": "DMPluginUI",
+        "margins": "10; 10; 10; 10",
+        "serial_number": "17BW025#021",
+        "spacing": 10,
+        "stretch": "3; 1",
+        "widgets": [
+            {
+                "ObjectName": "table_grid",
+                "Type": "QPSLTableWidget",
+                "column": 12,
+                "frame_shape": 1,
+                "row": 12
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "frame_shape": 1,
+                "spacing": 10,
+                "stretch": "2; 2; 1; 1; 4; 2",
+                "widgets": [
+                    {
+                        "ObjectName": "toggle_button_open",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#ffffff",
+                        "m_closed_text": "Open Mirror",
+                        "m_opened_text": "Close Mirror",
+                        "m_text": "Close Mirror"
+                    },
+                    {
+                        "ObjectName": "toggle_button_load_map",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#ffffff",
+                        "m_closed_text": "Load Map",
+                        "m_opened_text": "Map Loaded",
+                        "m_text": "Map Loaded"
+                    },
+                    {
+                        "ObjectName": "spin_single_value",
+                        "Type": "QPSLDoubleSpinBox",
+                        "decimals": 6,
+                        "prefix": "Single Value:",
+                        "range": "0.0; 1.0",
+                        "value": 0.1
+                    },
+                    {
+                        "ObjectName": "box_get_file_path",
+                        "Type": "QPSLGetOpenFileBox",
+                        "backgroud_color": "#cdcdcd",
+                        "margins": "10; 2; 10; 2",
+                        "path": "D:/softwaredata/vscode_file/pyQPSL/Plugins/Simple/DMPlugin/resources/Shapes/Alignmentshape140.csv",
+                        "spacing": 10,
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "text": " Path:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "m_text": "Select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "edit_array",
+                        "Type": "QPSLTextEdit"
+                    },
+                    {
+                        "ObjectName": "button_send",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "Send"
+                    }
+                ]
+            }
+        ]
+    }
+}

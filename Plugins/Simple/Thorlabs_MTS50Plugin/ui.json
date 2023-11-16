@@ -1,0 +1,635 @@
+{
+    "Thorlabs_MTS50PluginUI":{
+        "Type": "Thorlabs_MTS50PluginUI",
+        "spacing": 20,
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "10; 20; 0; 25",
+                "stretch": "2; 1; 2; 2; 2",
+                "widgets": [
+                    {
+                        "ObjectName": "text_logger",
+                        "Type": "QPSLTextEdit"
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "margins": "50; 25; 50; 25",
+                        "spacing": 25,
+                        "widgets": [
+                            {
+                                "ObjectName": "btn_open_all",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "Open devices",
+                                "m_opened_text": "Close devices",
+                                "m_text": "Open devices"
+                            },
+                            {
+                                "ObjectName": "btn_home_all",
+                                "Type": "QPSLPushButton",
+                                "m_text": "Home all"
+                            },
+                            {
+                                "ObjectName": "btn_stop_all",
+                                "Type": "QPSLPushButton",
+                                "m_text": "Stop all"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "margins": "0; 25; 0; 0",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "X axis"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "text": "Current position(mm):"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_pos_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "decimals": 5,
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "btn_stop_x",
+                                        "Type": "QPSLPushButton"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_minus_x",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "ObjectName": "btn_plus_x",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "sbox_move_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            },
+                                            {
+                                                "ObjectName": "btn_move_x",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Move",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#b2b2b2",
+                        "margins": "0; 25; 0; 0",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#191919",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "Y axis"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#b2b2b2",
+                                                "text": "Current position(mm):"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_pos_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#b2b2b2",
+                                                "decimals": 5,
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "btn_stop_y",
+                                        "Type": "QPSLPushButton"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_minus_y",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "ObjectName": "btn_plus_y",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "sbox_move_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#b2b2b2",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            },
+                                            {
+                                                "ObjectName": "btn_move_y",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Move",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#b2b2b2",
+                        "margins": "0; 25; 0; 0",
+                        "spacing": 10,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#b2b2b2",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "Z axis"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#b2b2b2",
+                                                "text": "Current position(mm):"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_pos_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#b2b2b2",
+                                                "decimals": 5,
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "btn_stop_z",
+                                        "Type": "QPSLPushButton"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_minus_z",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "ObjectName": "btn_plus_z",
+                                        "Type": "QPSLPushButton"
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "sbox_move_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#b2b2b2",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            },
+                                            {
+                                                "ObjectName": "btn_move_z",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Move",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "backgroud_color": "#666666",
+                "margins": "0; 20; 10; 10",
+                "spacing": 15,
+                "stretch": "0; 2; 2; 2; 1; 6",
+                "widgets": [
+                    {
+                        "Type": "QPSLLabel",
+                        "backgroud_color": "#666666",
+                        "font": "Arial; 14; 50; False",
+                        "text": "Auto scan:"
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#666666",
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "stretch": "1; 0; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#4c4c4c",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "X stage:"
+                                    },
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#666666",
+                                        "text": "Interval:"
+                                    },
+                                    {
+                                        "ObjectName": "sbox_interval_x",
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#666666",
+                                        "v_size_policy": 4,
+                                        "value":1
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max vel:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_vel_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 2.4",
+                                                "v_size_policy": 4,
+                                                "value": 2.4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Acc:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_acc_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 4.5",
+                                                "v_size_policy": 4,
+                                                "value": 1.5
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Min:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_min_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_max_x",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4,
+                                                "value": 50.0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#666666",
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "stretch": "1; 0; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#4c4c4c",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "Y stage:"
+                                    },
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#666666",
+                                        "text": "Interval:"
+                                    },
+                                    {
+                                        "ObjectName": "sbox_interval_y",
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#666666",
+                                        "v_size_policy": 4,
+                                        "value":1
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max vel:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_vel_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 2.4",
+                                                "v_size_policy": 4,
+                                                "value": 2.4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Acc:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_acc_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 4.5",
+                                                "v_size_policy": 4,
+                                                "value": 1.5
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Min:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_min_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_max_y",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4,
+                                                "value": 50.0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#666666",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#999999",
+                                "font": "Arial; 12; 75; False",
+                                "text": "Z stage:"
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "spacing": 15,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max vel:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_vel_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 2.4",
+                                                "v_size_policy": 4,
+                                                "value": 2.4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Acc:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_acc_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "0.0; 4.5",
+                                                "v_size_policy": 4,
+                                                "value": 1.5
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Min:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_min_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Max:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_max_z",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "range": "-0.5; 50.5",
+                                                "v_size_policy": 4,
+                                                "value": 50.0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#666666",
+                        "margins": "100; 0; 100; 0",
+                        "spacing": 30,
+                        "widgets": [
+                            {
+                                "ObjectName": "btn_init_scan",
+                                "Type": "QPSLPushButton",
+                                "m_text": "init scan"
+                            },
+                            {
+                                "ObjectName": "btn_start_scan",
+                                "Type": "QPSLToggleButton",
+                                "backgroud_color": "#a2a2a2",
+                                "m_closed_text": "start scan",
+                                "m_opened_text": "stop scan",
+                                "m_text": "start scan"
+                            },
+                            {
+                                "ObjectName": "btn_mark_point",
+                                "Type": "QPSLPushButton",
+                                "m_text": "mark point"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "plot_path_tracing",
+                        "Type": "QPSLOpenGLWidget",
+                        "backgroud_color": "#666666"
+                    }
+                ]
+            }
+        ]
+    }
+}

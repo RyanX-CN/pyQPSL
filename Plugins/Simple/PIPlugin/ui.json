@@ -1,0 +1,94 @@
+{
+    "PIPluginUI": {
+        "Type": "PIPluginUI",
+        "margins": "10; 10; 10; 10",
+        "serial_number": "0121004023",
+        "spacing": 10,
+        "stretch": "3; 1; 1",
+        "widgets": [
+            {
+                "ObjectName": "slider",
+                "Type": "QPSLComboSlider",
+                "backgroud_color": "#e0e0e0",
+                "m_decimals": 6,
+                "m_range": "-1.0; 1.0",
+                "m_value": -0.31747673216132366
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "frame_shape": 4,
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "toggle_button_open",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "open",
+                        "m_opened_text": "close",
+                        "m_text": "open"
+                    },
+                    {
+                        "ObjectName": "toggle_button_serve",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "set serve on",
+                        "m_opened_text": "set serve close",
+                        "m_text": "set serve on"
+                    },
+                    {
+                        "ObjectName": "toggle_button_query",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "start query",
+                        "m_opened_text": "querying...",
+                        "m_text": "start query"
+                    },
+                    {
+                        "ObjectName": "button_reference",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "reference"
+                    },
+                    {
+                        "ObjectName": "button_move_home",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "home"
+                    },
+                    {
+                        "ObjectName": "button_query_position",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "query position"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "frame_shape": 4,
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "spin_move",
+                        "Type": "QPSLDoubleSpinBox",
+                        "decimals": 6,
+                        "suffix": " millimeter",
+                        "value": 0.1
+                    },
+                    {
+                        "ObjectName": "button_move_absolute",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "absolute move"
+                    },
+                    {
+                        "ObjectName": "button_move_relative",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "relative move"
+                    }
+                ]
+            }
+        ]
+    }
+}

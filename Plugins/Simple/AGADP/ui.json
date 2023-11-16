@@ -1,0 +1,698 @@
+{
+    "AGADPLoginBox": {
+        "Type": "AGADPLoginBox",
+        "size": "1023; 639",
+        "spacing": 15,
+        "stretch": "16; 8; 0; 5; 5; 0; 7; 2",
+        "widgets": [
+            {
+                "ObjectName": "label_image",
+                "Type": "QPSLScalePixmapLabel"
+            },
+            {
+                "Type": "QPSLLabel",
+                "alignment": 132,
+                "font": "Arial; 26; 75; False",
+                "text": "AI-based Glaucoma Auxiliary Diagnosis Platform"
+            },
+            {
+                "Type": "QPSLWidget"
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "stretch": "3; 7; 3",
+                "widgets": [
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "ObjectName": "combo_edit_username",
+                        "Type": "QPSLComboLineEdit",
+                        "backgroud_color": "#dcdcdc",
+                        "spacing": 15,
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 18; 50; False",
+                                "text": "  username:"
+                            },
+                            {
+                                "Type": "QPSLLineEdit",
+                                "font": "Arial; 18; 50; False",
+                                "text": "admin"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "stretch": "3; 7; 3",
+                "widgets": [
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "ObjectName": "combo_edit_password",
+                        "Type": "QPSLComboLineEdit",
+                        "backgroud_color": "#dcdcdc",
+                        "spacing": 15,
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 18; 50; False",
+                                "text": "  password:"
+                            },
+                            {
+                                "Type": "QPSLLineEdit",
+                                "font": "Arial; 18; 50; False",
+                                "text": "admin"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLWidget"
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "widgets": [
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "ObjectName": "button_login",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#888888",
+                        "font": "Arial; 20; 75; False",
+                        "m_text": "login"
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLWidget"
+            }
+        ],
+        "window_title": "AGADP Login"
+    },
+    "AGADPUI": {
+        "Type": "AGADPUI",
+        "tabbar_visible": false,
+        "titles": [
+            "tab_augument",
+            "tab_upload",
+            "tab_diaganosis"
+        ],
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "margins": "30; 30; 30; 30",
+                "spacing": 30,
+                "widgets": [
+                    {
+                        "ObjectName": "box_get_input_path",
+                        "Type": "QPSLGetDirectoryBox",
+                        "backgroud_color": "#dcdcdc",
+                        "margins": "30; 5; 30; 5",
+                        "path": "./Plugins/SImple/AGADP/resources/vf/pdf",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 20; 50; False",
+                                "text": "input path:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_get_file_dir",
+                        "Type": "QPSLGetOpenFileBox",
+                        "backgroud_color": "#dcdcdc",
+                        "margins": "30; 5; 30; 5",
+                        "path": "./resources/vf/Location.xlsx",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 20; 50; False",
+                                "text": "file_dir:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_get_thre_dir",
+                        "Type": "QPSLGetOpenFileBox",
+                        "backgroud_color": "#dcdcdc",
+                        "margins": "30; 5; 30; 5",
+                        "path": "./Plugins/SImple/AGADP/resources/vf/\u6b63\u5e38\u9608\u503c+\u968f\u5e74\u9f84\u53d8\u5316.xlsx",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 20; 50; False",
+                                "text": "thre_dir:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_get_model_path",
+                        "Type": "QPSLGetOpenFileBox",
+                        "backgroud_color": "#dcdcdc",
+                        "margins": "30; 5; 30; 5",
+                        "path": "./Plugins/SImple/AGADP/resources/model/120/Frame.ckpt.data-00000-of-00001",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 20; 50; False",
+                                "text": "model_path:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_img_save_path",
+                        "Type": "QPSLGetDirectoryBox",
+                        "backgroud_color": "#dcdcdc",
+                        "margins": "30; 5; 30; 5",
+                        "path": "./Plugins/SImple/AGADP/resources/result",
+                        "stretch": "3; 6; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "font": "Arial; 20; 50; False",
+                                "text": "img_save_path:"
+                            },
+                            {
+                                "Type": "QPSLPushButton",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "select"
+                            },
+                            {
+                                "Type": "QPSLIconLabel",
+                                "dynamic": false,
+                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "stretch": "9; 4; 1; 4; 3; 5; 8",
+                "widgets": [
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "stretch": "1; 5; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLWidget"
+                            },
+                            {
+                                "ObjectName": "box_get_fname",
+                                "Type": "QPSLGetOpenFileBox",
+                                "backgroud_color": "#dcdcdc",
+                                "margins": "30; 5; 30; 5",
+                                "path": "./Plugins/SImple/AGADP/resources/vf/pdf/568-OD-20170216164717_31000901_65822[1].pdf",
+                                "spacing": 15,
+                                "stretch": "3; 6; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "fname:"
+                                    },
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "font": "Arial; 18; 50; False",
+                                        "m_text": "select"
+                                    },
+                                    {
+                                        "Type": "QPSLIconLabel",
+                                        "dynamic": false,
+                                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLWidget"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "stretch": "1; 5; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLWidget"
+                            },
+                            {
+                                "ObjectName": "box_get_cpf_path",
+                                "Type": "QPSLGetOpenFileBox",
+                                "backgroud_color": "#dcdcdc",
+                                "margins": "30; 5; 30; 5",
+                                "path": "./Plugins/SImple/AGADP/resources/cfp/20190408114541_31000901_18226.jpg",
+                                "spacing": 15,
+                                "stretch": "3; 6; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "cpf_path:"
+                                    },
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "font": "Arial; 18; 50; False",
+                                        "m_text": "select"
+                                    },
+                                    {
+                                        "Type": "QPSLIconLabel",
+                                        "dynamic": false,
+                                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLWidget"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    },
+                    {
+                        "Type": "QPSLHFrameList",
+                        "widgets": [
+                            {
+                                "Type": "QPSLWidget"
+                            },
+                            {
+                                "ObjectName": "button_upload",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#a2a2a2",
+                                "font": "Arial; 20; 50; False",
+                                "m_text": "upload"
+                            },
+                            {
+                                "Type": "QPSLWidget"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLWidget"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "margins": "5; 2; 5; 2",
+                "spacing": 5,
+                "stretch": "15; 28; 17",
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "margins": "0; 5; 0; 5",
+                        "spacing": 5,
+                        "stretch": "2; 3; 3; 3; 3; 5; 5; 1; 4; 1",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 16; 75; False",
+                                "text": " Patient Information"
+                            },
+                            {
+                                "ObjectName": "combo_edit_name",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Name:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "Zou Yanfei"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_birth",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Birth:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "1963-10-14"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_age",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Age:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "30"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_eye",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Eye:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "Right eye (OD)"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_exam_date",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Exam\n Date:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "2017-02-16"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_exam_time",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#dcdcdc",
+                                "stretch": "1; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Exam\n Time:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "16:41:05"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLWidget"
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "stretch": "1; 3; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLWidget"
+                                    },
+                                    {
+                                        "ObjectName": "button_ai_diagnosis",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "font": "Arial; 20; 50; False",
+                                        "m_text": "AI Diagnosis"
+                                    },
+                                    {
+                                        "Type": "QPSLWidget"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLWidget"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "margins": "0; 5; 0; 5",
+                        "spacing": 5,
+                        "stretch": "23; 2; 6",
+                        "widgets": [
+                            {
+                                "ObjectName": "big_label",
+                                "Type": "QPSLTabWidget",
+                                "tabbar_visible": false,
+                                "titles": [
+                                    "",
+                                    "",
+                                    ""
+                                ],
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLScalePixmapLabel"
+                                    },
+                                    {
+                                        "Type": "QPSLScalePixmapLabel"
+                                    },
+                                    {
+                                        "Type": "QPSLScalePixmapLabel"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 16; 75; False",
+                                "text": " Images"
+                            },
+                            {
+                                "ObjectName": "scroll_images",
+                                "Type": "QPSLHScrollList",
+                                "backgroud_color": "#ffffff",
+                                "frame_shape": 6,
+                                "margins": "10; 2; 10; 2",
+                                "ratios": "1.0; 1.0",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLScalePixmapLabel",
+                                        "frame_shape": 6
+                                    },
+                                    {
+                                        "Type": "QPSLScalePixmapLabel",
+                                        "frame_shape": 6
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "margins": "0; 5; 0; 5",
+                        "spacing": 5,
+                        "stretch": "3; 7; 7; 7; 3; 20",
+                        "widgets": [
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 16; 75; False",
+                                "text": " Diagnosis Report"
+                            },
+                            {
+                                "ObjectName": "combo_edit_postive",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#d9d9d9",
+                                "stretch": "1; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Positive\n Probability:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "98.01%"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_negative",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#d9d9d9",
+                                "stretch": "1; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Negative\n Probability:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": "1.99%"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_edit_diagnosis_result",
+                                "Type": "QPSLComboLineEdit",
+                                "backgroud_color": "#d9d9d9",
+                                "stretch": "1; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "font": "Arial; 18; 50; False",
+                                        "text": " Diagnosis\n Results:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "font": "Arial; 20; 50; False",
+                                        "text": "positive"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#e0e0e0",
+                                "font": "Arial; 16; 75; False",
+                                "text": "Lesion Analysis"
+                            },
+                            {
+                                "Type": "QPSLVScrollList",
+                                "backgroud_color": "#ffffff",
+                                "ratios": "0.43; 0.43",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "box_compare_1",
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#ffffff",
+                                        "frame_shape": 1,
+                                        "margins": "5; 0; 5; 0",
+                                        "spacing": 2,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "label_compare1_1",
+                                                "Type": "QPSLScalePixmapLabel",
+                                                "aspect_ratio_mode": 0,
+                                                "backgroud_color": "#f2f2f2"
+                                            },
+                                            {
+                                                "ObjectName": "label_compare1_2",
+                                                "Type": "QPSLScalePixmapLabel",
+                                                "aspect_ratio_mode": 0,
+                                                "backgroud_color": "#f2f2f2"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "box_compare_2",
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#ffffff",
+                                        "frame_shape": 1,
+                                        "margins": "5; 0; 5; 0",
+                                        "spacing": 2,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "label_compare2_1",
+                                                "Type": "QPSLScalePixmapLabel",
+                                                "aspect_ratio_mode": 0,
+                                                "backgroud_color": "#f2f2f2"
+                                            },
+                                            {
+                                                "ObjectName": "label_compare2_2",
+                                                "Type": "QPSLScalePixmapLabel",
+                                                "aspect_ratio_mode": 0,
+                                                "backgroud_color": "#f2f2f2"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

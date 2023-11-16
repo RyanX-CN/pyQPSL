@@ -1,0 +1,50 @@
+{
+    "dark/light_style": "None",
+    "is_virtual": {
+        "AGADPWorker": true,
+        "DMPluginWorker": true,
+        "PIPluginUI": false,
+        "PIPluginWorker": true,
+        "Thorlabs_MTS50": true,
+        "Thorlabs_MTS50PluginWorker": false,
+        "ZaberPluginWorker": true
+    },
+    "log": {
+        "console_log_level": "INF",
+        "detailed_log": false,
+        "file_log_level": "ALL"
+    },
+    "plugin_mode": {
+        "is_single_plugin": true,
+        "single_plugin_module": "Plugins.Simple.Thorlabs_MTS50Plugin",
+        "single_plugin_size": "1268; 876"
+    },
+    "style_control": "Fusion",
+    "themes": "dark_blue.xml",
+    "ui": {
+        "UI load path": "Plugin/*/ui.json",
+        "autosave": {
+            "AGADPLoginBox": false,
+            "AGADPUI": false,
+            "CompilePluginUI": false,
+            "CppPluginUI": false,
+            "DMPluginUI": false,
+            "DemoPluginUI": false,
+            "HongruPluginUI": true,
+            "NIDAQmxAIPluginUI": false,
+            "NIDAQmxAOPluginUI": false,
+            "NIDAQmxDOPluginUI": false,
+            "NIDAQmxOutput_ThorlabsMTS50_PluginUI": false,
+            "OpticalImageDivisorUI": false,
+            "OpticalImagesUI": false,
+            "PIPluginUI": false,
+            "Thorlabs_MTS50PluginUI": false,
+            "UIDesigner": true,
+            "ZaberPluginUI": false
+        }
+    },
+    "version": {
+        "main_version": 9,
+        "sub_version": 2
+    }
+}
