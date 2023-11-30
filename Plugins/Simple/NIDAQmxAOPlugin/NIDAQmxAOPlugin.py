@@ -174,6 +174,7 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
                                          QWaveDialog.generate_wave_from_dict(
                                              wave=generator_dict)))
         self.setup_logic()
+        self.area_channels.hide()
 
     def to_json(self):
         res: Dict = super().to_json()
@@ -225,6 +226,8 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
             QPSLDoubleSpinBox, "spin_max_val")
         self.area_channels: QPSLVScrollArea = self.findChild(
             QPSLVScrollArea, "area_channels")
+        self.tab_channels: QPSLTabWidget = self.findChild(
+            QPSLTabWidget, "tab_channels")
         self.button_add_channel: QPSLPushButton = self.findChild(
             QPSLPushButton, "button_add_channel")
         self.button_remove_channel: QPSLPushButton = self.findChild(

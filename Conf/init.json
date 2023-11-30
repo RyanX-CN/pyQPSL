@@ -10,14 +10,14 @@
         "ZaberPluginWorker": true
     },
     "log": {
-        "console_log_level": "INF",
+        "console_log_level": "ALL",
         "detailed_log": false,
         "file_log_level": "ALL"
     },
     "plugin_mode": {
         "is_single_plugin": true,
-        "single_plugin_module": "Plugins.Simple.Thorlabs_MTS50Plugin",
-        "single_plugin_size": "1268; 876"
+        "single_plugin_module": "Plugins.Simple.OpticalImages",
+        "single_plugin_size": "836; 1113"
     },
     "style_control": "Fusion",
     "themes": "dark_blue.xml",

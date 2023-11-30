@@ -189,9 +189,9 @@
     "OpticalImagesUI": {
         "Type": "OpticalImagesUI",
         "titles": [
-            "Brain Slice Recon",
+            "Brain Slice Reconstruction",
             "Pretreatment",
-            "Whole Brain Slice Recon"
+            "Whole Brain Reconstruction"
         ],
         "widgets": [
             {
@@ -228,6 +228,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Sample Input Path:"
                                             },
                                             {
@@ -236,8 +237,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -396,6 +398,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Recon Input Path:"
                                             },
                                             {
@@ -404,8 +407,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -420,6 +424,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Recon Save Path:"
                                             },
                                             {
@@ -428,8 +433,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -486,6 +492,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Sample Input Path:"
                                             },
                                             {
@@ -494,8 +501,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -562,6 +570,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Division Input Path:"
                                             },
                                             {
@@ -570,8 +579,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     }
@@ -645,6 +655,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Flatten Input Path:"
                                             },
                                             {
@@ -653,8 +664,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -670,6 +682,7 @@
                                             {
                                                 "ObjectName": "box_flattern_get_save_path",
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Flatten Save Path:"
                                             },
                                             {
@@ -678,8 +691,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -739,7 +753,7 @@
                         "frame_shape": 1,
                         "margins": "2; 2; 2; 2",
                         "spacing": 5,
-                        "stretch": "3; 3; 3; 3; 23; 4",
+                        "stretch": "3; 3; 3; 0; 3; 0; 0; 23; 0; 4",
                         "widgets": [
                             {
                                 "ObjectName": "box_reconstruction2_get_path",
@@ -747,11 +761,13 @@
                                 "backgroud_color": "#cdcdcd",
                                 "margins": "10; 2; 10; 2",
                                 "spacing": 5,
-                                "stretch": "5; 5; 1",
+                                "stretch": "6; 5; 1",
+                                "path":"K:/Results/result_wlc/20231115_1/flatten",
                                 "widgets": [
                                     {
                                         "Type": "QPSLLabel",
-                                        "text": "Whole Reconstruction Path:"
+                                        "backgroud_color": "#cdcdcd",
+                                        "text": "Read Path:          "
                                     },
                                     {
                                         "Type": "QPSLPushButton",
@@ -759,8 +775,9 @@
                                     },
                                     {
                                         "Type": "QPSLIconLabel",
+                                        "backgroud_color": "#cdcdcd",
                                         "dynamic": false,
-                                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                        "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                     }
                                 ]
                             },
@@ -775,7 +792,7 @@
                                     },
                                     {
                                         "Type": "QPSLLineEdit",
-                                        "text": "1_27_2_humanbrain_slice_"
+                                        "text": ""
                                     }
                                 ]
                             },
@@ -790,7 +807,7 @@
                                     },
                                     {
                                         "Type": "QPSLLineEdit",
-                                        "text": "_bkgd_illu_cor_flatten.tif"
+                                        "text": ".tiftest_flatten.tif"
                                     }
                                 ]
                             },
@@ -799,31 +816,107 @@
                                 "margins": "10; 0; 10; 0",
                                 "widgets": [
                                     {
-                                        "ObjectName": "button_use_qtw",
-                                        "Type": "QPSLRadioButton",
-                                        "is_checked": true,
-                                        "text": "Destripe"
+                                        "Type": "QPSLLabel",
+                                        "text": "Start Read Number:"
                                     },
                                     {
-                                        "ObjectName": "button_not_use_qtw",
+                                        "ObjectName":"spin_start_read_number",
+                                        "Type": "QPSLSpinBox",
+                                        "range": "0; 1000000",
+                                        "value": 1
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#4c4c4c",
+                                "margins": "10; 0; 10; 0",
+                                "stretch": "2; 1; 1",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "First Time: "
+                                    },
+                                    {
+                                        "ObjectName": "button_first_time",
                                         "Type": "QPSLRadioButton",
-                                        "text": "Not Destripe"
+                                        "is_checked": true,
+                                        "text": "True"
+                                    },
+                                    {
+                                        "ObjectName": "button_not_first_time",
+                                        "Type": "QPSLRadioButton",
+                                        "text": "False"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "Stitch Direction:"
+                                    },
+                                    {
+                                        "ObjectName":"combo_box_stitch_direction",
+                                        "Type": "QPSLComboBox"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "combo_box_reconstruction2_save_name",
+                                "Type": "QPSLComboLineEdit",
+                                "margins": "10; 0; 10; 0",
+                                "stretch": "2; 2",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "text": "Save Name:"
+                                    },
+                                    {
+                                        "Type": "QPSLLineEdit",
+                                        "text": "2-0_stitch.tif"
                                     }
                                 ]
                             },
                             {
                                 "ObjectName": "table_reconstruction2",
                                 "Type": "QPSLTableWidget",
+                                "backgroud_color": "#7f7f7f",
+                                "column": 4,
                                 "frame_shape": 6,
                                 "row": 15
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "stretch": "4; 4; 8",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "button_ascending_sort_table_reconstruction2",
+                                        "Type": "QPSLRadioButton",
+                                        "text": "Ascending Sort"
+                                    },
+                                    {
+                                        "ObjectName": "button_descending_sort_table_reconstruction2",
+                                        "Type": "QPSLRadioButton",
+                                        "text": "Descending Sort"
+                                    },
+                                    {
+                                        "ObjectName": "button_reconstruction2_add_row",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#e5e5e5",
+                                        "m_text": "add row"
+                                    }
+                                ]
                             },
                             {
                                 "ObjectName": "toggle_button_reconstruction2",
                                 "Type": "QPSLToggleButton",
                                 "backgroud_color": "#a2a2a2",
-                                "m_closed_text": "Start Whole Reconstruction",
-                                "m_opened_text": "Stop Whole Reconstruction",
-                                "m_text": "Start Whole Reconstruction"
+                                "m_closed_text": "Start Whole Brain Reconstruction",
+                                "m_opened_text": "Stop Whole Brain Reconstruction",
+                                "m_text": "Start Whole Brain Reconstruction"
                             }
                         ]
                     }

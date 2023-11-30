@@ -3,8 +3,9 @@ from Tool import loading_info, Dict, SharedStateController, np, pyqtBoundSignal,
 
 def Reconstruction_Read_Sample_Dcimg(img_path: str,
                                      report_signal: pyqtBoundSignal):
-    res = np.random.randint(0, 65535,
-                            size=(100, 510, 520)).astype(dtype=np.uint16)
+    # res = np.random.randint(0, 65535,
+    #                         size=(100, 510, 520)).astype(dtype=np.uint16)
+    res = tifffile.imread(img_path)
     time.sleep(1)
     report_signal.emit(res)
 
@@ -37,6 +38,8 @@ def Pretreatment_Read_TIFF_img(img_path: str, report_signal: pyqtBoundSignal):
             dy += random.randint(0, 30) - 15
             A.append(numpy_array_shift_2d(res, dx, dy))
         report_signal.emit(np.stack(A, axis=0))
+    else:
+        report_signal.emit(res)
 
 
 def Pretreatment_Read_TIFF_Division_img(img_path: str,

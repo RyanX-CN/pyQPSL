@@ -30,6 +30,7 @@ class OpticalImagesWorker(QPSLWorker):
     ), pyqtSignal(), pyqtSignal(int)
     sig_to_query_flatten_result, sig_query_flatten_result, sig_answer_flatten_result = pyqtSignal(
         str, str), pyqtSignal(str, str), pyqtSignal(np.ndarray, np.ndarray)
+    
     sig_to_reconstruction2, sig_reconstruction2 = pyqtSignal(dict), pyqtSignal(
         dict)
     sig_reconstruction2_started, sig_reconstruction2_stopped, sig_reconstruction2_report = pyqtSignal(
@@ -266,12 +267,22 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
             QPSLComboLineEdit, "combo_box_reconstruction2_name_prefix")
         self.combo_box_reconstruction2_name_suffix: QPSLComboLineEdit = self.findChild(
             QPSLComboLineEdit, "combo_box_reconstruction2_name_suffix")
-        self.button_use_qtw: QPSLRadioButton = self.findChild(
-            QPSLRadioButton, "button_use_qtw")
-        self.button_not_use_qtw: QPSLRadioButton = self.findChild(
-            QPSLRadioButton, "button_not_use_qtw")
+        self.spin_start_read_number: QPSLSpinBox = self.findChild(QPSLSpinBox,
+                                                                        "spin_start_read_number")
+        self.button_first_time: QPSLRadioButton = self.findChild(
+            QPSLRadioButton, "button_first_time")
+        self.button_not_first_time: QPSLRadioButton = self.findChild(
+            QPSLRadioButton, "button_not_first_time")
+        self.combo_box_stitch_direction: QPSLComboBox =self.findChild(
+            QPSLComboBox, "combo_box_stitch_direction")
+        self.combo_box_reconstruction2_save_name: QPSLComboLineEdit =self.findChild(
+            QPSLComboLineEdit, "combo_box_reconstruction2_save_name")
         self.table_reconstruction2: QPSLTableWidget = self.findChild(
             QPSLTableWidget, "table_reconstruction2")
+        self.buttun_ascending_sort_table_reconstruction2: QPSLRadioButton = self.findChild(
+            QPSLRadioButton,"button_ascending_sort_table_reconstruction2")
+        self.buttun_descending_sort_table_reconstruction2: QPSLRadioButton = self.findChild(
+            QPSLRadioButton,"button_descending_sort_table_reconstruction2")
         self.button_reconstruction2_add_row: QPSLPushButton = self.findChild(
             QPSLPushButton, "button_reconstruction2_add_row")
         self.toggle_button_reconstruction2: QPSLToggleButton = self.findChild(
@@ -406,11 +417,18 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
                            self.on_reconstruction2_reported)
             connect_queued(self.m_worker.sig_reconstruction2_stopped,
                            self.on_reconstruction2_stopped)
+            connect_direct(self.buttun_ascending_sort_table_reconstruction2.clicked,
+                           lambda: self.table_reconstruction2.sortByColumn(0,Qt.SortOrder.AscendingOrder))
+            connect_direct(self.buttun_descending_sort_table_reconstruction2.clicked,
+                           lambda: self.table_reconstruction2.sortByColumn(0,Qt.SortOrder.DescendingOrder))
+            connect_direct(self.button_reconstruction2_add_row.clicked,
+                           lambda: self.table_reconstruction2.setRowCount(self.table_reconstruction2.rowCount()+1))
 
             self.table_reconstruction2.setHorizontalHeaderLabels(
-                ("Brain Slice Number 1", "Brain Slice Number 2"))
+                ("Slice Number 1", "Slice Section Number 1","Slice Number 2", "Slice Section Number 2"))
             self.table_reconstruction2.horizontalHeader().setSectionResizeMode(
                 QHeaderView.ResizeMode.Stretch)
+            self.table_reconstruction2.verticalHeader().setVisible(False)
 
         setup_tab1()
         setup_tab2()
@@ -523,7 +541,7 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
         image3d.setWindowTitle(
             self.box_calibration_get_sample_tiff_path.get_path())
         image3d.set_image_data(image_data=self.m_tiff_data)
-        image3d.set_axis_z()
+        image3d.set_axis_x()
         image3d.setParent(self, Qt.WindowType.Window)
         image3d.resize(450, 500)
         connect_direct(image3d.sig_clicked_pos, self.on_add_sample_tiff_point)
@@ -649,6 +667,7 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
             self.m_reconstruction2_progress.show()
             self.m_worker.sig_to_reconstruction2.emit(
                 self.m_reconstruction2_parameters)
+            print("start stitching...")
 
     @QPSLObjectBase.log_decorator()
     def on_click_stop_reconstruction2(self):
@@ -724,14 +743,17 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def prepare_construction2_work(self) -> bool:
         parameters = dict()
-        parameters["input_path"] = self.box_reconstruction2_get_path.get_path()
+        parameters["read_path"] = self.box_reconstruction2_get_path.get_path()
         parameters[
             "name_prefix"] = self.combo_box_reconstruction2_name_prefix.value_text(
             )
         parameters[
             "name_suffix"] = self.combo_box_reconstruction2_name_suffix.value_text(
             )
-        parameters["destripe"] = self.button_use_qtw.isChecked()
+        parameters["start_read_number"] = self.spin_start_read_number.value()
+        parameters["First_time"] = self.button_first_time.isChecked()
+        parameters["stitch_direction"] = self.combo_box_stitch_direction.currentText()
+        parameters["save_name"] = self.combo_box_reconstruction2_save_name.value_text()
         table = []
         for i in range(self.table_reconstruction2.rowCount()):
             a, b = self.table_reconstruction2.item(
@@ -743,7 +765,7 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
         self.m_reconstruction2_parameters = parameters
         self.add_warning("prepare parameters:")
         for k, v in parameters.items():
-            self.add_warning("{0}: {1}".format(simple_str(k), simple_str(v)))
+            self.add_warning("{0}: {1}".format(simple_str(k), simple_str(v))) 
         return True
 
 

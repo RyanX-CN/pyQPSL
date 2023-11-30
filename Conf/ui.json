@@ -1244,9 +1244,9 @@
     "OpticalImagesUI": {
         "Type": "OpticalImagesUI",
         "titles": [
-            "Brain Slice Recon",
+            "Brain Slice Reconstruction",
             "Pretreatment",
-            "Whole Brain Slice Recon"
+            "Whole Brain Reconstruction"
         ],
         "widgets": [
             {

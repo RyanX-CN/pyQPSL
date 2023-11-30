@@ -3,22 +3,13 @@
         "Type": "NIDAQmxAOPluginUI",
         "generators": [
             {
-                "Cycle": 200000,
-                "Length": 200000,
-                "Max": 5.0,
-                "Min": -5.0,
+                "Cycle": 1000,
+                "Length": 3000,
+                "Max": 3.0,
+                "Min": -3.0,
                 "Phase": 0,
-                "Stage Number": 100,
-                "Type": "Trapezoid Wave"
-            },
-            {
-                "Cycle": 100000,
-                "Length": 200000,
-                "Max": 5.0,
-                "Min": -5.0,
-                "Phase": 0,
-                "Stage Number": 100,
-                "Type": "Trapezoid Wave"
+                "Bottom Part": 500,
+                "Type": "Square Wave"
             }
         ],
         "margins": "10; 10; 10; 10",
@@ -28,7 +19,7 @@
             {
                 "Type": "QPSLVFrameList",
                 "spacing": 10,
-                "stretch": "5; 5; 4; 4; 4; 4; 14; 4",
+                "stretch": "2; 2; 2; 2; 2; 2; 0; 20; 4",
                 "widgets": [
                     {
                         "ObjectName": "box_device",
@@ -81,16 +72,16 @@
                         "Type": "QPSLDoubleSpinBox",
                         "prefix": " Min:",
                         "range": "-10.0; 10.0",
-                        "suffix": " Vol.",
-                        "value": -9.0
+                        "suffix": " V",
+                        "value": -5.0
                     },
                     {
                         "ObjectName": "spin_max_val",
                         "Type": "QPSLDoubleSpinBox",
                         "prefix": " Max:",
                         "range": "-10.0; 10.0",
-                        "suffix": " Vol.",
-                        "value": 8.0
+                        "suffix": " V",
+                        "value": 5.0
                     },
                     {
                         "ObjectName": "area_channels",
@@ -119,6 +110,88 @@
                                         "backgroud_color": "#ffffff",
                                         "checked": true,
                                         "text": ""
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "tab_channels",
+                        "Type": "QPSLTabWidget",
+                        "titles": [
+                            "channel_0"
+                        ],
+                        "widgets": [
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#cccccc",
+                                "stretch":"2; 12",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#000000",
+                                        "stretch": "1; 2; 0",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLPushButton",
+                                                "backgroud_color": "#cdcdcd",
+                                                "m_text": "Channel 0:"
+                                            },
+                                            {
+                                                "Type": "QPSLComboBox",
+                                                "backgroud_color": "#ffffff"
+                                            },
+                                            {
+                                                "Type": "QPSLCheckBox",
+                                                "backgroud_color": "#ffffff",
+                                                "checked": true,
+                                                "text": ""
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#cccccc",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLComboBox",
+                                                "backgroud_color": "#cccccc"
+                                            },
+                                            {
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#333333",
+                                                "prefix": "min: ",
+                                                "range": "-10.0; 10.0",
+                                                "suffix": " V",
+                                                "value": -3.0
+                                            },
+                                            {
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#cccccc",
+                                                "prefix": "max: ",
+                                                "range": "-10.0; 10.0",
+                                                "suffix": " V",
+                                                "value": 3.0
+                                            },
+                                            {
+                                                "Type": "QPSLSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "prefix": "cycle: ",
+                                                "value":1000
+                                            },
+                                            {
+                                                "Type": "QPSLSpinBox",
+                                                "backgroud_color": "#cccccc",
+                                                "prefix": "delay: "
+                                            },
+                                            {
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#ffffff",
+                                                "prefix": "ratio: ",
+                                                "range": "0.0; 1.0",
+                                                "value":0.5
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -224,6 +297,11 @@
                                 "m_text": "Start Task"
                             },
                             {
+                                "ObjectName": "btn_reset",
+                                "Type": "QPSLPushButton",
+                                "m_text": "Reset"
+                            },
+                            {
                                 "ObjectName": "toggle_button_start_show",
                                 "Type": "QPSLToggleButton",
                                 "backgroud_color": "#a2a2a2",
@@ -235,7 +313,7 @@
                                 "ObjectName": "spin_everyn",
                                 "Type": "QPSLSpinBox",
                                 "prefix": " Everyn:",
-                                "value": 10000
+                                "value": 1000
                             },
                             {
                                 "ObjectName": "spin_time_window",
