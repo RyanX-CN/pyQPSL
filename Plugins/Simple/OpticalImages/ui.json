@@ -549,9 +549,9 @@
                                         "ObjectName": "toggle_button_calibration",
                                         "Type": "QPSLToggleButton",
                                         "backgroud_color": "#a2a2a2",
-                                        "m_closed_text": "Start Calibration",
-                                        "m_opened_text": "Stop Calibration",
-                                        "m_text": "Start Calibration"
+                                        "m_closed_text": "CLockwise Rotation",
+                                        "m_opened_text": "Clockwise Rotation",
+                                        "m_text": "Clockwise Rotation"
                                     }
                                 ]
                             },

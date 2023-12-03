@@ -90,7 +90,7 @@ class QPSLImage3dBase(QPSLVFrameList):
         self.spin_high: QPSLSpinBox = self.box_settings.get_widget(
             1).remove_type()
         self.box_settings.add_widget(widget=QPSLSpinBox().load_attr(
-            _range=(0, self.m_max_color), value=5, prefix="gray ratio: "))
+            _range=(0, self.m_max_color), value=1, prefix="gray ratio: "))
         self.spin_gray_ratio: QPSLSpinBox = self.box_settings.get_widget(
             2).remove_type()
         self.set_stretch(sizes=(30, 3, 1))

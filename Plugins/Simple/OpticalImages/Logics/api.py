@@ -54,6 +54,8 @@ def Pretreatment_Read_TIFF_Division_img(img_path: str,
             dy += random.randint(0, 30) - 15
             A.append(numpy_array_shift_2d(res, dx, dy))
         report_signal.emit(np.stack(A, axis=0))
+    else:
+        report_signal.emit(res)
 
 
 def Pretreatment_Read_Flatten_img(input_path: str, save_path: str,
@@ -72,6 +74,8 @@ def Pretreatment_Read_Flatten_img(input_path: str, save_path: str,
             A.append(numpy_array_shift_2d(res1, dx, dy))
             B.append(numpy_array_shift_2d(res2, dx, dy))
         report_signal.emit(np.stack(A, axis=0), np.stack(B, axis=0))
+    else:
+        report_signal.emit(res1, res2)
 
 
 def Calibration_Work(parameters: Dict, start_signal: pyqtBoundSignal,

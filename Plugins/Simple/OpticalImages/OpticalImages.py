@@ -455,7 +455,7 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
         if self.m_dcimg_data is None:
             return self.add_error("no valid image data")
         image3d = QPSLImage3d().load_attr(
-            bit_width=16, image_format=QImage.Format.Format_Grayscale16)
+            bit_width=8, image_format=QImage.Format.Format_Grayscale8)
         image3d.setWindowTitle(
             self.box_reconstruction_get_sample_dcimg_path.get_path())
         image3d.set_image_data(image_data=self.m_dcimg_data)
@@ -537,15 +537,16 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
         if self.m_tiff_data is None:
             return self.add_error("no valid image data")
         image3d = QPSLImage3d().load_attr(
-            bit_width=16, image_format=QImage.Format.Format_Grayscale16)
+            bit_width=8, image_format=QImage.Format.Format_Grayscale8)
         image3d.setWindowTitle(
             self.box_calibration_get_sample_tiff_path.get_path())
         image3d.set_image_data(image_data=self.m_tiff_data)
-        image3d.set_axis_x()
+        image3d.set_axis_z()
         image3d.setParent(self, Qt.WindowType.Window)
         image3d.resize(450, 500)
         connect_direct(image3d.sig_clicked_pos, self.on_add_sample_tiff_point)
         image3d.show()
+
 
     @QPSLObjectBase.log_decorator()
     def on_add_sample_tiff_point(self, point: QPoint):
@@ -555,14 +556,23 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_click_calibration(self):
-        if self.prepare_calibration_work():
-            self.m_calibration_progress = QPSLProgressDialog().load_attr(
-                title="calibration progress", _range=(0, 100))
-            connect_direct(self.m_calibration_progress.canceled,
-                           self.on_click_stop_calibration)
-            self.m_calibration_progress.show()
-            self.m_worker.sig_to_calibration.emit(
-                self.m_calibration_parameters)
+        # if self.prepare_calibration_work():
+        #     self.m_calibration_progress = QPSLProgressDialog().load_attr(
+        #         title="rotation progress", _range=(0, 100))
+        #     connect_direct(self.m_calibration_progress.canceled,
+        #                    self.on_click_stop_calibration)
+        #     self.m_calibration_progress.show()
+        #     self.m_worker.sig_to_calibration.emit(
+        #         self.m_calibration_parameters)
+            
+        res = []
+        for i in range(0,self.m_tiff_data.shape[0]):
+            matrix = self.m_tiff_data[i].reshape(self.m_tiff_data[i].size)[::-1]
+            matrix = matrix.reshape(self.m_tiff_data[i].shape)
+            matrix = matrix.transpose(1,0)[::-1]
+            res.append(matrix)
+        self.m_tiff_data = np.stack(res, axis= 0)
+        self.on_show_sample_tiff()
 
     @QPSLObjectBase.log_decorator()
     def on_click_stop_calibration(self):

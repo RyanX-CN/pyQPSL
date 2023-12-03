@@ -17,7 +17,7 @@
     "plugin_mode": {
         "is_single_plugin": true,
         "single_plugin_module": "Plugins.Simple.OpticalImages",
-        "single_plugin_size": "836; 1113"
+        "single_plugin_size": "1318; 1113"
     },
     "style_control": "Fusion",
     "themes": "dark_blue.xml",
