@@ -150,52 +150,34 @@
                                         ]
                                     },
                                     {
-                                        "Type": "QPSLVFrameList",
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#333333",
+                                        "prefix": "vol: ",
+                                        "range": "-5.0; 5.0",
+                                        "suffix": " V",
+                                        "value": 3.0
+                                    },
+                                    {
+                                        "Type": "QPSLSpinBox",
+                                        "backgroud_color": "#666666",
+                                        "prefix": "cycle: ",
+                                        "value":10000
+                                    },
+                                    {
+                                        "Type": "QPSLSpinBox",
                                         "backgroud_color": "#cccccc",
-                                        "widgets": [
-                                            {
-                                                "Type": "QPSLComboBox",
-                                                "backgroud_color": "#cccccc"
-                                            },
-                                            {
-                                                "Type": "QPSLDoubleSpinBox",
-                                                "backgroud_color": "#333333",
-                                                "prefix": "min: ",
-                                                "range": "-10.0; 10.0",
-                                                "suffix": " V",
-                                                "value": -3.0
-                                            },
-                                            {
-                                                "Type": "QPSLDoubleSpinBox",
-                                                "backgroud_color": "#cccccc",
-                                                "prefix": "max: ",
-                                                "range": "-10.0; 10.0",
-                                                "suffix": " V",
-                                                "value": 3.0
-                                            },
-                                            {
-                                                "Type": "QPSLSpinBox",
-                                                "backgroud_color": "#666666",
-                                                "prefix": "cycle: ",
-                                                "value":1000
-                                            },
-                                            {
-                                                "Type": "QPSLSpinBox",
-                                                "backgroud_color": "#cccccc",
-                                                "prefix": "delay: "
-                                            },
-                                            {
-                                                "Type": "QPSLDoubleSpinBox",
-                                                "backgroud_color": "#ffffff",
-                                                "prefix": "ratio: ",
-                                                "range": "0.0; 1.0",
-                                                "value":0.5
-                                            }
-                                        ]
+                                        "prefix": "delay: "
+                                    },
+                                    {
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#ffffff",
+                                        "prefix": "ratio: ",
+                                        "range": "0.0; 1.0",
+                                        "value":0
                                     }
-                                ]
+                                        ]
                             }
-                        ]
+                                ]
                     },
                     {
                         "Type": "QPSLHFrameList",

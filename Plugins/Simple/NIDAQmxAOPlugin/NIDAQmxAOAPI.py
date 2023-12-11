@@ -20,7 +20,7 @@ class DAQmxAnalogOutputTask(Structure):
                 ('min_val', c_double), ('max_val', c_double),
                 ('error_code', c_int32), ('error_buffer', c_char * 1024)]
 
-    def init_task(self, channel_names: List[str], sample_rate: int,
+    def init_task(self, channel_names: List[str], trigger_source: str,sample_rate: int,
                   sample_number: int, min_val: float, max_val: float,
                   arr2d: np.ndarray) -> int:
         channel_number = len(channel_names)
@@ -29,6 +29,7 @@ class DAQmxAnalogOutputTask(Structure):
             c_channels[i].physical_channel_name = channel_name.encode('utf8')
         self.channels = c_channels
         self.channel_number = channel_number
+        self.trigger_source = trigger_source.encode('utf8')
         self.sample_rate = sample_rate
         self.min_val = min_val
         self.max_val = max_val

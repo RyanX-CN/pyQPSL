@@ -152,8 +152,8 @@ class Thorlabs_MTS50Base(QPSLWorker):
                                           1)
 
     @QPSLObjectBase.log_decorator()
-    def set_output_mode_byvelocity(self,trigger1Mode,trigger1Polarity):
-        self._lib.CC_SetTriggerConfigParams(self.m_serial_number,c_int(trigger1Mode),c_int(trigger1Polarity))
+    def set_output_mode_byvelocity(self,trigger1Mode,trigger1Polarity,trigger2Mode,trigger2Polarity):
+        self._lib.CC_SetTriggerConfigParams(self.m_serial_number,c_int(trigger1Mode),c_int(trigger1Polarity),c_int(trigger2Mode),c_int(trigger2Polarity))
         # trigger1Mode  = c_int()
         # trigger1Polarity = c_int()
         # self._lib.CC_GetTriggerConfigParams(self.m_serial_number,byref(trigger1Mode),byref(trigger1Polarity))       
@@ -295,11 +295,11 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
             try:
                 while self.y_pos < max_y.value:
                     while self.x_pos < max_x.value:
-                        self.z_stage.set_output_mode_byvelocity(12,1)
+                        self.z_stage.set_output_mode_byvelocity(12,1,12,1)
                         self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
                         self.z_stage.move_absolute(max_z)
                         self.z_stage.wait_on_ready()
-                        self.z_stage.set_output_mode_byvelocity(0,2)
+                        self.z_stage.set_output_mode_byvelocity(0,2,0,2)
                         self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
                         self.z_stage.move_absolute(min_z)
                         # self.z_stage.wait_on_ready()

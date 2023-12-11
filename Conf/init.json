@@ -10,14 +10,14 @@
         "ZaberPluginWorker": true
     },
     "log": {
-        "console_log_level": "ALL",
+        "console_log_level": "INF",
         "detailed_log": false,
         "file_log_level": "ALL"
     },
     "plugin_mode": {
-        "is_single_plugin": true,
-        "single_plugin_module": "Plugins.Simple.OpticalImages",
-        "single_plugin_size": "836; 1113"
+        "is_single_plugin": false,
+        "single_plugin_module": "Plugins.Simple.NIDAQmxAOPlugin",
+        "single_plugin_size": "1492; 678"
     },
     "style_control": "Fusion",
     "themes": "dark_blue.xml",

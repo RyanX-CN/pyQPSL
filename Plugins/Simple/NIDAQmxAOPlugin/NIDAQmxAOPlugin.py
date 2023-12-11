@@ -12,8 +12,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
     sig_query_channel_list, sig_to_query_channel_list, sig_answer_channel_list = pyqtSignal(
         str, int), pyqtSignal(str, int), pyqtSignal(list, int)
     sig_init_task, sig_to_init_task, sig_task_inited = pyqtSignal(
-        list, float, int, float, float, int,
-        np.ndarray), pyqtSignal(list, float, int, float, float, int,
+        list, str, float, int, float, float, int,
+        np.ndarray), pyqtSignal(list, str, float, int, float, float, int,
                                 np.ndarray), pyqtSignal()
     sig_clear_task, sig_to_clear_task, sig_task_clear = pyqtSignal(
     ), pyqtSignal(), pyqtSignal()
@@ -78,10 +78,11 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.sig_answer_channel_list.emit(channel_name_list, channel_id)
 
     @QPSLObjectBase.log_decorator()
-    def on_init_task(self, channel_names: List[str], sample_rate: float,
+    def on_init_task(self, channel_names: List[str], trigger_source:str, sample_rate: float,
                      sample_number: int, min_val: float, max_val: float,
                      everyn: int, arr2d: np.ndarray):
         self.m_task.init_task(channel_names=channel_names,
+                              trigger_source=trigger_source,
                               sample_rate=sample_rate,
                               sample_number=sample_number,
                               min_val=min_val,
@@ -164,27 +165,11 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
 
     def load_by_json(self, json: Dict):
         super().load_by_json(json)
-        generators = json.get("generators")
-        if generators is not None:
-            for generator_dict in generators:
-                if generator_dict is None:
-                    self.m_waves.append((None, None))
-                else:
-                    self.m_waves.append((generator_dict,
-                                         QWaveDialog.generate_wave_from_dict(
-                                             wave=generator_dict)))
         self.setup_logic()
         self.area_channels.hide()
 
     def to_json(self):
         res: Dict = super().to_json()
-        generators = []
-        for generator, wave in self.m_waves:
-            if generator is None:
-                generators.append(None)
-            else:
-                generators.append(generator)
-        res.update({"generators": generators})
         return res
 
     def __init__(self):
@@ -261,7 +246,9 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
                        self.on_click_add_channel)
         connect_direct(self.button_remove_channel.sig_clicked,
                        self.on_click_remove_channel)
-        for i, box in enumerate(self.area_channels.get_widgets()):
+        # for i, box in enumerate(self.area_channels.get_widgets()):
+        #     self.setup_logic_channel_box(index=i)
+        for i, box in enumerate(self.tab_channels.get_widgets()):
             self.setup_logic_channel_box(index=i)
         connect_queued(self.m_worker.sig_answer_channel_list,
                        self.on_get_channel_list)
@@ -345,9 +332,10 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def on_get_channel_list(self, channel_name_list: List[str],
                             channel_id: int):
-        frame: QPSLHFrameList = self.area_channels.get_widget(channel_id -
+        channel_tab: QPSLVFrameList = self.tab_channels.get_widget(channel_id -
                                                               1).remove_type()
-        combobox: QPSLComboBox = frame.get_widget(1).remove_type()
+        channel_box: QPSLHFrameList = channel_tab.get_widget(0).remove_type()
+        combobox: QPSLComboBox = channel_box.get_widget(1).remove_type()
         current = None
         if combobox.count():
             current = combobox.currentText()
@@ -360,51 +348,60 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_click_add_channel(self):
-        index = len(self.area_channels.get_widgets())
+        index = len(self.tab_channels.get_widgets())
         channel_box: QPSLHFrameList = QPSLObjectBase.from_json(
-            self.area_channels.get_widget(index - 1).to_json())
-        self.area_channels.add_widget(widget=channel_box)
+            self.tab_channels.get_widget(index-1).to_json())
+        self.tab_channels.add_widget(tab=channel_box,
+                                  title="channel_{0}".format(index))
         self.setup_logic_channel_box(index=index)
-        self.update_channel_box_height()
+        # self.update_channel_box_height()
 
     @QPSLObjectBase.log_decorator()
     def on_click_remove_channel(self):
-        if len(self.area_channels.get_widgets()) == 1:
+        if len(self.tab_channels.get_widgets()) == 1:
             raise BaseException("can't remove last channel")
-        self.area_channels.remove_widget(
-            widget=self.area_channels.get_widgets()[-1])
-        self.update_channel_wave(len(self.area_channels.get_widgets()))
-        while len(self.area_channels.get_widgets()) < len(self.m_waves):
+        self.tab_channels.remove_widget(
+            widget=self.tab_channels.get_widgets()[-1])
+        self.update_channel_wave(len(self.tab_channels.get_widgets()))
+        while len(self.tab_channels.get_widgets()) < len(self.m_waves):
             self.m_waves.pop()
 
     @QPSLObjectBase.log_decorator()
     def on_channel_show_state_changed(self, checkbox: QPSLCheckBox):
-        for i, box in enumerate(self.area_channels.get_widgets()):
-            _checkbox: QPSLCheckBox = box.get_widget(2).remove_type()
+        # for i, box in enumerate(self.area_channels.get_widgets()):
+        #     _checkbox: QPSLCheckBox = box.get_widget(2).remove_type()
+        #     if _checkbox == checkbox:
+        #         self.update_channel_wave(index=i)
+        for i,tab in enumerate(self.tab_channels.get_widgets()):
+            _channelbox: QPSLHFrameList = tab.get_widget(0).remove_type()
+            _checkbox: QPSLCheckBox = _channelbox.get_widget(2).remove_type()
             if _checkbox == checkbox:
                 self.update_channel_wave(index=i)
 
     @QPSLObjectBase.log_decorator()
     def on_click_init_task(self):
         channels = []
-        for box in self.area_channels.get_widgets():
-            combobox: QPSLComboBox = box.get_widget(1).remove_type()
-            channels.append(combobox.currentText())
+        for tab in self.tab_channels.get_widgets():
+            _channelbox: QPSLHFrameList = tab.get_widget(0).remove_type()
+            _channel: QPSLComboBox = _channelbox.get_widget(1).remove_type()
+            channels.append(_channel.currentText())
+
+        trigger_source = self.combobox_terminal.currentText()
         sample_rate = self.spin_sample_rate.value()
         sample_number = self.spin_sample_number.value()
         min_val = self.spin_min_val.value()
         max_val = self.spin_max_val.value()
         everyn = self.spin_everyn.value()
-        if len(self.area_channels.get_widgets()) > len(self.m_waves):
+        if len(self.tab_channels.get_widgets()) > len(self.m_waves):
             raise BaseException("no enough data to write!!!")
         arr2d = []
-        for i in range(len(self.area_channels.get_widgets())):
+        for i in range(len(self.tab_channels.get_widgets())):
             if self.m_waves[i][1] is None:
                 raise BaseException("No.{0} channel has no data!!!".format(i +
                                                                            1))
             arr2d.append(self.m_waves[i][1])
         arr2d = np.vstack(arr2d)
-        self.m_worker.sig_to_init_task.emit(channels, sample_rate,
+        self.m_worker.sig_to_init_task.emit(channels, trigger_source, sample_rate,
                                             sample_number, min_val, max_val,
                                             everyn, arr2d)
         while len(self.plot_show.get_deques()) < len(channels):
@@ -438,7 +435,7 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
                          self.spin_sample_rate.value() /
                          self.spin_everyn.value())
         if self.toggle_button_init_task.get_state():
-            for i in range(len(self.area_channels.get_widgets())):
+            for i in range(len(self.tab_channels.get_widgets())):
                 self.plot_show.get_deque(index=i).set_capacity(
                     capacity=min(capacity, limit))
 
@@ -464,15 +461,16 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
         self.spin_everyn.setEnabled(not state)
         self.plot_show.button_add_deque.setEnabled(not state)
         self.plot_show.button_remove_deque.setEnabled(not state)
-        for i in range(len(self.area_channels.get_widgets())):
+        for i in range(len(self.tab_channels.get_widgets())):
             self.update_channel_wave(index=i)
 
     def setup_logic_channel_box(self, index: int):
-        channel_box: QPSLHFrameList = self.area_channels.get_widget(index)
+        channel_tab: QPSLVFrameList = self.tab_channels.get_widget(index)
+        channel_box: QPSLHFrameList = channel_tab.get_widget(0).remove_type()
         button_channel: QPSLPushButton = channel_box.get_widget(
             0).remove_type()
         checkbox: QPSLCheckBox = channel_box.get_widget(2).remove_type()
-        button_channel.set_text("Channel {0}:".format(index + 1))
+        button_channel.set_text("Channel {0}:".format(index))
         connect_direct(button_channel.sig_clicked_str,
                        self.on_click_query_channel)
         connect_direct(checkbox.sig_value_changed_of,
@@ -498,8 +496,9 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
             self.m_waves.append((None, None))
 
     def update_channel_wave(self, index: int):
-        if index < len(self.area_channels.get_widgets()):
-            channel_box: QPSLHFrameList = self.area_channels.get_widget(index)
+        if index < len(self.tab_channels.get_widgets()):
+            channel_tab: QPSLVFrameList = self.tab_channels.get_widget(index)
+            channel_box: QPSLHFrameList = channel_tab.get_widget(0).remove_type()
             checkbox: QPSLCheckBox = channel_box.get_widget(2).remove_type()
         while index >= len(self.plot_show.get_deques()):
             self.plot_show.add_deque(deque=QPSLCurveDeque().load_attr(
@@ -507,21 +506,21 @@ class NIDAQmxAOPluginUI(QPSLHFrameList, QPSLPluginBase):
                     len(self.plot_show.get_deques()) + 1)))
         deque = self.plot_show.get_deque(index=index)
         if index < len(
-                self.area_channels.get_widgets()) and checkbox.isChecked(
+                self.tab_channels.get_widgets()) and checkbox.isChecked(
                 ) and not self.toggle_button_init_task.get_state():
             deque.set_data(x=None, y=self.m_waves[index][1])
         else:
             deque.clear_data()
 
-    def update_channel_box_height(self):
-        height = self.box_device.height()
-        for w in self.area_channels.get_widgets():
-            w.setFixedHeight(height)
+    # def update_channel_box_height(self):
+    #     height = self.box_device.height()
+    #     for w in self.tab_channels.get_widgets():
+    #         w.setFixedHeight(height)
 
-    def eventFilter(self, obj: QPSLHFrameList, ev: QEvent) -> bool:
-        if obj == self.box_device and ev.type() == QEvent.Type.Resize:
-            self.update_channel_box_height()
-        return super().eventFilter(obj, ev)
+    # def eventFilter(self, obj: QPSLHFrameList, ev: QEvent) -> bool:
+    #     if obj == self.box_device and ev.type() == QEvent.Type.Resize:
+    #         self.update_channel_box_height()
+    #     return super().eventFilter(obj, ev)
 
 
 MainWidget = NIDAQmxAOPluginUI

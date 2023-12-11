@@ -80,6 +80,7 @@ int32 DLL_EXPORT QPSL_DAQmxAO_init(DAQmxAnalogOutputTask *task) {
     }
     DAQmxErrChk_task(DAQmxCreateAOVoltageChan(task->handle, buffer, "", task->min_val, task->max_val, DAQmx_Val_Volts, nullptr));
     DAQmxErrChk_task(DAQmxCfgSampClkTiming(task->handle, task->trigger_source, task->sample_rate, DAQmx_Val_Rising, task->sample_mode, task->sample_per_channel));
+    DAQmxErrChk_task(DAQmxCfgDigPatternStartTrig(task->handle,task->trigger_source,"1",DAQmx_Val_PatternMatches));
     return 0;
 }
 int32 DLL_EXPORT QPSL_DAQmxAO_start(DAQmxAnalogOutputTask *task) {
