@@ -5,6 +5,7 @@ from .Logics.api import Pretreatment_Read_TIFF_Division_img
 from .Logics.api import Pretreatment_Read_Flatten_img, Flatten_Work
 from .Logics.api import Reconstruction2_Work
 from .OpticalImageDivisor import OpticalImageDivisorUI
+from scipy import ndimage
 
 
 class OpticalImagesWorker(QPSLWorker):
@@ -287,6 +288,8 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
             QPSLPushButton, "button_reconstruction2_add_row")
         self.toggle_button_reconstruction2: QPSLToggleButton = self.findChild(
             QPSLToggleButton, "toggle_button_reconstruction2")
+        self.spin_rotate_degree: QPSLSpinBox =self.findChild(
+            QPSLSpinBox, "spin_rotate_degree")
 
     @QPSLObjectBase.log_decorator()
     def setup_logic(self):
@@ -565,13 +568,21 @@ class OpticalImagesUI(QPSLTabWidget, QPSLPluginBase):
         #     self.m_worker.sig_to_calibration.emit(
         #         self.m_calibration_parameters)
             
+        # res = []
+        # for i in range(0,self.m_tiff_data.shape[0]):
+        #     matrix = self.m_tiff_data[i].reshape(self.m_tiff_data[i].size)[::-1]
+        #     matrix = matrix.reshape(self.m_tiff_data[i].shape)
+        #     matrix = matrix.transpose(1,0)[::-1]
+        #     res.append(matrix)
+        # self.m_tiff_data = np.stack(res, axis= 0)
+
         res = []
-        for i in range(0,self.m_tiff_data.shape[0]):
-            matrix = self.m_tiff_data[i].reshape(self.m_tiff_data[i].size)[::-1]
-            matrix = matrix.reshape(self.m_tiff_data[i].shape)
-            matrix = matrix.transpose(1,0)[::-1]
-            res.append(matrix)
-        self.m_tiff_data = np.stack(res, axis= 0)
+        rotate_degree = self.spin_rotate_degree.value()
+        for i in range(0, self.m_tiff_data.shape[0]):
+            matrix = self.m_tiff_data[i]
+            matrix1 = ndimage.rotate(matrix, rotate_degree, reshape=False)
+            res.append(matrix1)
+        self.m_tiff_data = np.stack(res,axis=0)
         self.on_show_sample_tiff()
 
     @QPSLObjectBase.log_decorator()

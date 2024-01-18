@@ -4,4 +4,7 @@ from .QPSLPlotCurveItem import QPSLPlotCurveItem
 from .QPSLPlotItem import QPSLPlotItem
 from .QPSLPlotWidget import QPSLPlotWidget
 from .QPSLViewBox import QPSLViewBox
-from .QPSLOpenGLWidget import QPSLOpenGLWidget
+try:
+    from .QPSLOpenGLWidget import QPSLOpenGLWidget
+except:
+    pass

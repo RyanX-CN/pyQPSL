@@ -7,4 +7,4 @@ if __name__ == '__main__':
     sys.exit(app.exec())
 
 # import pyqtgraph.examples
-# pyqtgraph.examples.run()
+# pyqtgraph.examples.run()p

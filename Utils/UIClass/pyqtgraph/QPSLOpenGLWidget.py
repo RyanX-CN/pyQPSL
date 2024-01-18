@@ -1,10 +1,17 @@
 from QPSLClass.Base import *
 from ...BaseClass import *
 from ...Enum import *
-import pyqtgraph.opengl.GLViewWidget
+try:
+    import OpenGL
+    import pyqtgraph.opengl.GLViewWidget
+    print("1")
+    loading_info("opengl version = {0}".format(OpenGL.__version__))
+except:
+    loading_warning("no opengl")
 
 
-class QPSLOpenGLWidget(pyqtgraph.opengl.GLViewWidget, QPSLWidgetBase):
+
+class QPSLOpenGLWidget(QPSLWidgetBase, pyqtgraph.opengl.GLViewWidget):
 
     def load_by_json(self, json: Dict):
         super().load_by_json(json)

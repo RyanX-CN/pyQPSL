@@ -71,6 +71,11 @@ int32 DLL_EXPORT QPSL_DAQmxGetDevTerminals(const char *device_name, char *termin
     DAQmxErrChk(DAQmxGetDevTerminals(device_name, terminal_list, len));
     return 0;
 }
+int32 DLL_EXPORT QPSL_DAQmxGetDOLineList(const char *device_name, char *name_list, uInt32 len, char *error_buffer, uInt32 len2) {
+    int error_code;
+    DAQmxErrChk(DAQmxGetDevDOLines(device_name, name_list, len));
+    return 0;
+}
 int32 DLL_EXPORT QPSL_DAQmxAO_init(DAQmxAnalogOutputTask *task) {
     DAQmxErrChk_task(DAQmxCreateTask("", &task->handle));
     char buffer[1024]{}, *cursor = buffer;
@@ -79,7 +84,7 @@ int32 DLL_EXPORT QPSL_DAQmxAO_init(DAQmxAnalogOutputTask *task) {
         cursor += sprintf(cursor, "%s", task->channels[i].physical_channel_name);
     }
     DAQmxErrChk_task(DAQmxCreateAOVoltageChan(task->handle, buffer, "", task->min_val, task->max_val, DAQmx_Val_Volts, nullptr));
-    DAQmxErrChk_task(DAQmxCfgSampClkTiming(task->handle, task->trigger_source, task->sample_rate, DAQmx_Val_Rising, task->sample_mode, task->sample_per_channel));
+    DAQmxErrChk_task(DAQmxCfgSampClkTiming(task->handle, "", task->sample_rate, DAQmx_Val_Rising, task->sample_mode, task->sample_per_channel));
     DAQmxErrChk_task(DAQmxCfgDigPatternStartTrig(task->handle,task->trigger_source,"1",DAQmx_Val_PatternMatches));
     return 0;
 }

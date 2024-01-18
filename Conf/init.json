@@ -15,15 +15,9 @@
         "file_log_level": "ALL"
     },
     "plugin_mode": {
-<<<<<<< HEAD
         "is_single_plugin": false,
         "single_plugin_module": "Plugins.Simple.NIDAQmxAOPlugin",
         "single_plugin_size": "1492; 678"
-=======
-        "is_single_plugin": true,
-        "single_plugin_module": "Plugins.Simple.OpticalImages",
-        "single_plugin_size": "1318; 1113"
->>>>>>> 65f776a2327af6f2e9f93fd5bedc893175020489
     },
     "style_control": "Fusion",
     "themes": "dark_blue.xml",
@@ -36,7 +30,7 @@
             "CppPluginUI": false,
             "DMPluginUI": false,
             "DemoPluginUI": false,
-            "HongruPluginUI": true,
+            "DoubleDCAMPluginUI": false,
             "NIDAQmxAIPluginUI": false,
             "NIDAQmxAOPluginUI": false,
             "NIDAQmxDOPluginUI": false,

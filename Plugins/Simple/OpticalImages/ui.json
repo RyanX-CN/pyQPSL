@@ -187,7 +187,7 @@
         ]
     },
     "OpticalImagesUI": {
-        "Type": "OpticalImagesUI",
+        "Type": "OpticalImageUI",
         "titles": [
             "Brain Slice Reconstruction",
             "Pretreatment",
@@ -239,7 +239,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -409,7 +409,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -435,7 +435,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -503,7 +503,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -546,12 +546,23 @@
                                         ]
                                     },
                                     {
-                                        "ObjectName": "toggle_button_calibration",
-                                        "Type": "QPSLToggleButton",
-                                        "backgroud_color": "#a2a2a2",
-                                        "m_closed_text": "CLockwise Rotation",
-                                        "m_opened_text": "Clockwise Rotation",
-                                        "m_text": "Clockwise Rotation"
+                                        "Type": "QPSLHFrameList",
+                                        "spacing": 10,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "spin_rotate_degree",
+                                                "Type": "QPSLSpinBox",
+                                                "prefix": "Degree: "
+                                            },
+                                            {
+                                                "ObjectName": "toggle_button_calibration",
+                                                "Type": "QPSLToggleButton",
+                                                "backgroud_color": "#a2a2a2",
+                                                "m_closed_text": "Rotation",
+                                                "m_opened_text": "Rotation",
+                                                "m_text": "Rotation"
+                                            }
+                                        ]
                                     }
                                 ]
                             },
@@ -581,7 +592,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     }
@@ -666,7 +677,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -693,7 +704,7 @@
                                                 "Type": "QPSLIconLabel",
                                                 "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                                "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -753,16 +764,16 @@
                         "frame_shape": 1,
                         "margins": "2; 2; 2; 2",
                         "spacing": 5,
-                        "stretch": "3; 3; 3; 0; 3; 0; 0; 23; 0; 4",
+                        "stretch": "3; 3; 3; 3; 3; 3; 3; 3; 25; 0; 4",
                         "widgets": [
                             {
                                 "ObjectName": "box_reconstruction2_get_path",
                                 "Type": "QPSLGetOpenFileBox",
                                 "backgroud_color": "#cdcdcd",
                                 "margins": "10; 2; 10; 2",
+                                "path": "K:/Results/result_wlc/20231115_1/flatten",
                                 "spacing": 5,
                                 "stretch": "6; 5; 1",
-                                "path":"K:/Results/result_wlc/20231115_1/flatten",
                                 "widgets": [
                                     {
                                         "Type": "QPSLLabel",
@@ -777,7 +788,7 @@
                                         "Type": "QPSLIconLabel",
                                         "backgroud_color": "#cdcdcd",
                                         "dynamic": false,
-                                        "path": "C:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
+                                        "path": "c:/Users/WeLab/Desktop/pyQPSL/pyQPSL_9.2/Resources/unchecked.png"
                                     }
                                 ]
                             },
@@ -791,8 +802,7 @@
                                         "text": "Name Prefix:"
                                     },
                                     {
-                                        "Type": "QPSLLineEdit",
-                                        "text": ""
+                                        "Type": "QPSLLineEdit"
                                     }
                                 ]
                             },
@@ -817,10 +827,45 @@
                                 "widgets": [
                                     {
                                         "Type": "QPSLLabel",
+                                        "backgroud_color": "#cccccc",
+                                        "text": "Stack depth:"
+                                    },
+                                    {
+                                        "ObjectName": "spin_start_read_number",
+                                        "Type": "QPSLSpinBox",
+                                        "range": "0; 1000000",
+                                        "value": 1
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#cccccc",
+                                        "text": "Read Number:"
+                                    },
+                                    {
+                                        "ObjectName": "spin_read_number",
+                                        "Type": "QPSLSpinBox",
+                                        "range": "0; 1000000",
+                                        "value": 1
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "margins": "10; 0; 10; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#cccccc",
                                         "text": "Start Read Number:"
                                     },
                                     {
-                                        "ObjectName":"spin_start_read_number",
+                                        "ObjectName": "spin_start_read_number",
                                         "Type": "QPSLSpinBox",
                                         "range": "0; 1000000",
                                         "value": 1
@@ -835,32 +880,21 @@
                                 "widgets": [
                                     {
                                         "Type": "QPSLLabel",
+                                        "backgroud_color": "#4c4c4c",
                                         "text": "First Time: "
                                     },
                                     {
                                         "ObjectName": "button_first_time",
                                         "Type": "QPSLRadioButton",
+                                        "backgroud_color": "#4c4c4c",
                                         "is_checked": true,
                                         "text": "True"
                                     },
                                     {
                                         "ObjectName": "button_not_first_time",
                                         "Type": "QPSLRadioButton",
+                                        "backgroud_color": "#4c4c4c",
                                         "text": "False"
-                                    }
-                                ]
-                            },
-                            {
-                                "Type": "QPSLHFrameList",
-                                "margins": "10; 0; 10; 0",
-                                "widgets": [
-                                    {
-                                        "Type": "QPSLLabel",
-                                        "text": "Stitch Direction:"
-                                    },
-                                    {
-                                        "ObjectName":"combo_box_stitch_direction",
-                                        "Type": "QPSLComboBox"
                                     }
                                 ]
                             },

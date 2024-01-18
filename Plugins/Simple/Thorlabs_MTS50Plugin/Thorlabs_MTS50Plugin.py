@@ -17,9 +17,13 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1)
 
 # Serial number of each stage
-SERIAL_NUMBER_X = b"27000001"
-SERIAL_NUMBER_Y = b"27000002"
-SERIAL_NUMBER_Z = b"27000003"
+# SERIAL_NUMBER_X = b"27000001"
+# SERIAL_NUMBER_Y = b"27000002"
+# SERIAL_NUMBER_Z = b"27000003"
+
+SERIAL_NUMBER_X = b"27258500"
+SERIAL_NUMBER_Y = b"27258730"
+SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)

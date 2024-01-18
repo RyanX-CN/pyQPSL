@@ -1,0 +1,28 @@
+{
+    "DemoPlugin":{
+        "Type": "QPSLHFrameList",
+        "widgets": [
+            {
+                "ObjectName": "view_demo",
+                "Type": "QPSLTrackedScalePixmapLabel"
+            },
+            {
+                "Type": "QPSLVFrameList",
+                "stretch": "0; 1",
+                "widgets": [
+                    {
+                        "ObjectName": "btn_live",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "Live",
+                        "m_opened_text": "Abort",
+                        "m_text": "Live"
+                    },
+                    {
+                        "Type": "QPSLLabel"
+                    }
+                ]
+            }
+        ]
+    }    
+}
