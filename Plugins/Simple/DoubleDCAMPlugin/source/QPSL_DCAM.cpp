@@ -23,7 +23,7 @@ struct DCAMController{
     DCAMERR err_code;
     char err_buffer[1024];    
 };
-DCAMERR deal_err(DCAMController *controller){
+int32 deal_err(DCAMController *controller){
     if(failed(controller->err_code)){
         sprintf(controller->err_buffer, "DCAM %d ERROR: %d\n",controller->index, controller->err_code);
     }
@@ -64,7 +64,7 @@ int32 DLL_EXPORT QPSL_DCAMAPI_uninit(char *err_buffer){
     sprintf(err_buffer, "DCAMAPI Uninit Success\n");
     return 0;
 }
-DCAMERR DLL_EXPORT QPSL_DCAM_open(DCAMController *controller){
+int32 DLL_EXPORT QPSL_DCAM_open(DCAMController *controller){
     DCAMDEV_OPEN devopen;
     memset(&devopen, 0, sizeof(devopen));
 	devopen.size = sizeof(devopen);	
