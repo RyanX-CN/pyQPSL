@@ -42,7 +42,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
 
     def __init__(self):
         super().__init__()
-        # DCAMAPI_init()
+        DCAMAPI_init()
 
     def load_attr(self):
         super().load_attr()
@@ -60,7 +60,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         if self.m_cam2.has_handle():
             self.m_cam1.buffer_release()
             self.m_cam2.close_device()
-        # DCAMAPI_uninit()
+        DCAMAPI_uninit()
         return super().to_delete()
 
     def setup_logic(self):
@@ -91,18 +91,22 @@ class DoubleDCAMPluginWorker(QPSLWorker):
     @QPSLObjectBase.log_decorator()
     def on_open_cam1(self):
         self.m_cam1.open_device()
+        self.sig_cam1_opened.emit()
     
     @QPSLObjectBase.log_decorator()
     def on_close_cam1(self):
-        self.m_cam1.buffer_release()
+        # self.m_cam1.buffer_release()
         self.m_cam1.close_device()
+        self.sig_cam1_closed.emit()
     
     @QPSLObjectBase.log_decorator()
     def on_get_deviceID_cam1(self):
+        self.ID_cam1 =c_char()
         err, self.ID_cam1 = self.m_cam1.get_cameraID()
     
     @QPSLObjectBase.log_decorator()
     def on_get_temperature_cam1(self):
+        self.temp_cam1 = c_double()
         err, self.temp_cam1 = self.m_cam1.get_temperature()
     
     @QPSLObjectBase.log_decorator()
@@ -285,8 +289,8 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.btn_live_cam1.set_closed)   #Abort
         connect_direct(self.btn_capture_cam1.sig_clicked,
                        self.on_click_capture_cam1)
-        connect_direct(self.timer.timeout,
-                       self.refresh_temperature_cam1)
+        # connect_direct(self.timer.timeout,
+        #                self.refresh_temperature_cam1)
         connect_direct(self.btn_applyROI_cam1.sig_clicked,
                        self.on_click_setROI_cam1)
         connect_direct(self.sbox_exposure_time_cam1.sig_value_changed,
@@ -295,12 +299,19 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     #CAMERA 1    
     @QPSLObjectBase.log_decorator()
     def on_click_open_cam1(self):
-        self.m_worker.sig_to_open_cam1.emit()
+        # print(self.m_worker.m_cam1.hdcam)
+        self.m_worker.on_open_cam1()
+        # print(self.m_worker.m_cam1.hdcam)
+        sleep_for(1000)
+        # self.m_worker.sig_to_open_cam1.emit()
         self.on_set_deviceID_cam1()
+        self.refresh_temperature_cam1()
+        self.timer.start(100)
 
     @QPSLObjectBase.log_decorator()
     def on_click_close_cam1(self):
         self.m_worker.sig_to_close_cam1.emit()
+        self.timer.stop()
         self.label_device_cam1.clear()
         self.label_temperature_cam1.clear()
         self.label_framerate_cam1.clear()
@@ -318,17 +329,19 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def on_click_capture_cam1(self):
         m_save_path = self.line_path_cam1.text()
+        if m_save_path == "":
+            m_save_path = "E:/Custom Control Software/Test"
         self.m_worker.on_capture_cam1(m_save_path)
 
     @QPSLObjectBase.log_decorator()
     def on_set_deviceID_cam1(self):
         self.m_worker.on_get_deviceID_cam1()
-        self.label_device_cam1.setText("Device:" + str(self.m_worker.ID_cam1))
+        self.label_device_cam1.setText("Device: " + self.m_worker.ID_cam1.value.decode("utf-8").replace("\\","/"))
     
     @QPSLObjectBase.log_decorator()
     def refresh_temperature_cam1(self):
         self.m_worker.on_get_temperature_cam1()
-        self.label_temperature_cam1.setText("Temperature: " + str(self.m_worker.temp_cam1))
+        self.label_temperature_cam1.setText("Temperature: " + str(self.m_worker.temp_cam1.value))
 
     @QPSLObjectBase.log_decorator()
     def refresh_framerate_cam1(self):

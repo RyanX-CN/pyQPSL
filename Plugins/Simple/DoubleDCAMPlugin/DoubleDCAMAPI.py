@@ -3,9 +3,9 @@ from ctypes import c_wchar_p, c_char
 
 class DCAMController(Structure):
     _fields_ = [('hdcam',c_void_p),
-                ('index',c_int32),
-                ('save_path',c_wchar_p),
-                ('err_code',c_void_p), ('err_buffer',c_char * 1024)]
+                ('index',c_int),
+                ('save_path',c_char_p),
+                ('err_code',c_int32), ('err_buffer',c_char * 1024)]
     
     # def api_init(self):
     #     _QPSL_DCAMAPI_init(pointer(self))
@@ -23,30 +23,32 @@ class DCAMController(Structure):
     
     def open_device(self):
         _QPSL_DCAM_open(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
 
     def close_device(self):
         _QPSL_DCAM_close(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
-    def get_cameraID(self) -> Tuple[int, c_char]:
-        id_string = c_char()
-        _QPSL_DCAM_getstring(pointer(self), byref(id_string))
-        if self.err_code:
+    def get_cameraID(self) -> Tuple[int, c_char*256]:
+        id_string = ctypes.create_string_buffer(256)
+        _QPSL_DCAM_getstring(pointer(self), id_string)
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code, id_string
 
     def get_temperature(self) -> Tuple[int, c_double]:
         temp_data = c_double()
+        print(temp_data)
         _QPSL_DCAM_getvalue(pointer(self), byref(temp_data))
-        if self.err_code:
+        print(temp_data)
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code, temp_data    
@@ -55,84 +57,84 @@ class DCAMController(Structure):
         _QPSL_DCAM_setROI(pointer(self), 
                           c_int32(hpos), c_int32(vpos), 
                           c_int32(hsize), c_int32(vsize))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def set_exposure_time(self, exposure_time):
         _QPSL_DCAM_setExposureTime(pointer(self), c_double(exposure_time))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
         
     def set_internal_trigger(self):
         _QPSL_DCAM_setInternalTrigger(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
 
     def set_external_trigger(self):
         _QPSL_DCAM_setExternalTrigger(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def set_syncreadout(self):
         _QPSL_DCAM_setSyncReadout(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def set_trigger_positive(self):
         _QPSL_DCAM_setTriggerPositive(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def set_trigger_negative(self):
         _QPSL_DCAM_setTriggerNegative(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def set_trigger_delay(self, delay):
         _QPSL_DCAM_setTriggerDelay(pointer(self), c_double(delay))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def capture(self):
         _QPSL_DCAM_Capture(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
         
     def live(self, image_data: c_char_p):
         _QPSL_DCAM_Live(pointer(self), image_data)
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
     def abort(self):
         _QPSL_DCAM_Abort(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
 
     def scan(self, endframe):
         _QPSL_DCAM_Scan(pointer(self),c_int(endframe))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
@@ -142,7 +144,7 @@ class DCAMController(Structure):
     
     def buffer_release(self):
         _QPSL_DCAM_bufferRelease(pointer(self))
-        if self.err_code:
+        if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
@@ -154,7 +156,7 @@ c_uint32_p = POINTER(c_uint32)
 c_double_p = POINTER(c_double)
 
 try:
-    _library = load_dll("QPSL_DoubleDCAM.dll")
+    _library = load_dll("QPSL_DCAM.dll")
 except BaseException as e:
     loading_error(e)
 

@@ -4,7 +4,6 @@ from ...Enum import *
 try:
     import OpenGL
     import pyqtgraph.opengl.GLViewWidget
-    print("1")
     loading_info("opengl version = {0}".format(OpenGL.__version__))
 except:
     loading_warning("no opengl")
