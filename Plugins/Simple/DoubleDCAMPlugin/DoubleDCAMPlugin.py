@@ -8,6 +8,17 @@ from .DoubleDCAMAPI import *
 '''
     This Plugin is for controller 2 Hamamatsu CMOS camera ORCA-Flash4.0 V3
 '''
+class DCAMLiveWorker(QPSLWorker):
+    '''
+    Create a thread for Live image
+    '''
+    pass
+
+class DCAMScanWorker(QPSLWorker):
+    '''
+    Create a thread for Scan
+    '''
+    pass
 
 class DoubleDCAMPluginWorker(QPSLWorker):
     # Camera 1    
@@ -222,6 +233,8 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.btn_scan_endframe_cam1: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_endframe_cam1")
         self.btn_scan_custom_cam1: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_custom_cam1")
         self.line_path_cam1: QPSLLineEdit = self.findChild(QPSLLineEdit, "line_path_cam1")
+        self.line_filename_cam1:QPSLLineEdit = self.findChild(QPSLLineEdit, "line_filename_cam1")
+        self.btn_path_apply_cam1:QPSLPushButton = self.findChild(QPSLPushButton, "btn_path_apply_cam1")
         #Camera 2
         self.btn_open_cam2: QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_open_cam2")
         self.btn_live_cam2: QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_live_cam2")
@@ -244,7 +257,9 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.btn_scan_continous_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_continous_cam2")
         self.btn_scan_endframe_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_endframe_cam2")
         self.btn_scan_custom_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_custom_cam2")
-        self.line_path_cam2: QPSLLineEdit = self.findChild(QPSLLineEdit, "line_path_cam2")
+        self.line_path_cam2: QPSLLineEdit = self.findChild(QPSLLineEdit, "line_path_cam2")        
+        self.line_filename_cam2:QPSLLineEdit = self.findChild(QPSLLineEdit, "line_filename_cam2")
+        self.btn_path_apply_cam2:QPSLPushButton = self.findChild(QPSLPushButton, "btn_path_apply_cam2")
         #Log
         self.text_logger: QPSLTextEdit = self.findChild(QPSLTextEdit, "text_logger")
         #Live view

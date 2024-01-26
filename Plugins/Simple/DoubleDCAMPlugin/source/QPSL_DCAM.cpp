@@ -2,7 +2,6 @@
 #define __QPSL_DCAM__
 #include "dcamapi4.h"
 #include "dcamprop.h"
-// #include "console4.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
@@ -22,8 +21,10 @@ extern "C" {
         return deal_err(controller);
 
 struct DCAMController{
-    HDCAM hdcam;
+    HDCAM hdcam; //the handle which specifies the target dcam
     int index;
+    HDCAMWAIT hwait; //the handle used to wait for events sent from device
+    HDCAMREC hrec; //the handle used for disk recording
     const char* save_path; 
     DCAMERR err_code;
     char err_buffer[1024];    
@@ -140,7 +141,6 @@ int32 DLL_EXPORT QPSL_DCAM_bufferRelease(DCAMController *controller){
     return 0;
 }
 int32 DLL_EXPORT QPSL_DCAM_Capture(DCAMController *controller){
-    HDCAMREC hrec = NULL;
 	DCAMREC_OPEN recopen;
 	memset(&recopen, 0, sizeof(recopen));
 	recopen.size = sizeof(recopen);
@@ -155,20 +155,19 @@ int32 DLL_EXPORT QPSL_DCAM_Capture(DCAMController *controller){
 	recopen.usertextsize = 0;
     DCAMErrChk(dcamrec_open(&recopen))
     else{
-        hrec = recopen.hrec;
+        controller->hrec = recopen.hrec;
     }
-    HDCAMWAIT hwait = NULL;
     DCAMWAIT_OPEN waitopen;
     memset(&waitopen, 0, sizeof(waitopen));
     waitopen.size = sizeof(waitopen);
     waitopen.hdcam = controller->hdcam;
     DCAMErrChk(dcamwait_open(&waitopen))
     else{
-        hwait = waitopen.hwait;
+        controller->hwait = waitopen.hwait;
     }
     DCAMErrChk(dcambuf_alloc(controller->hdcam,1));
-    if((hrec!=NULL) && (hwait!=NULL)){
-        DCAMErrChk(dcamcap_record(controller->hdcam,hrec))
+    if((controller->hrec!=NULL) && (controller->hwait!=NULL)){
+        DCAMErrChk(dcamcap_record(controller->hdcam,controller->hrec))
         else{
             DCAMErrChk(dcamcap_start(controller->hdcam, DCAMCAP_START_SNAP))
             else{
@@ -177,17 +176,17 @@ int32 DLL_EXPORT QPSL_DCAM_Capture(DCAMController *controller){
                 waitstart.size = sizeof(waitstart);
                 waitstart.eventmask = DCAMWAIT_CAPEVENT_STOPPED;
                 waitstart.timeout = DCAMWAIT_TIMEOUT_INFINITE;
-                DCAMErrChk(dcamwait_start(hwait, &waitstart));
+                DCAMErrChk(dcamwait_start(controller->hwait, &waitstart));
             }
         }
-        DCAMErrChk(dcamrec_close(hrec));
+        DCAMErrChk(dcamrec_close(controller->hrec));
     }  
     DCAMErrChk(dcambuf_release(controller->hdcam));
-    DCAMErrChk(dcamwait_abort(hwait));
+    DCAMErrChk(dcamwait_abort(controller->hwait));
     return 0;
 }
-int32 DLL_EXPORT QPSL_DCAM_Live(DCAMController *controller, char *imagebuf){
-    HDCAMWAIT hwait = NULL;
+typedef int32 (*DCAM_GetFramesCallback)(char*, DCAMController*);
+int32 DLL_EXPORT QPSL_DCAM_Live(DCAMController *controller, char *imagebuf, DCAM_GetFramesCallback callback){
     DCAMWAIT_OPEN waitopen;
     DCAMWAIT_START waitstart;
     DCAMBUF_FRAME bufframe;
@@ -202,9 +201,9 @@ int32 DLL_EXPORT QPSL_DCAM_Live(DCAMController *controller, char *imagebuf){
     waitopen.hdcam = controller->hdcam;
     DCAMErrChk(dcamwait_open(&waitopen))
     else{
-        hwait = waitopen.hwait;
+        controller->hwait = waitopen.hwait;
     }
-    if(hwait!=NULL){
+    if(controller->hwait!=NULL){
         memset(&waitstart, 0, sizeof(waitstart));
         waitstart.size = sizeof(waitstart);
         waitstart.eventmask = DCAMWAIT_CAPEVENT_FRAMEREADY;
@@ -218,7 +217,7 @@ int32 DLL_EXPORT QPSL_DCAM_Live(DCAMController *controller, char *imagebuf){
     DCAMErrChk(dcamcap_start(controller->hdcam, DCAMCAP_START_SEQUENCE))
     else{
         for(int i=0;true;){
-            controller->err_code = dcamwait_start(hwait, &waitstart);
+            controller->err_code = dcamwait_start(controller->hwait, &waitstart);
             if(failed(controller->err_code)){
                 if(controller->err_code == DCAMERR_ABORT){
                     break;
@@ -233,21 +232,18 @@ int32 DLL_EXPORT QPSL_DCAM_Live(DCAMController *controller, char *imagebuf){
             int y;
             for(y = 0;y < cy; y++)
             {
-                memcpy_s(pDst, rowbytes, pSrc, copyrowbytes);
+                memcpy_s(pDst, copyrowbytes, pSrc, copyrowbytes);
                 pSrc += bufframe.rowbytes;
-                pDst += rowbytes;
+                pDst += copyrowbytes;
             }
-
-            // ImageData<unsigned short> imagedata((unsigned short*)bufframe.buf,bufframe.width,bufframe.height);
+            callback(imagebuf,controller);
             i++;
         }
         DCAMErrChk(dcamcap_stop(controller->hdcam));
     }
     DCAMErrChk(dcambuf_release(controller->hdcam));
-    DCAMErrChk(dcamwait_abort(hwait));
-}
-int32 DLL_EXPORT QPSL_DCAM_Abort(DCAMController *controller){
-    controller->err_code = DCAMERR_ABORT;
+    DCAMErrChk(dcamwait_abort(controller->hwait));
+    return 0;
 }
 int32 DLL_EXPORT QPSL_DCAM_Scan(DCAMController *controller, int endframe){
     HDCAMREC hrec = NULL;
@@ -303,7 +299,27 @@ int32 DLL_EXPORT QPSL_DCAM_Scan(DCAMController *controller, int endframe){
     }
     DCAMErrChk(dcamrec_close(hrec));
     DCAMErrChk(dcamwait_abort(hwait));
+    return 0;
 }
+int32 DLL_EXPORT QPSL_DCAM_Abort(DCAMController *controller){
+    controller->err_code = DCAMERR_ABORT;
+    return 0;
+}
+/*
+int32 get_single_frame(void*data){
+    
+}
+typedef int32 (*DCAM_GetFramesCallback)(char*, DCAMController*);
+int32 DLL_EXPORT QPSL_DCAM_getframes(DCAMController *controller, DCAM_GetFramesCallback callback){
+    char data[11111];
+    while(true){
+        get_single_frame(data);
+        //do stuff with data...
+        callback(data, controller);
+    }
+}
+*/
+
 #ifdef __cplusplus
 }
 #endif

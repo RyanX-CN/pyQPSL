@@ -4,22 +4,10 @@ from ctypes import c_wchar_p, c_char
 class DCAMController(Structure):
     _fields_ = [('hdcam',c_void_p),
                 ('index',c_int),
+                ('hwait',c_void_p),
+                ('hrec',c_void_p),
                 ('save_path',c_char_p),
                 ('err_code',c_int32), ('err_buffer',c_char * 1024)]
-    
-    # def api_init(self):
-    #     _QPSL_DCAMAPI_init(pointer(self))
-    #     if self.err_code:
-    #         raise BaseException(
-    #             bytes.decode(self.err_buffer, encoding='utf8'))
-    #     return self.err_code
-    
-    # def api_uninit(self):
-    #     _QPSL_DCAMAPI_uninit(pointer(self))
-    #     if self.err_code:
-    #         raise BaseException(
-    #             bytes.decode(self.err_buffer, encoding='utf8'))
-    #     return self.err_code
     
     def open_device(self):
         _QPSL_DCAM_open(pointer(self))
