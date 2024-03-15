@@ -15,9 +15,9 @@
         "file_log_level": "ALL"
     },
     "plugin_mode": {
-        "is_single_plugin": true,
-        "single_plugin_module": "Plugins.Simple.Thorlabs_MTS50Plugin",
-        "single_plugin_size": "1268; 876"
+        "is_single_plugin": false,
+        "single_plugin_module": "Plugins.Simple.DoubleDCAMPlugin",
+        "single_plugin_size": "1268; 784"
     },
     "style_control": "Fusion",
     "themes": "dark_blue.xml",
@@ -30,6 +30,7 @@
             "CppPluginUI": false,
             "DMPluginUI": false,
             "DemoPluginUI": false,
+            "DoubleDCAMPluginUI": false,
             "HongruPluginUI": true,
             "NIDAQmxAIPluginUI": false,
             "NIDAQmxAOPluginUI": false,

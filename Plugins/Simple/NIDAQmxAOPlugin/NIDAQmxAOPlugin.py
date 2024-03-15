@@ -143,6 +143,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
     @ctypes.WINFUNCTYPE(c_int32, c_void_p, c_int32, c_uint32, c_void_p)
     def on_everyn_callback(handle: c_void_p, event_type: c_int32,
                            n_sample: c_uint32, callback_data: c_void_p):
+        print(type(callback_data))
+        print(type(handle))
         self = ctypes.cast(callback_data, POINTER(py_object)).contents.value
         self: NIDAQmxAOPluginWorker
         index = self.m_write_per_channel % self.m_arr2d.shape[1]

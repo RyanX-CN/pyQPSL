@@ -17,9 +17,13 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1)
 
 # Serial number of each stage
-SERIAL_NUMBER_X = b"27000001"
-SERIAL_NUMBER_Y = b"27000002"
-SERIAL_NUMBER_Z = b"27000003"
+# SERIAL_NUMBER_X = b"27000001"
+# SERIAL_NUMBER_Y = b"27000002"
+# SERIAL_NUMBER_Z = b"27000003"
+
+SERIAL_NUMBER_X = b"27258500"
+SERIAL_NUMBER_Y = b"27258730"
+SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -30,6 +34,7 @@ class Thorlabs_MTS50Base(QPSLWorker):
     
     _lib = load_dll("Thorlabs.MotionControl.KCube.DCServo.dll")
     _log = []
+    moving_state = bool
 
     def __init__(self,serial_number:str):
         super().__init__()
@@ -113,10 +118,12 @@ class Thorlabs_MTS50Base(QPSLWorker):
         messageType = c_ushort()
         messageID = c_ushort()
         messageData = c_ulong()
-        while messageType.value != 2 or messageID.value != 1:
-             self._lib.CC_WaitForMessage(self.m_serial_number, byref(messageType), byref(messageID), byref(messageData))
+        if self.moving_state == True:
+            while messageType.value != 2 or messageID.value != 1:
+                self._lib.CC_WaitForMessage(self.m_serial_number, byref(messageType), byref(messageID), byref(messageData))
             #  print(messageType, messageID)
-        # return True
+        else:
+            pass
     
     @QPSLObjectBase.log_decorator()
     def set_accleration_and_velocity(self,acceleration_real,velocity_real):
@@ -149,12 +156,11 @@ class Thorlabs_MTS50Base(QPSLWorker):
                                           1)
 
     @QPSLObjectBase.log_decorator()
-    def set_output_mode_velocity(self,trigger1Mode,trigger1Polarity):
-        self._lib.CC_SetTriggerConfigParams(self.m_serial_number,c_int(trigger1Mode),c_int(trigger1Polarity))
+    def set_output_mode_byvelocity(self,trigger1Mode,trigger1Polarity,trigger2Mode,trigger2Polarity):
+        self._lib.CC_SetTriggerConfigParams(self.m_serial_number,c_int(trigger1Mode),c_int(trigger1Polarity),c_int(trigger2Mode),c_int(trigger2Polarity))
         # trigger1Mode  = c_int()
         # trigger1Polarity = c_int()
-        # self._lib.CC_GetTriggerConfigParams(self.m_serial_number,byref(trigger1Mode),byref(trigger1Polarity))
-        
+        # self._lib.CC_GetTriggerConfigParams(self.m_serial_number,byref(trigger1Mode),byref(trigger1Polarity))       
 
 class Thorlabs_MTS50PluginWorker(QPSLWorker):
     sig_open_device, sig_to_open_device, sig_device_opened = pyqtSignal(), pyqtSignal(), pyqtSignal()
@@ -287,29 +293,39 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                          max_y:c_double, min_y:c_double, interval_y:c_double,
                          max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):
             self.sig_scan_started.emit()
-            while self.y_pos < max_y.value:
-                while self.x_pos < max_x.value:
-                    self.z_stage.set_output_mode_velocity(12,1)
-                    self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
-                    self.z_stage.move_absolute(max_z)
-                    # print("z is moving")
-                    self.z_stage.wait_on_ready()
-                    self.z_stage.set_output_mode_velocity(0,2)
-                    self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.4))
-                    self.z_stage.move_absolute(min_z)
-                    # print("z is homing")
-                    self.x_stage.move_relative(interval_x)
-                    # print("x is moving")
+            # self.x_stage.moving_state = True
+            self.y_stage.moving_state = True
+            self.z_stage.moving_state = True
+            try:
+                while self.y_pos < max_y.value:
+                    while self.x_pos < max_x.value:
+                        self.z_stage.set_output_mode_byvelocity(12,1,12,1)
+                        self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
+                        self.z_stage.move_absolute(max_z)
+                        self.z_stage.wait_on_ready()
+                        self.z_stage.set_output_mode_byvelocity(0,2,0,2)
+                        self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
+                        self.z_stage.move_absolute(min_z)
+                        # self.z_stage.wait_on_ready()
+                        self.x_stage.move_relative(interval_x)
+                        # self.z_stage.wait_on_ready()
+                        if self.z_stage.moving_state == False:
+                            raise StopIteration
+                        self.z_stage.wait_on_ready()
+                    self.y_stage.move_relative(interval_y)
+                    self.x_stage.move_absolute(min_x)
                     # self.x_stage.wait_on_ready()
-                    # print("x is ready")
-                    self.z_stage.wait_on_ready()
-                self.y_stage.move_relative(interval_y)
-                self.x_stage.move_absolute(min_x)
-                self.x_stage.wait_on_ready()
-                # self.y_stage.wait_on_ready()
+                    if self.y_stage.moving_state == False:
+                        raise StopIteration
+                    self.y_stage.wait_on_ready()
+            except StopIteration:
+                print("motion stopped")
 
     @QPSLObjectBase.log_decorator()
     def on_stop_scan(self):
+        # self.x_stage.moving_state = False
+        self.y_stage.moving_state = False
+        self.z_stage.moving_state = False
         self.x_stage.stop_immediate()
         self.y_stage.stop_immediate()
         self.z_stage.stop_immediate()
@@ -340,7 +356,7 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
         self.m_worker.stop_thread()
         self.timer.destroyed
         self.m_worker.to_delete()
-        self.position_3d.deleteLater()
+        # self.position_3d.deleteLater()
         if self.auto_save():
             self.save_into_json(json_path=self.get_json_file())
         return super().to_delete()
@@ -429,8 +445,13 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
                                                              "btn_start_scan")
         self.btn_mark_point: QPSLPushButton = self.findChild(QPSLPushButton,
                                                              "btn_mark_point")
-        self.position_3d: QPSLOpenGLWidget = self.findChild(QPSLOpenGLWidget,
-                                                                "plot_path_tracing")
+        # self.position_3d: QPSLOpenGLWidget = self.findChild(QPSLOpenGLWidget,
+        #                                                         "plot_path_tracing")
+        #utils
+        self.sbox_exposure_time: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
+                                                                "sbox_exposure_time")
+        self.text_caputuring_number: QPSLLabel = self.findChild(QPSLLabel,
+                                                                "text_capturing_number")
 
     @QPSLObjectBase.log_decorator()
     def setup_logic(self):
@@ -438,7 +459,7 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
         self.get_named_widgets()
         self.m_worker.load_attr()
         self.timer = QTimer(self)
-        self.plot_init()
+        # self.plot_init()
 
         # connect devices
         connect_direct(self.btn_open_all.sig_open,
@@ -457,8 +478,8 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.m_worker.stop_all)
     
         # Information refresh
-        connect_direct(self.timer.timeout,
-                       self.plot_position)
+        # connect_direct(self.timer.timeout,
+        #                self.plot_position)
         connect_direct(self.timer.timeout,
                        self.refresh_pos)
         connect_direct(self.timer.timeout,
@@ -507,6 +528,10 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.m_worker.on_stop_scan)
         connect_queued(self.m_worker.sig_scan_stopped,
                        self.btn_start_scan.set_closed)
+        
+        #Utils
+        connect_direct(self.timer.timeout,
+                       self.utils_capturing_times)
         
         self.m_worker.start_thread()
 
@@ -574,18 +599,6 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
         self.sbox_pos_x.setValue(self.m_worker.x_pos)
         self.sbox_pos_y.setValue(self.m_worker.y_pos)
         self.sbox_pos_z.setValue(self.m_worker.z_pos)
-   
-    @QPSLObjectBase.log_decorator()
-    def init_scan(self):
-        self.m_worker.sig_to_init_scan.emit(c_double(self.sbox_acc_x.value()),
-                                            c_double(self.sbox_acc_y.value()),
-                                            c_double(self.sbox_acc_z.value()),
-                                            c_double(self.sbox_vel_x.value()),
-                                            c_double(self.sbox_vel_y.value()),
-                                            c_double(self.sbox_vel_z.value()),
-                                            c_double(self.sbox_min_x.value()),
-                                            c_double(self.sbox_min_y.value()),
-                                            c_double(self.sbox_min_z.value()))
 
     @QPSLObjectBase.log_decorator()
     def plot_init(self):
@@ -625,7 +638,19 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
         self.position_3d.addItem(self.mark_plot)
         print("Marked point {0} position ({1}, {2}, {3})".format(
             self.marked_point_number, self.sbox_pos_x.value(), self.sbox_pos_y.value(), self.sbox_pos_z.value()))
-        
+    
+    @QPSLObjectBase.log_decorator()
+    def init_scan(self):
+        self.m_worker.sig_to_init_scan.emit(c_double(self.sbox_acc_x.value()),
+                                            c_double(self.sbox_acc_y.value()),
+                                            c_double(self.sbox_acc_z.value()),
+                                            c_double(self.sbox_vel_x.value()),
+                                            c_double(self.sbox_vel_y.value()),
+                                            c_double(self.sbox_vel_z.value()),
+                                            c_double(self.sbox_min_x.value()),
+                                            c_double(self.sbox_min_y.value()),
+                                            c_double(self.sbox_min_z.value()))
+    
     @QPSLObjectBase.log_decorator()
     def start_scan(self):
         self.m_worker.sig_to_start_scan.emit(c_double(self.sbox_max_x.value()),
@@ -638,6 +663,11 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
                                             c_double(self.sbox_min_z.value()),
                                             c_double(self.sbox_acc_z.value()),
                                             c_double(self.sbox_vel_z.value()))
+
+    @QPSLObjectBase.log_decorator()
+    def utils_capturing_times(self):
+        self.uniform_motion_time = 1000*(self.sbox_max_z.value()-self.sbox_min_z.value()-(self.sbox_vel_z.value()**2/self.sbox_acc_z.value()))/self.sbox_vel_z.value()
+        self.text_caputuring_number.setText(str(math.ceil(self.uniform_motion_time/self.sbox_exposure_time.value())))
 
 
 MainWidget = Thorlabs_MTS50PluginUI

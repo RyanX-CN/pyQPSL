@@ -236,6 +236,8 @@ class UIDesigner(QPSLHSplitter, QPSLPluginBase):
         for cls in get_registered_classes().values():
             if "ui" in cls.__module__.lower():
                 ui_classes.append(cls)
+        from Utils.Classes.QPSLDCAMView import QPSLDCAMView
+        ui_classes.append(QPSLDCAMView)
         from Plugins.Simple.Thorlabs_MTS50Plugin.Thorlabs_MTS50Plugin import Thorlabs_MTS50PluginUI
         ui_classes.append(Thorlabs_MTS50PluginUI)
         from Plugins.Simple.NIDAQmxAOPlugin.NIDAQmxAOPlugin import NIDAQmxAOPluginUI

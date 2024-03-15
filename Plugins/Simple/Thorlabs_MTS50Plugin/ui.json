@@ -1,6 +1,6 @@
 {
     "Thorlabs_MTS50PluginUI":{
-        "Type": "Thorlabs_MTS50PluginUI",
+        "Type": "QPSLHFrameList",
         "spacing": 20,
         "widgets": [
             {
@@ -269,7 +269,7 @@
                 "backgroud_color": "#666666",
                 "margins": "0; 20; 10; 10",
                 "spacing": 15,
-                "stretch": "0; 2; 2; 2; 1; 6",
+                "stretch": "0; 2; 2; 2; 1; 0",
                 "widgets": [
                     {
                         "Type": "QPSLLabel",
@@ -302,7 +302,7 @@
                                         "Type": "QPSLDoubleSpinBox",
                                         "backgroud_color": "#666666",
                                         "v_size_policy": 4,
-                                        "value":1
+                                        "value": 1.0
                                     }
                                 ]
                             },
@@ -382,7 +382,7 @@
                                                 "backgroud_color": "#666666",
                                                 "range": "-0.5; 50.5",
                                                 "v_size_policy": 4,
-                                                "value": 50.0
+                                                "value": 5.0
                                             }
                                         ]
                                     }
@@ -415,7 +415,7 @@
                                         "Type": "QPSLDoubleSpinBox",
                                         "backgroud_color": "#666666",
                                         "v_size_policy": 4,
-                                        "value":1
+                                        "value": 1.0
                                     }
                                 ]
                             },
@@ -495,7 +495,7 @@
                                                 "backgroud_color": "#666666",
                                                 "range": "-0.5; 50.5",
                                                 "v_size_policy": 4,
-                                                "value": 50.0
+                                                "value": 5.0
                                             }
                                         ]
                                     }
@@ -589,7 +589,7 @@
                                                 "backgroud_color": "#666666",
                                                 "range": "-0.5; 50.5",
                                                 "v_size_policy": 4,
-                                                "value": 50.0
+                                                "value": 5.0
                                             }
                                         ]
                                     }
@@ -624,9 +624,46 @@
                         ]
                     },
                     {
-                        "ObjectName": "plot_path_tracing",
-                        "Type": "QPSLOpenGLWidget",
-                        "backgroud_color": "#666666"
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#666666",
+                        "spacing": 20,
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#e5e5e5",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#666666",
+                                        "text": "Exposure time(ms): "
+                                    },
+                                    {
+                                        "ObjectName": "sbox_exposure_time",
+                                        "Type": "QPSLDoubleSpinBox",
+                                        "backgroud_color": "#666666",
+                                        "range": "0.1; 1000",
+                                        "value": 5.0,
+                                        "decimals": 0
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#666666",
+                                        "text": "Capturing number:"
+                                    },
+                                    {
+                                        "ObjectName": "text_capturing_number",
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#666666"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }

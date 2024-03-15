@@ -1,0 +1,67 @@
+{
+    "DemoPluginUI": {
+        "Type": "DemoPluginUI",
+        "margins": "5; 5; 5; 5",
+        "spacing": 5,
+        "stretch": "2; 1; 1",
+        "widgets": [
+            {
+                "ObjectName": "slider",
+                "Type": "QPSLComboSlider",
+                "m_decimals": 5,
+                "m_range": "-1000.0; 10000.0",
+                "m_value": 1000.0
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "margins": "2; 2; 2; 2",
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "ObjectName": "toggle_button_open",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#ffffff",
+                        "m_closed_text": "Open",
+                        "m_opened_text": "Close",
+                        "m_text": "Close"
+                    },
+                    {
+                        "ObjectName": "toggle_button_query",
+                        "Type": "QPSLToggleButton",
+                        "backgroud_color": "#a2a2a2",
+                        "m_closed_text": "Start Query",
+                        "m_opened_text": "Stop Query",
+                        "m_text": "Start Query"
+                    },
+                    {
+                        "ObjectName": "button_query",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "Query"
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLHFrameList",
+                "margins": "2; 2; 2; 2",
+                "spacing": 5,
+                "stretch": "2; 1",
+                "widgets": [
+                    {
+                        "ObjectName": "spin_move_distance",
+                        "Type": "QPSLDoubleSpinBox",
+                        "decimals": 2,
+                        "range": "-1000.0; 10000.0",
+                        "value": 5000.0
+                    },
+                    {
+                        "ObjectName": "button_move",
+                        "Type": "QPSLPushButton",
+                        "backgroud_color": "#cdcdcd",
+                        "m_text": "Move"
+                    }
+                ]
+            }
+        ]
+    }
+}
