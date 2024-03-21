@@ -10,122 +10,70 @@ from .DoubleDCAMAPI import *
     This Plugin is for controller 2 Hamamatsu CMOS camera ORCA-Flash4.0 V3
 '''
 
-SAVE_BATCH = 100 # The batch for saving TIF images
+SAVE_BATCH_SIZE = 100 # The batch for saving TIF images
 TARGET_MIN = 0 
-TARGET_MAX = 65535 # 8 bit_width convert to 16 bit_width
+TARGET_MAX = 65535
 
 class DCAMLiveWorker(QPSLWorker):
     '''
-    Create a thread for Live image
+    Create a thread for living image
     '''
     sig_report_ndarray_cam1 = pyqtSignal(np.ndarray)
     sig_report_ndarray_cam2 = pyqtSignal(np.ndarray)
     sig_report_pixmap_cam1 = pyqtSignal(QPixmap)
     sig_report_pixmap_cam2 = pyqtSignal(QPixmap)
     sig_report_ndarray_difference = pyqtSignal(np.ndarray)
-    sig_report_pixmap_difference = pyqtSignal(np.ndarray)
+    sig_report_pixmap_difference = pyqtSignal(QPixmap)
 
     def __init__(self):
         super().__init__()
-        # self.m_queue1 = deque()
-        # self.m_queue2 = deque()
         self.m_queues = [deque(), deque()]
         self.m_noneed_difference = True
-        self.m_id_cam = [0]*2
+        self.m_id_image = [0]*2
 
     def to_delete(self):
         return super().to_delete()
     
+    @QPSLObjectBase.log_decorator()     
     def receive_data_from_cam(self, index:int, data_cam:np.uint64):
         data_cam = int(data_cam)    # convert np.uint64 to int for ctypes.cast() 
         imagedata_cam = ctypes.cast(data_cam,c_ImageData_p).contents
-        print("data_cam:", data_cam)
         imagedata_cam: ImageData
-        # frame_id = imagedata_cam.frame_id
-        # self.add_warning("cam = {0}, frame_id = {1}".format(index,frame_id))
-        print(imagedata_cam.buffer)
-        print(imagedata_cam.frame_id)
+        frame_id = imagedata_cam.frame_id
         framebuffer_cam = np.frombuffer(imagedata_cam.buffer, dtype=np.uint16, count=1<<22)
         framebuffer_cam = np.reshape(framebuffer_cam,(2048,2048))
-        # self.add_warning("imagedata2ndarray cam = {0}, frame_id = {1}".format(index,frame_id))        
-        self.add_warning("imagedata2ndarray cam = {0}".format(index))        
-        # # print("framebuffer_cam:", framebuffer_cam.max(), framebuffer_cam.min(), framebuffer_cam.sum())
-        # max_value = np.max(framebuffer_cam)
-        # min_value = np.min(framebuffer_cam)
-        # scaled_array = ((framebuffer_cam - min_value) / (max_value - min_value)) * (TARGET_MAX - TARGET_MIN) + TARGET_MIN
-        # framebuffer_cam = np.uint16(scaled_array)
-        # # framebuffer_cam = scaled_array
-        # qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
-        #               framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16)
-        # # print(qimg_cam.width(), qimg_cam.height())
-        # pixmap_cam = QPixmap.fromImage(qimg_cam)
-        # # print("pixmap_cam", pixmap_cam.width(), pixmap_cam.height())
-        # self.m_id_cam[index] +=1
-        # if self.m_id_cam[index]%6 == 0:
-        #     if index == 0:
-        #         self.sig_report_ndarray_cam1.emit(framebuffer_cam)
-        #         self.sig_report_pixmap_cam1.emit(pixmap_cam)
-        #     else:
-        #         self.sig_report_ndarray_cam2.emit(framebuffer_cam)
-        #         self.sig_report_pixmap_cam2.emit(pixmap_cam)                    
+        framebuffer_cam = framebuffer_cam.astype(np.uint16)
+        # Emit ndarray data to save as TIF file
+        if index == 0:
+            self.sig_report_ndarray_cam1.emit(framebuffer_cam)
+            self.add_warning("framebuffer_cam1")
+        elif index == 1:
+            self.sig_report_ndarray_cam2.emit(framebuffer_cam)
+        self.m_id_image[index] +=1
+        # Downsample data to show on UI
+        if self.m_id_image[index]%6 == 0:
+            max_value = np.max(framebuffer_cam)
+            min_value = np.min(framebuffer_cam)
+            scaled_array = ((framebuffer_cam - min_value) / (max_value - min_value)) * (TARGET_MAX - TARGET_MIN) + TARGET_MIN
+            framebuffer_cam = np.uint16(scaled_array)
+            qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
+                framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16)
+            pixmap_cam = QPixmap.fromImage(qimg_cam)
+            if index == 0:
+                self.sig_report_pixmap_cam1.emit(pixmap_cam)
+            elif index == 1:
+                self.sig_report_pixmap_cam2.emit(pixmap_cam)                    
+            
+            if not self.m_noneed_difference:
+                self.m_queues[index].append(framebuffer_cam)
+            
+                if self.m_queues[1 - index] and len(self.m_queues[index]) == 1:
+                    self.calculate_difference()
+        
         data_cam = ctypes.cast(data_cam,c_void_p)
         Delete_Data_pointer(data_cam)
-        
-        # if not self.m_noneed_difference:
-        #     self.m_queues[index].append(framebuffer_cam)
-        
-        #     if self.m_queues[1 - index] and len(self.m_queues[index]) == 1:
-        #         self.calculate_difference()
-
-
     
-    '''
-    def receive_data_from_cam1(self, data_cam1:np.uint64):
-        data_cam1 = int(data_cam1)    # convert np.uint64 to int for ctypes.cast() 
-        imagedata_cam1 = ctypes.cast(data_cam1,c_ImageData_p).contents
-        print("data_cam1:", data_cam1)
-        imagedata_cam1: ImageData
-        framebuffer_cam1 = np.frombuffer(imagedata_cam1.buffer, dtype=np.uint16, count=1<<22)
-        framebuffer_cam1 = np.reshape(framebuffer_cam1,(2048,2048))
-        print("framebuffer_cam1:", framebuffer_cam1.max(), framebuffer_cam1.min(), framebuffer_cam1.sum())
-        qimg_cam1 = QImage(framebuffer_cam1.data,framebuffer_cam1.shape[1], framebuffer_cam1.shape[0],
-                      framebuffer_cam1.shape[1] * 2, QImage.Format.Format_Grayscale16)
-        # print(qimg_cam1.width(), qimg_cam1.height())
-        pixmap_cam1 = QPixmap.fromImage(qimg_cam1)
-        print("pixmap_cam1", pixmap_cam1.width(), pixmap_cam1.height())
-        self.sig_report_ndarray_cam1.emit(framebuffer_cam1)
-        self.sig_report_pixmap_cam1.emit(pixmap_cam1)
-        data_cam1 = ctypes.cast(data_cam1,c_void_p)
-        Delete_Data_pointer(data_cam1)
-        
-        self.m_queue1.append(framebuffer_cam1)
-        if self.m_queue2 and len(self.m_queue1) == 1:
-            self.calculate_difference()
-
-
-    def recive_data_from_cam2(self, data_cam2:np.uint64):
-        data_cam2 = int(data_cam2)    # convert np.uint64 to int for ctypes.cast() 
-        imagedata_cam2 = ctypes.cast(data_cam2, c_ImageData_p).contents
-        print("data_cam2:", data_cam2)
-        imagedata_cam2: ImageData
-        framebuffer_cam2 = np.frombuffer(imagedata_cam2.buffer, dtype=np.uint16, count=1<<22)
-        framebuffer_cam2 = np.reshape(framebuffer_cam2, (2048,2048))
-        print("framebuffer_cam2:", framebuffer_cam2.max(), framebuffer_cam2.min(), framebuffer_cam2.sum())
-        qimg_cam2 = QImage(framebuffer_cam2.data,framebuffer_cam2.shape[1], framebuffer_cam2.shape[0],
-                      framebuffer_cam2.shape[1] * 2, QImage.Format.Format_Grayscale16)
-        # print(qimg_cam2.width(), qimg_cam2.height())
-        pixmap_cam2 = QPixmap.fromImage(qimg_cam2)
-        print("pixmap_cam2", pixmap_cam2.width(), pixmap_cam2.height())
-        # self.sig_report_cam1.emit(framebuffer_cam2)
-        self.sig_report_pixmap_cam2.emit(pixmap_cam2)
-        data_cam2 = ctypes.cast(data_cam2,c_void_p)
-        Delete_Data_pointer(data_cam2)
-        
-        self.m_queue1.append(framebuffer_cam2)        
-        if self.m_queue1 and len(self.m_queue2) == 1:
-            self.calculate_difference()
-    '''
-    
+    @QPSLObjectBase.log_decorator()    
     def calculate_difference(self):
         image_cam1 = self.m_queues[0].popleft()
         image_cam2 = self.m_queues[1].popleft()
@@ -134,47 +82,60 @@ class DCAMLiveWorker(QPSLWorker):
                       image_difference.shape[1] * 2, QImage.Format.Format_Grayscale16)
         # print(qimg_cam.width(), qimg_cam.height())
         pixmap_cam = QPixmap.fromImage(qimg_difference)
-        self.sig_report_ndarray_difference.emit(image_difference)
+        # self.sig_report_ndarray_difference.emit(image_difference)
         self.sig_report_pixmap_difference.emit(pixmap_cam)
 
 
 class DCAMSaveWorker(QPSLWorker):
     '''
-    Create a thread for save frame data TIF file
+    Create a thread for saving frame data TIF file
     '''
-    sig_to_set_save_path = pyqtSignal(str)
-    # sig_to_save = pyqtSignal()
+    sig_to_set_save_prop = pyqtSignal(str, int)
 
     def __init__(self):
         super().__init__()
-        self.setup_logic()
-        self.m_save_flag = False
-        self.m_save_buffer = np.empty((100, 2048, 2048), dtype=np.uint16)
-        self.m_save_path = "E:/Custom_Control_Software/Test/{0}".format(str(datetime.datetime.now()).replace('-',''))
-        self.m_index_number = 0
+        self.m_save_flag = False 
+        self.m_save_path = "E:/Custom_Control_Software"
+        # self.m_save_path = "E:/Custom_Control_Software/Test/{0}".format(str(datetime.datetime.now().date()).replace('-',''))
+        self.m_endframe = 0
+        self.m_save_buffer = np.empty((SAVE_BATCH_SIZE, 2048, 2048), dtype=np.uint16)
+        self.m_index_image = 0
         self.m_batch_number = 0
-
+    
+    def load_attr(self, index:int):
+        super().load_attr()
+        self.index = index
+        self.setup_logic()
+        return self
+    
     def to_delete(self):
         return super().to_delete()
     
     def setup_logic(self):
-        connect_direct(self.sig_to_set_save_path,
-                       self.set_save_path)
-        
-    def set_save_path(self, path:str):
-        self.m_save_path = path
+        connect_direct(self.sig_to_set_save_prop,
+                       self.set_save_prop)
+
+    @QPSLObjectBase.log_decorator()            
+    def set_save_prop(self, save_path:str, endframe:int):
+        self.m_save_path = save_path
+        self.m_endframe = endframe
     
+    @QPSLObjectBase.log_decorator()    
     def save_tiff_file(self, data:np.ndarray):
         if self.m_save_flag == False:
             return
-        self.m_index_number += 1
-        self.m_save_buffer = np.stack((data), axis=0)
-        if self.m_index_number == SAVE_BATCH:        
-            tifffile.imwrite(self.m_save_path + "/{0}.tif".format(self.m_batch_number), 
+        # np.save(self.m_save_path + "/CAM{0}_{1}.npy".format(self.index, self.m_index_number_cam),data)
+        # tifffile.imwrite(self.m_save_path + "/CAM{0}_{1}.tif".format(self.index, self.m_index_number_cam),data)
+        # self.m_save_buffer = np.stack((self.m_save_buffer,data), axis=0)
+        self.m_save_buffer[self.m_index_image] = data
+        self.m_index_image += 1
+        if self.m_index_image % SAVE_BATCH_SIZE == 0 or self.m_index_image == self.m_endframe:        
+            tifffile.imwrite(self.m_save_path + "/CAM{0}_{1}.tif".format(self.index, self.m_batch_number), 
                             self.m_save_buffer)
             self.m_save_buffer[:] = 0
-            # self.m_save_buffer = np.empty((0, 2048, 2048), dtype=np.uint16)
             self.m_batch_number  += 1
+        if self.m_index_image == self.m_endframe:
+            self.m_index_image = 0
 
 
 class DoubleDCAMPluginWorker(QPSLWorker):
@@ -195,15 +156,19 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         float), pyqtSignal(float)
     sig_setExposuretime_cam, sig_to_setExposuretime_cam = pyqtSignal(
         float), pyqtSignal(float)
-    sig_strat_scan_cam, sig_to_start_scan_cam, sig_scan_cam_started = pyqtSignal(
+    sig_strat_scan_cam, sig_to_start_scan_cam, sig_scan_cam_started = pyqtSignal(int
+    ), pyqtSignal(int), pyqtSignal()    
+    sig_stop_scan_cam, sig_to_stop_scan_cam, sig_scan_cam_stopped = pyqtSignal(
     ), pyqtSignal(), pyqtSignal()
     sig_send_data_to_live = pyqtSignal(int, np.uint64)
-    sig_send_data_to_save = pyqtSignal(int, np.uint64)
+    sig_send_data_to_save = pyqtSignal(np.uint64)
 
     def __init__(self):
         super().__init__()
         # DCAMAPI_init()
         self.m_continue_flag: bool = True
+        self.m_scan_continus_flag: bool = True
+        self.m_custom_flag: bool = False
         self.m_x0 = 0
         self.m_y0 = 0
         self.m_width = 2048
@@ -220,7 +185,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
 
     def to_delete(self):
         if self.m_cam.has_handle():
-            self.m_cam.buffer_release()
+            # self.m_cam.buffer_release()
             self.m_cam.close_device()
         DCAMAPI_uninit()
         return super().to_delete()
@@ -236,7 +201,9 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         connect_asynch_and_synch(self.sig_to_abort_cam,self.sig_abort_cam,
                                  self.on_abort_cam)
         connect_asynch_and_synch(self.sig_to_start_scan_cam,self.sig_strat_scan_cam,
-                                 self.on_scan_cam_continous)
+                                 self.on_scan_cam)
+        connect_asynch_and_synch(self.sig_to_stop_scan_cam,self.sig_stop_scan_cam,
+                                 self.on_stop_scan_cam)
         connect_asynch_and_synch(self.sig_to_setROI_cam,self.sig_setROI_cam,
                                  self.on_set_ROI_cam)
         connect_asynch_and_synch(self.sig_to_set_trigger_delay_cam,self.sig_set_trigger_dalay_cam,
@@ -248,7 +215,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
     def  on_open_cam(self):
         self.m_cam.open_device()
         self.sig_cam_opened.emit()
-        self.on_set_exposure_time_cam(100)
+        self.on_set_exposure_time_cam(10)
     
     @QPSLObjectBase.log_decorator()
     def on_close_cam(self):
@@ -286,6 +253,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
     @QPSLObjectBase.log_decorator()
     def on_abort_cam(self):
         self.m_continue_flag = False
+        self.m_id = 0
         # self.m_cam.abort()
     
     @QPSLObjectBase.log_decorator()    
@@ -330,30 +298,46 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self.m_cam.set_trigger_delay(trigger_delay)
 
     @QPSLObjectBase.log_decorator()
-    def on_scan_cam_continous(self, m_endframe, m_save_path):
-        # self.m_cam.save_path = c_char_p(m_save_path)
-        # while True:
-        #     self.m_cam.scan(m_endframe)
+    def on_scan_cam(self,endframe:int):
         self.m_continue_flag = True
-        self.sig_cam_lived.emit()
-        self.sig_scan_cam_started.emit()
-        self.m_worker_self = py_object(self)
-        self.add_warning("Camera {0} is living".format(self.index))
-        self.m_cam.pre_live()
-        while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag:
+        while self.m_scan_continus_flag:
             QCoreApplication.instance().processEvents()
-            self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
-                            callback= DoubleDCAMPluginWorker.on_everyframe_callback_scan)
-            # sleep_for(50)
-        self.m_cam.post_live()
-        self.sig_cam_aborted.emit()        
-        pass        
-
+            if not self.m_custom_flag:
+                # self.m_continue_flag = True
+                # self.sig_cam_lived.emit()
+                self.sig_scan_cam_started.emit()
+                self.m_worker_self = py_object(self)
+                self.add_warning("Camera {0} is scaning".format(self.index))
+                self.m_cam.pre_live()
+                while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag and self.m_id <= endframe:
+                    QCoreApplication.instance().processEvents()
+                    self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
+                                    callback= DoubleDCAMPluginWorker.on_everyframe_callback)
+                self.m_cam.post_live()
+                self.add_warning("Camera {0} scaning done".format(self.index))
+                self.sig_scan_cam_stopped.emit()
+                break
+            else:
+                # self.m_continue_flag = True
+                # self.sig_cam_lived.emit()
+                self.sig_scan_cam_started.emit()
+                self.m_worker_self = py_object(self)
+                self.add_warning("Camera {0} is scaning(custom)".format(self.index))
+                self.m_cam.pre_live()
+                while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag and self.m_id <= endframe:
+                    QCoreApplication.instance().processEvents()
+                    self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
+                                    callback= DoubleDCAMPluginWorker.on_everyframe_callback)
+                self.m_cam.post_live()
+                self.sig_scan_cam_stopped.emit()
+            self.add_warning("Camera {0} scaning done(custom)".format(self.index))                                
+    
     @QPSLObjectBase.log_decorator()
-    def on_scan_cam(self, m_endframe, m_save_path):
-        # self.m_cam.save_path = c_char_p(m_save_path)
-        # self.m_cam.scan(m_endframe)
-        pass
+    def on_stop_scan_cam(self):
+        self.m_continue_flag = False
+        self.m_scan_continus_flag = False    
+        self.m_custom_flag = False
+        self.m_id = 0
     
     @ctypes.WINFUNCTYPE(c_int32,c_void_p,c_void_p)
     def on_everyframe_callback(self:c_void_p,
@@ -361,24 +345,13 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self = ctypes.cast(self, POINTER(py_object)).contents.value
         self: DoubleDCAMPluginWorker
         # print(data,type(data))
-        # self.add_warning("cam = {0}, img = {1}".format(self.index,self.m_id))
+        self.add_warning("cam = {0}, img = {1}".format(self.index,self.m_id))
         ctypes.cast(data,c_ImageData_p).contents.frame_id = self.m_id
         self.m_id += 1
         data = np.uint64(data)
         # print(self.m_cam.bufframe.width,self.m_cam.bufframe.height,self.m_cam.bufframe.rowbytes)
         self.sig_send_data_to_live.emit(self.index, data)
-        return 0
-    
-    @ctypes.WINFUNCTYPE(c_int32,c_void_p,c_void_p)
-    def on_everyframe_callback_scan(self:c_void_p,
-                         data:c_void_p):    
-        self = ctypes.cast(self, POINTER(py_object)).contents.value
-        self: DoubleDCAMPluginWorker
-        # print(data,type(data))
-        data = np.uint64(data)
-        # print(self.m_cam.bufframe.width,self.m_cam.bufframe.height,self.m_cam.bufframe.rowbytes)
-        self.sig_send_data_to_live.emit(self.index, data)
-        self.sig_send_data_to_save.emit(self.index, data)
+        self.sig_send_data_to_save.emit(data)
         return 0
 
 
@@ -397,7 +370,8 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.m_worker_cam1 = DoubleDCAMPluginWorker().load_attr(0)
         self.m_worker_cam2 = DoubleDCAMPluginWorker().load_attr(1)
         self.m_live_worker = DCAMLiveWorker().load_attr()
-        self.m_save_worker = DCAMSaveWorker().load_attr()
+        self.m_save_worker_cam1 = DCAMSaveWorker().load_attr(0)
+        self.m_save_worker_cam2 = DCAMSaveWorker().load_attr(1)
         self.m_log_info = []
 
     def load_attr(self):
@@ -413,8 +387,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.m_worker_cam2.to_delete()
         self.m_live_worker.stop_thread()
         self.m_live_worker.to_delete()
-        self.m_save_worker.stop_thread()
-        self.m_save_worker.to_delete()
+        self.m_save_worker_cam1.stop_thread()
+        self.m_save_worker_cam1.to_delete()
+        self.m_save_worker_cam2.stop_thread()
+        self.m_save_worker_cam2.to_delete()
         if self.auto_save():
             self.save_into_json(json_path=self.get_json_file())
         return super().to_delete()
@@ -441,7 +417,9 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.btn_stop_scan_cam1: QPSLPushButton = self.findChild(QPSLPushButton,"btn_stop_scan_cam1")
         self.btn_scan_continous_cam1: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_continous_cam1")
         self.btn_scan_endframe_cam1: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_endframe_cam1")
+        self.sbox_scan_endframe_cam1: QPSLSpinBox = self.findChild(QPSLSpinBox,"sbox_scan_endframe_cam1")
         self.btn_scan_custom_cam1: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_custom_cam1")
+        self.sbox_scan_custom_cam1: QPSLSpinBox = self.findChild(QPSLSpinBox,"sbox_scan_custom_cam1")
         self.line_path_cam1: QPSLLineEdit = self.findChild(QPSLLineEdit, "line_path_cam1")
         self.btn_path_cam1: QPSLPushButton = self.findChild(QPSLPushButton, "btn_path_cam1")
         self.sbox_filename_cam1:QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_filename_cam1")
@@ -467,7 +445,9 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.btn_stop_scan_cam2: QPSLPushButton = self.findChild(QPSLPushButton,"btn_stop_scan_cam2")
         self.btn_scan_continous_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_continous_cam2")
         self.btn_scan_endframe_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_endframe_cam2")
+        self.sbox_scan_endframe_cam2: QPSLSpinBox = self.findChild(QPSLSpinBox,"sbox_scan_endframe_cam2")
         self.btn_scan_custom_cam2: QPSLRadioButton = self.findChild(QPSLRadioButton, "btn_scan_custom_cam2")
+        self.sbox_scan_custom_cam2: QPSLSpinBox = self.findChild(QPSLSpinBox,"sbox_scan_custom_cam2")
         self.line_path_cam2: QPSLLineEdit = self.findChild(QPSLLineEdit, "line_path_cam2")
         self.btn_path_cam2: QPSLPushButton = self.findChild(QPSLPushButton, "btn_path_cam2")        
         self.sbox_filename_cam2:QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_filename_cam2")
@@ -492,6 +472,8 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.scan_radiobuttongroup2.addButton(self.btn_scan_continous_cam2)
         self.scan_radiobuttongroup2.addButton(self.btn_scan_endframe_cam2)
         self.scan_radiobuttongroup2.addButton(self.btn_scan_custom_cam2)
+        self.line_path_cam1.setText("E:/Custom_Control_Software/Test")
+        self.line_path_cam2.setText("E:/Custom_Control_Software/Test")
         for btn in self.btn_after_API_init:
             btn.setDisabled(True)
     
@@ -536,11 +518,11 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         connect_direct(self.btn_start_scan_cam1.sig_clicked,
                        self.on_clicked_scan_cam1)
         connect_queued(self.m_live_worker.sig_report_ndarray_cam1,
-                       self.m_save_worker.save_tiff_file)
+                       self.m_save_worker_cam1.save_tiff_file)
         connect_direct(self.btn_stop_scan_cam1.sig_clicked,
                        self.on_clicked_stop_cam1)
         # connect_queued(self.m_worker_cam1.sig_send_data_to_save,
-        #                self.m_save_worker.save_tiff_file)
+        #                self.m_save_worker_cam1.save_tiff_file)
         # Setting
         connect_direct(self.btn_applyROI_cam1.sig_clicked,
                        self.on_click_setROI_cam1)
@@ -590,7 +572,7 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         connect_direct(self.btn_start_scan_cam2.sig_clicked,
                        self.on_clicked_scan_cam2)
         connect_queued(self.m_live_worker.sig_report_ndarray_cam2,
-                       self.m_save_worker.save_tiff_file)
+                       self.m_save_worker_cam2.save_tiff_file)
         connect_direct(self.btn_stop_scan_cam2.sig_clicked,
                        self.on_clicked_stop_cam2)
         # Setting       
@@ -609,10 +591,14 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         connect_direct(self.btn_path_cam2.clicked,
                        self.choose_path_cam2)
 
+        connect_queued(self.m_live_worker.sig_report_pixmap_difference,
+                       self.refresh_live_view_difference)
+        
         self.m_worker_cam1.start_thread()
         self.m_worker_cam2.start_thread()
         self.m_live_worker.start_thread()
-        self.m_save_worker.start_thread()
+        self.m_save_worker_cam1.start_thread()
+        self.m_save_worker_cam2.start_thread()
 
     '''============================================= CAMERA 1 =============================================''' 
     @QPSLObjectBase.log_decorator()
@@ -703,19 +689,26 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_scan_cam1(self):
-        self.m_save_worker.m_save_flag = True
-        self.m_save_worker.sig_to_set_save_path.emit(self.line_path_cam1.text())
+        self.m_save_worker_cam1.m_save_flag = True
+        if self.btn_scan_continous_cam1.isChecked():
+            endframe = 50000
+        elif self.btn_scan_endframe_cam1.isChecked():
+            endframe = self.sbox_scan_endframe_cam1.value()
+        elif self.btn_scan_custom_cam1.isChecked():
+            endframe = self.sbox_scan_custom_cam1.value()
+            self.m_worker_cam1.m_custom_flag = True
+        self.m_save_worker_cam1.sig_to_set_save_prop.emit(self.line_path_cam1.text(),endframe)
+        self.m_worker_cam1.sig_to_start_scan_cam.emit(endframe)
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_stop_cam1(self):
-        self.m_save_worker.m_save_flag = False
-
+        self.m_worker_cam1.sig_to_stop_scan_cam.emit()
+        self.m_save_worker_cam1.m_save_flag = False
 
     @QPSLObjectBase.log_decorator()
     def choose_path_cam1(self, event):
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder",'./')
         self.line_path_cam1.setText(folder_path)
-        self.m_save_worker.set_save_path(folder_path)
     
     '''============================================= CAMERA 2 =============================================''' 
     @QPSLObjectBase.log_decorator()
@@ -804,17 +797,26 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_scan_cam2(self):
-        self.m_save_worker.sig_to_set_save_path.emit(self.line_path_cam2.text())
+        self.m_save_worker_cam2.m_save_flag = True
+        if self.btn_scan_continous_cam2.isChecked():
+            endframe = 50000
+        elif self.btn_scan_endframe_cam2.isChecked():
+            endframe = self.sbox_scan_endframe_cam2.value()
+        elif self.btn_scan_custom_cam2.isChecked():
+            endframe = self.sbox_scan_custom_cam2.value()
+            self.m_worker_cam2.m_custom_flag = True
+        self.m_save_worker_cam2.sig_to_set_save_prop.emit(self.line_path_cam1.text(),endframe)
+        self.m_worker_cam2.sig_to_start_scan_cam.emit(endframe)
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_stop_cam2(self):
-        self.m_save_worker.m_save_flag = False
+        self.m_worker_cam2.sig_to_stop_scan_cam.emit()
+        self.m_save_worker_cam2.m_save_flag = False
 
     @QPSLObjectBase.log_decorator()
     def choose_path_cam2(self, event):
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder",'./')
         self.line_path_cam2.setText(folder_path)
-        self.m_save_worker.set_save_path(folder_path)  
     
     '''============================================= Global =============================================''' 
     @QPSLObjectBase.log_decorator()    
@@ -837,6 +839,14 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     def add_log_message(self,log_message:str):
         self.m_log_info.append(log_message)
         # self.text_logger.setText(self.m_log_info)
+
+    @QPSLObjectBase.log_decorator()
+    def refresh_live_view_difference(self, cam_image_difference:QPixmap):
+        # cam2_image_show = cam_image_difference.copy(self.m_worker_cam2.m_x0,
+        #                                   self.m_worker_cam2.m_y0,
+        #                                   self.m_worker_cam2.m_width,
+        #                                   self.m_worker_cam2.m_height)
+        self.view_combined.on_show_pixmap(cam_image_difference)
 
     @property    
     def btn_after_API_init(self) -> Iterable[QPSLPushButton]:

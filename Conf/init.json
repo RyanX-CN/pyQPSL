@@ -10,7 +10,7 @@
         "ZaberPluginWorker": true
     },
     "log": {
-        "console_log_level": "INF",
+        "console_log_level": "WARN",
         "detailed_log": false,
         "file_log_level": "ALL"
     },

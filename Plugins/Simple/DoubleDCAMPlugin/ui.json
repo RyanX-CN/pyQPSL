@@ -322,7 +322,7 @@
                                                         "decimals": 1,
                                                         "suffix": " ms",
                                                         "v_size_policy": 4,
-                                                        "value": 100
+                                                        "value": 10.0
                                                     }
                                                 ]
                                             }
@@ -384,7 +384,8 @@
                                                     {
                                                         "ObjectName": "sbox_scan_endframe_cam1",
                                                         "Type": "QPSLSpinBox",
-                                                        "backgroud_color": "#999999"
+                                                        "backgroud_color": "#999999",
+                                                        "value":100
                                                     }
                                                 ]
                                             },
@@ -402,7 +403,8 @@
                                                     {
                                                         "ObjectName": "sbox_scan_custom_cam1",
                                                         "Type": "QPSLSpinBox",
-                                                        "backgroud_color": "#999999"
+                                                        "backgroud_color": "#999999",
+                                                        "value":100
                                                     }
                                                 ]
                                             },
@@ -736,7 +738,7 @@
                                                         "decimals": 1,
                                                         "suffix": " ms",
                                                         "v_size_policy": 4,
-                                                        "value": 100.0
+                                                        "value": 10.0
                                                     }
                                                 ]
                                             }
@@ -798,7 +800,8 @@
                                                     {
                                                         "ObjectName": "sbox_scan_endframe_cam2",
                                                         "Type": "QPSLSpinBox",
-                                                        "backgroud_color": "#999999"
+                                                        "backgroud_color": "#999999",
+                                                        "value":100
                                                     }
                                                 ]
                                             },
@@ -816,7 +819,8 @@
                                                     {
                                                         "ObjectName": "sbox_scan_custom_cam2",
                                                         "Type": "QPSLSpinBox",
-                                                        "backgroud_color": "#999999"
+                                                        "backgroud_color": "#999999",
+                                                        "value":100
                                                     }
                                                 ]
                                             },
