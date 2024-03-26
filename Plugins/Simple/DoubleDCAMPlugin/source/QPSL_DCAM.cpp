@@ -193,7 +193,7 @@ int32 get_single_frame(DCAMController *controller, char *databuf){
         bufframe.iFrame = -1;    //last frame
     }
     DCAMErrChk(dcamwait_start(controller->hwait, &waitstart))
-    DCAMErrChk(dcambuf_lockframe(controller->hdcam, &bufframe))
+    DCAMErrChk(dcambuf_copyframe(controller->hdcam, &bufframe))
     int32 ox = bufframe.left;
     int32 oy = bufframe.top;
     int32 cx = bufframe.width;

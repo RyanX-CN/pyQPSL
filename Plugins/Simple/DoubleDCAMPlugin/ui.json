@@ -880,28 +880,32 @@
                 "Type": "QPSLTabWidget",
                 "backgroud_color": "#ffffff",
                 "titles": [
-                    "Live_1",
-                    "LIve_2",
-                    "LIve_combined"
+                    "View_Separately",
+                    "View_Combined"
                 ],
                 "widgets": [
                     {
-                        "Type": "QPSLDCAMView",
-                        "backgroud_color": "#ffffff",
-                        "ObjectName":"view_cam1"
-
-                    },
-                    {
-                        "Type": "QPSLDCAMView",
-                        "backgroud_color": "#ffffff",
-                        "ObjectName":"view_cam2"                        
-
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#cccccc",
+                        "widgets": [
+                            {
+                                "Type": "QPSLDCAMView",
+                                "backgroud_color": "#ffffff",
+                                "ObjectName":"view_cam1"
+        
+                            },
+                            {
+                                "Type": "QPSLDCAMView",
+                                "backgroud_color": "#ffffff",
+                                "ObjectName":"view_cam2"                        
+        
+                            }
+                        ]
                     },
                     {
                         "Type": "QPSLDCAMView",
                         "backgroud_color": "#999999",
                         "ObjectName":"view_combined"
-
                     }
                 ]
             }
