@@ -887,6 +887,7 @@
                     {
                         "Type": "QPSLHFrameList",
                         "backgroud_color": "#cccccc",
+                        "spacing": 20,
                         "widgets": [
                             {
                                 "Type": "QPSLDCAMView",

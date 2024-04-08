@@ -100,6 +100,7 @@ int32 DLL_EXPORT QPSL_DCAM_setROI(DCAMController *controller, int32 hpos, int32 
     DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_SUBARRAYVPOS,vpos));
     DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_SUBARRAYHSIZE,hsize));
     DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_SUBARRAYVSIZE,vsize));
+    DCAMErrChk(dcamprop_setvalue(controller->hdcam, DCAM_IDPROP_SUBARRAYMODE, DCAMPROP_MODE__ON))
     return 0;
 }
 int32 DLL_EXPORT QPSL_DCAM_setExposureTime(DCAMController *controller, double exposuretime){

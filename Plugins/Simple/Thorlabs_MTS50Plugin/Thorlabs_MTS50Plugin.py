@@ -17,13 +17,13 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1)
 
 # Serial number of each stage
-# SERIAL_NUMBER_X = b"27000001"
-# SERIAL_NUMBER_Y = b"27000002"
-# SERIAL_NUMBER_Z = b"27000003"
+SERIAL_NUMBER_X = b"27000001"
+SERIAL_NUMBER_Y = b"27000002"
+SERIAL_NUMBER_Z = b"27000003"
 
-SERIAL_NUMBER_X = b"27258500"
-SERIAL_NUMBER_Y = b"27258730"
-SERIAL_NUMBER_Z = b"27258489"
+# SERIAL_NUMBER_X = b"27258500"
+# SERIAL_NUMBER_Y = b"27258730"
+# SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -291,35 +291,38 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
     @QPSLObjectBase.log_decorator()
     def on_start_scan(self, max_x:c_double, min_x:c_double, interval_x:c_double,
                          max_y:c_double, min_y:c_double, interval_y:c_double,
-                         max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):
-            self.sig_scan_started.emit()
-            # self.x_stage.moving_state = True
-            self.y_stage.moving_state = True
-            self.z_stage.moving_state = True
-            try:
-                while self.y_pos < max_y.value:
-                    while self.x_pos < max_x.value:
-                        self.z_stage.set_output_mode_byvelocity(12,1,12,1)
-                        self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
-                        self.z_stage.move_absolute(max_z)
-                        self.z_stage.wait_on_ready()
-                        self.z_stage.set_output_mode_byvelocity(0,2,0,2)
-                        self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
-                        self.z_stage.move_absolute(min_z)
-                        # self.z_stage.wait_on_ready()
-                        self.x_stage.move_relative(interval_x)
-                        # self.z_stage.wait_on_ready()
-                        if self.z_stage.moving_state == False:
-                            raise StopIteration
-                        self.z_stage.wait_on_ready()
-                    self.y_stage.move_relative(interval_y)
-                    self.x_stage.move_absolute(min_x)
-                    # self.x_stage.wait_on_ready()
-                    if self.y_stage.moving_state == False:
-                        raise StopIteration
-                    self.y_stage.wait_on_ready()
-            except StopIteration:
-                print("motion stopped")
+                         max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):        
+        self.sig_scan_started.emit()
+        # self.x_stage.moving_state = True
+        self.y_stage.moving_state = True
+        self.z_stage.moving_state = True
+        try:
+            while self.y_pos < max_y.value:
+                while self.x_pos < max_x.value:
+                    QCoreApplication.instance().processEvents()
+                    self.z_stage.set_output_mode_byvelocity(12,1,12,1)
+                    self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
+                    self.z_stage.move_absolute(max_z)
+                    self.z_stage.wait_on_ready()
+                    self.z_stage.set_output_mode_byvelocity(0,2,0,2)
+                    self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
+                    self.z_stage.move_absolute(min_z)
+                    # self.z_stage.wait_on_ready()
+                    self.x_stage.move_relative(interval_x)
+                    # self.z_stage.wait_on_ready()
+                    if self.z_stage.moving_state == False:
+                        break
+                        # raise StopIteration
+                    self.z_stage.wait_on_ready()
+                self.y_stage.move_relative(interval_y)
+                self.x_stage.move_absolute(min_x)
+                # self.x_stage.wait_on_ready()
+                if self.y_stage.moving_state == False:
+                    break
+                    # raise StopIteration
+                self.y_stage.wait_on_ready()
+        except StopIteration:
+            print("motion stopped")
 
     @QPSLObjectBase.log_decorator()
     def on_stop_scan(self):
@@ -472,6 +475,8 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.m_worker.close_devices)
         connect_queued(self.m_worker.sig_device_closed,
                        self.btn_open_all.set_closed)
+        connect_queued(self.m_worker.sig_device_closed,
+                        self.stop_polling)
         connect_direct(self.btn_home_all.sig_clicked,
                        self.m_worker.home_all)
         connect_direct(self.btn_stop_all.sig_clicked,
@@ -592,6 +597,10 @@ class Thorlabs_MTS50PluginUI(QPSLHFrameList,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def start_polling(self):
         self.timer.start(100)
+
+    @QPSLObjectBase.log_decorator()
+    def stop_polling(self):
+        self.timer.stop()
 
     @QPSLObjectBase.log_decorator()
     def refresh_pos(self):

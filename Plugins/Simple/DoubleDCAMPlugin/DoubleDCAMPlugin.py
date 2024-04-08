@@ -31,6 +31,8 @@ class DCAMLiveWorker(QPSLWorker):
         super().__init__()
         self.m_queues = [deque(), deque()]
         self.m_noneed_difference = True
+        self.m_downsample_rate = 6
+        self.m_muti_ratio = [200]*2
         self.m_id_image = [0]*2
         self.m_data_count = [1<<22]*2
         self.m_data_shape = [(2048,2048)]*2
@@ -38,6 +40,14 @@ class DCAMLiveWorker(QPSLWorker):
     def to_delete(self):
         return super().to_delete()
     
+    # @QPSLObjectBase.log_decorator()     
+    # def set_ratio_cam1(self,ratio:int):
+    #     self.m_muti_ratio[0] = ratio
+
+    # @QPSLObjectBase.log_decorator()     
+    # def set_ratio_cam2(self,ratio:int):
+    #     self.m_muti_ratio[1] = ratio
+
     @QPSLObjectBase.log_decorator()     
     def receive_data_from_cam(self, index:int, data_cam:np.uint64):
         data_cam = int(data_cam)    # convert np.uint64 to int for ctypes.cast() 
@@ -51,16 +61,18 @@ class DCAMLiveWorker(QPSLWorker):
         # Emit ndarray data to save as TIF file
         if index == 0:
             self.sig_report_ndarray_cam1.emit(framebuffer_cam)
-            self.add_warning("framebuffer_cam1")
         elif index == 1:
             self.sig_report_ndarray_cam2.emit(framebuffer_cam)
         self.m_id_image[index] +=1
         # Downsample data to show on UI
-        if self.m_id_image[index]%6 == 0:
+        if self.m_id_image[index]%self.m_downsample_rate == 0:
             # max_value = np.max(framebuffer_cam)
             # min_value = np.min(framebuffer_cam)
             # scaled_array = ((framebuffer_cam - min_value) / (max_value - min_value)) * (TARGET_MAX - TARGET_MIN) + TARGET_MIN
-            scaled_array = framebuffer_cam * 200
+            if index == 0:
+                scaled_array = framebuffer_cam * self.m_muti_ratio[0]
+            elif index == 1:
+                scaled_array = framebuffer_cam * self.m_muti_ratio[1]
             framebuffer_cam = np.uint16(scaled_array)
             qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
                 framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16)
@@ -72,7 +84,6 @@ class DCAMLiveWorker(QPSLWorker):
             
             if not self.m_noneed_difference:
                 self.m_queues[index].append(framebuffer_cam)
-            
                 if self.m_queues[1 - index] and len(self.m_queues[index]) == 1:
                     self.calculate_difference()
         
@@ -83,7 +94,8 @@ class DCAMLiveWorker(QPSLWorker):
     def calculate_difference(self):
         image_cam1 = self.m_queues[0].popleft()
         image_cam2 = self.m_queues[1].popleft()
-        image_difference = image_cam1 - image_cam2
+        image_difference = image_cam1 * self.m_muti_ratio[0] - image_cam2 *self.m_muti_ratio[1]
+        image_difference = np.uint16(image_difference)
         qimg_difference = QImage(image_difference.data,image_difference.shape[1], image_difference.shape[0],
                       image_difference.shape[1] * 2, QImage.Format.Format_Grayscale16)
         # print(qimg_cam.width(), qimg_cam.height())
@@ -121,7 +133,7 @@ class DCAMSaveWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()            
     def set_save_prop(self, save_path:str, endframe:int):
-        folder_name = str(datetime.datetime.now().strftime("%Y%m%d_%H%M"))
+        folder_name = str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
         self.save_file_path = "{0}/{1}".format(save_path,folder_name)
         if not os.path.exists(self.save_file_path):
             os.mkdir(self.save_file_path)
@@ -185,6 +197,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
 
     def load_attr(self, index:int):
         super().load_attr()
+        self.is_virtual = True
         self.index = index
         cam_info = [c_void_p(),c_int(index)]
         self.m_cam = DCAMController(*cam_info)
@@ -359,10 +372,12 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self.m_id += 1
         data = np.uint64(data)
         # print(self.m_cam.bufframe.width,self.m_cam.bufframe.height,self.m_cam.bufframe.rowbytes)
-        if self.m_id % 50 == 0:
-            frame_rate = self.m_id / 50
-            self.sig_refresh_frame_rate.emit(frame_rate)
-            self.m_id = 0
+        # if self.m_id % 50 == 0:
+        #     frame_rate = self.m_id / 50
+        #     self.sig_refresh_frame_rate.emit(frame_rate)
+        #     self.m_id = 0
+        if self.m_debug:
+            pass
         self.sig_send_data_to_live.emit(self.index, data)
         self.sig_send_data_to_save.emit(data)
         return 0
@@ -386,6 +401,7 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.m_save_worker_cam1 = DCAMSaveWorker().load_attr(0)
         self.m_save_worker_cam2 = DCAMSaveWorker().load_attr(1)
         self.m_log_info = []
+        self.m_time_queue = [deque(), deque()]
 
     def load_attr(self):
         with open(self.get_json_file(),"rt") as f:
@@ -487,6 +503,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.scan_radiobuttongroup2.addButton(self.btn_scan_custom_cam2)
         self.line_path_cam1.setText("E:/Custom_Control_Software/Test")
         self.line_path_cam2.setText("E:/Custom_Control_Software/Test")
+        self.view_cam1.sbox_ratio_2.hide()
+        self.view_cam2.sbox_ratio_2.hide()
+        self.view_combined.sbox_ratio_1.setPrefix("ratio_1: ")
+        self.view_combined.sbox_ratio_2.setPrefix("ratio_2: ")
         for btn in self.btn_after_API_init:
             btn.setDisabled(True)
     
@@ -528,6 +548,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.on_click_abort_cam1)    
         connect_queued(self.m_worker_cam1.sig_cam_aborted,
                        self.btn_live_cam1.set_closed)
+        connect_queued(self.view_cam1.sbox_ratio_1.sig_value_changed_to,
+                       self.on_change_live_ratio_cam1)
+        connect_queued(self.m_worker_cam1.sig_refresh_frame_rate,
+                       self.refresh_framerate_cam1)
         # Scan/Stop
         connect_direct(self.btn_start_scan_cam1.sig_clicked,
                        self.on_clicked_scan_cam1)
@@ -582,6 +606,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
                        self.on_click_abort_cam2)    
         connect_queued(self.m_worker_cam2.sig_cam_aborted,
                        self.btn_live_cam2.set_closed)
+        connect_direct(self.view_cam2.sbox_ratio_1.sig_value_changed_to,
+                       self.on_change_live_ratio_cam2)
+        connect_queued(self.m_worker_cam2.sig_refresh_frame_rate,
+                       self.refresh_framerate_cam2)
         # Scan/Stop      
         connect_direct(self.btn_start_scan_cam2.sig_clicked,
                        self.on_clicked_scan_cam2)
@@ -605,6 +633,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         connect_direct(self.btn_path_cam2.clicked,
                        self.choose_path_cam2)
 
+        connect_direct(self.view_combined.sbox_ratio_1.sig_value_changed_to,
+                       self.on_change_live_ratio_cam1)
+        connect_direct(self.view_combined.sbox_ratio_2.sig_value_changed_to,
+                       self.on_change_live_ratio_cam2)
         connect_queued(self.m_live_worker.sig_report_pixmap_difference,
                        self.refresh_live_view_difference)
         
@@ -640,6 +672,10 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.m_worker_cam1.sig_to_live_cam.emit()
     
     @QPSLObjectBase.log_decorator()
+    def on_change_live_ratio_cam1(self, ratio:float):
+        self.m_live_worker.m_muti_ratio[0] = ratio
+
+    @QPSLObjectBase.log_decorator()
     def refresh_live_view1(self, cam1_image:QPixmap):
         # cam1_image_show = cam1_image.copy(self.m_worker_cam1.m_x0,
         #                                   self.m_worker_cam1.m_y0,
@@ -673,8 +709,12 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.label_temperature_cam1.setText("Temperature: " + str(self.m_worker_cam1.temp_cam.value))
 
     @QPSLObjectBase.log_decorator()
-    def refresh_framerate_cam1(self,current_framerate:float):
-            self.label_framerate_cam1.setText("Framerate: " + current_framerate)
+    def refresh_framerate_cam1(self,current_frame_time:float):
+            self.m_time_queue[0].append(current_frame_time)
+            if len(self.m_time_queue[0]) >= 5:
+                current_framerate = (self.m_time_queue[0][-1] - self.m_time_queue[0][0]) / len(self.m_time_queue[0])
+                self.m_time_queue[0].popleft()
+                self.label_framerate_cam1.setText("Framerate: " + current_framerate)
     
     @QPSLObjectBase.log_decorator()
     def on_click_setROI_cam1(self):        
@@ -729,6 +769,7 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     '''============================================= CAMERA 2 =============================================''' 
     @QPSLObjectBase.log_decorator()
     def on_click_open_cam2(self):
+        self.m_live_worker.m_noneed_difference = False
         self.m_worker_cam2.sig_to_open_cam.emit()
         sleep_for(1000)
         self.on_set_deviceID_cam2()
@@ -740,6 +781,7 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def on_click_close_cam2(self):
         self.m_worker_cam2.sig_to_close_cam.emit()
+        self.m_live_worker.m_noneed_difference = True
         # self.timer.stop()
         self.label_device_cam2.clear()
         self.label_temperature_cam2.clear()
@@ -749,7 +791,11 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam2(self):
         self.m_worker_cam2.sig_to_live_cam.emit()
-    
+
+    @QPSLObjectBase.log_decorator()
+    def on_change_live_ratio_cam2(self, ratio:float):
+        self.m_live_worker.m_muti_ratio[1] = ratio
+
     @QPSLObjectBase.log_decorator()
     def refresh_live_view2(self, cam2_image:QPixmap):
         # cam2_image_show = cam2_image.copy(self.m_worker_cam2.m_x0,
@@ -784,8 +830,12 @@ class DoubleDCAMPluginUI(QPSLHFrameList,QPSLPluginBase):
         self.label_temperature_cam2.setText("Temperature: " + str(self.m_worker_cam2.temp_cam.value))
 
     @QPSLObjectBase.log_decorator()
-    def refresh_framerate_cam2(self):
-        pass
+    def refresh_framerate_cam2(self,current_frame_time:float):
+            self.m_time_queue[1].append(current_frame_time)
+            if len(self.m_time_queue[1]) >= 5:
+                current_framerate = (self.m_time_queue[1][-1] - self.m_time_queue[1][0]) / len(self.m_time_queue[1])
+                self.m_time_queue[1].popleft()
+                self.label_framerate_cam1.setText("Framerate: " + current_framerate)
     
     @QPSLObjectBase.log_decorator()
     def on_click_setROI_cam2(self):        

@@ -2,11 +2,13 @@ from QPSLClass.Base import *
 from QPSLClass.Base import Dict
 from ..BaseClass import *
 from ..UIClass.QPSLFrameList import QPSLHFrameList, QPSLVFrameList
-from ..UIClass.QPSLLabel import QPSLTrackedScalePixmapLabel
+from ..UIClass.QPSLSpinBox import QPSLSpinBox, QPSLDoubleSpinBox
+from ..UIClass.QPSLLabel import QPSLLabel, QPSLTrackedScalePixmapLabel
 
 
 class QPSLDCAMView(QPSLVFrameList):
-    sig_hovered_pos = pyqtSignal(QPoint)
+    sig_hovered_pos = pyqtSignal(QPointF)
+    sig_report_ratio = pyqtSignal(int)
 
     # def to_json(self):
     #     return super().to_json()
@@ -18,6 +20,7 @@ class QPSLDCAMView(QPSLVFrameList):
     def __init__(self):
         super().__init__()
         self.m_image: np.ndarray = None
+        self.m_pixmap: QPixmap = None
         self.m_mutex = QMutex()
         self.m_tasks = deque()
 
@@ -34,6 +37,7 @@ class QPSLDCAMView(QPSLVFrameList):
         self.m_byte_width = bit_width // 8
         self.m_image_format = image_format
         self.setup_ui()
+        self.set_stretch([10,0])
         self.setup_logic()
         return self
 
@@ -51,22 +55,49 @@ class QPSLDCAMView(QPSLVFrameList):
     
     @QPSLObjectBase.log_decorator()
     def setup_ui(self):
-        # self.add_widget(widget=QPSLVFrameList().load_attr(
-        #     spacing=5, margins=(10,0,0,0)))
-        # self.box_view: QPSLVFrameList = self.get_widget(0).remove_type()
         self.add_widget(widget=QPSLTrackedScalePixmapLabel().load_attr(
             aspect_ratio_mode=Qt.AspectRatioMode.KeepAspectRatio))
-        self.label_image:QPSLTrackedScalePixmapLabel = self.get_widget(
-            0).remove_type()
+        self.add_widget(widget=QPSLHFrameList().load_attr(
+            spacing=5, margins=(0, 0, 0, 0)))
+        self.add_widget(widget=QPSLLabel().load_attr())
+        self.label_image:QPSLTrackedScalePixmapLabel = self.get_widget(0).remove_type()
+        self.frame_image:QPSLHFrameList = self.get_widget(1).remove_type()
+        self.label_info:QPSLLabel = self.get_widget(2).remove_type() 
+        self.frame_image.add_widget(widget=QPSLDoubleSpinBox().load_attr(
+            prefix="ratio: ", value=200))
+        self.frame_image.add_widget(widget=QPSLDoubleSpinBox().load_attr(
+            prefix="ratio: ", value=200))
+        self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
+            prefix="x0: ", value=0))
+        self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
+            prefix="y0: ",value=0))
+        self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
+            prefix="width: ",value=2048))
+        self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
+            prefix="height: ",value=2048))
+        self.sbox_ratio_1:QPSLDoubleSpinBox = self.frame_image.get_widget(0).remove_type()
+        self.sbox_ratio_2:QPSLDoubleSpinBox = self.frame_image.get_widget(1).remove_type()
+        self.sbox_ROI_x0:QPSLSpinBox = self.frame_image.get_widget(2).remove_type()
+        self.sbox_ROI_y0:QPSLSpinBox = self.frame_image.get_widget(3).remove_type()
+        self.sbox_ROI_width:QPSLSpinBox = self.frame_image.get_widget(4).remove_type()
+        self.sbox_ROI_height:QPSLSpinBox = self.frame_image.get_widget(5).remove_type()
 
     @QPSLObjectBase.log_decorator()
     def setup_logic(self):
-        connect_direct(self.label_image.sig_hovered_pos,
-                       self.on_show_hover_position)
+        connect_direct(self.label_image.sig_clicked_pos,
+                       self.on_show_click_position)
         
     @QPSLObjectBase.log_decorator()
-    def on_show_hover_position(self):
-        pass
+    def on_show_click_position(self, pos: QPointF):
+        pixmap_width = self.m_pixmap.width()
+        pixmap_height = self.m_pixmap.height()
+        pixmap_x = int(pos.x() * (pixmap_width / self.width()))
+        pixmap_y = int(pos.y() * (pixmap_height / self.height()))
+        image = self.m_pixmap.toImage()
+        pixel_color = QColor(image.pixel(pixmap_x, pixmap_y))
+        grayscale_value = pixel_color.lightness() / self.sbox_ratio_1.value()
+        self.label_info.setText("pos:({0},{1}), {2}".format(pixmap_x,pixmap_y,grayscale_value))
+        
         
     @QPSLObjectBase.log_decorator()
     def on_show_image(self, img: np.ndarray):
@@ -76,14 +107,16 @@ class QPSLDCAMView(QPSLVFrameList):
         print("b")
         # print(qimg.width(),qimg.height())
         pixmap = QPixmap.fromImage(qimg)
-        print(pixmap.width(),pixmap.height())
         print("c")
         # self.label_image.set_pixmap(pixmap)
         # print("d")
     
     @QPSLObjectBase.log_decorator()
-    def on_show_pixmap(self,pixmap):
+    def on_show_pixmap(self,pixmap:QPixmap):
+        pixmap = pixmap.copy(self.sbox_ROI_x0.value(),self.sbox_ROI_y0.value(),
+                          self.sbox_ROI_width.value(),self.sbox_ROI_height.value())
         self.label_image.set_pixmap(pixmap)
+        self.m_pixmap = pixmap
         
     @QPSLObjectBase.log_decorator()
     def on_show_current_frame(self):
