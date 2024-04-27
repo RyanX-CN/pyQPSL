@@ -1,6 +1,7 @@
 {
     "DoubleDCAMPluginUI":{
-        "Type": "QPSLHFrameList",
+        "Type": "QPSLHSplitter",
+        "v_size_policy":13,
         "margins": "0; 0; 0; 5",
         "spacing": 10,
         "stretch": "0; 6",
@@ -8,6 +9,7 @@
             {
                 "Type": "QPSLVFrameList",
                 "spacing": 5,
+                "h_size_policy":13,
                 "widgets": [
                     {
                         "Type":"QPSLHFrameList",
@@ -395,16 +397,16 @@
                                                 "spacing": 13,
                                                 "widgets": [
                                                     {
-                                                        "ObjectName": "btn_scan_custom_cam1",
+                                                        "ObjectName": "btn_scan_loop_cam1",
                                                         "Type": "QPSLRadioButton",
                                                         "backgroud_color": "#999999",
-                                                        "text": "End Frame(Custom)"
+                                                        "text": "Loop Round"
                                                     },
                                                     {
-                                                        "ObjectName": "sbox_scan_custom_cam1",
+                                                        "ObjectName": "sbox_scan_loop_cam1",
                                                         "Type": "QPSLSpinBox",
                                                         "backgroud_color": "#999999",
-                                                        "value":100
+                                                        "value":10
                                                     }
                                                 ]
                                             },
@@ -412,7 +414,7 @@
                                                 "Type": "QPSLHFrameList",
                                                 "backgroud_color": "#4c4c4c",
                                                 "spacing": 5,
-                                                "stretch": "1; 8; 1; 1; 1",
+                                                "stretch": "1; 8; 1; 1",
                                                 "widgets": [
                                                     {
                                                         "Type": "QPSLLabel",
@@ -429,17 +431,6 @@
                                                         "Type": "QPSLPushButton",
                                                         "m_text": "...",
                                                         "h_size_policy": 13
-                                                    },
-                                                    {
-                                                        "ObjectName":"sbox_filename_cam1",
-                                                        "Type": "QPSLSpinBox",
-                                                        "suffix":".tif",
-                                                        "range":"0; 999"
-                                                    },
-                                                    {
-                                                        "ObjectName":"btn_path_apply_cam1",
-                                                        "Type": "QPSLPushButton",
-                                                        "m_text":"apply"
                                                     }
                                                 ]
                                             }
@@ -811,16 +802,16 @@
                                                 "spacing": 13,
                                                 "widgets": [
                                                     {
-                                                        "ObjectName": "btn_scan_custom_cam2",
+                                                        "ObjectName": "btn_scan_loop_cam2",
                                                         "Type": "QPSLRadioButton",
                                                         "backgroud_color": "#999999",
-                                                        "text": "End Frame(Custom)"
+                                                        "text": "Loop Round"
                                                     },
                                                     {
-                                                        "ObjectName": "sbox_scan_custom_cam2",
+                                                        "ObjectName": "sbox_scan_loop_cam2",
                                                         "Type": "QPSLSpinBox",
                                                         "backgroud_color": "#999999",
-                                                        "value":100
+                                                        "value":10
                                                     }
                                                 ]
                                             },
@@ -828,7 +819,7 @@
                                                 "Type": "QPSLHFrameList",
                                                 "backgroud_color": "#4c4c4c",
                                                 "spacing": 5,
-                                                "stretch": "1; 8; 1; 1; 1",
+                                                "stretch": "1; 8; 1; 1",
                                                 "widgets": [
                                                     {
                                                         "Type": "QPSLLabel",
@@ -845,17 +836,6 @@
                                                         "Type": "QPSLPushButton",
                                                         "m_text": "...",
                                                         "h_size_policy": 13
-                                                    },
-                                                    {
-                                                        "ObjectName":"sbox_filename_cam2",
-                                                        "Type": "QPSLSpinBox",
-                                                        "suffix":".tif",
-                                                        "range":"0; 999"
-                                                    },
-                                                    {
-                                                        "ObjectName":"btn_path_apply_cam2",
-                                                        "Type": "QPSLPushButton",
-                                                        "m_text":"apply"
                                                     }
                                                 ]
                                             }
@@ -879,6 +859,7 @@
             {
                 "Type": "QPSLTabWidget",
                 "backgroud_color": "#ffffff",
+                "h_size_policy":13,
                 "titles": [
                     "View_Separately",
                     "View_Combined"

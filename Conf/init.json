@@ -3,6 +3,7 @@
     "is_virtual": {
         "AGADPWorker": true,
         "DMPluginWorker": true,
+        "DoubleDCAMPluginWorker": true,
         "PIPluginUI": false,
         "PIPluginWorker": true,
         "Thorlabs_MTS50": true,
@@ -10,7 +11,7 @@
         "ZaberPluginWorker": true
     },
     "log": {
-        "console_log_level": "INF",
+        "console_log_level": "WARN",
         "detailed_log": false,
         "file_log_level": "ALL"
     },
@@ -19,7 +20,7 @@
         "single_plugin_module": "Plugins.Simple.DoubleDCAMPlugin",
         "single_plugin_size": "1268; 784"
     },
-    "style_control": "Fusion",
+    "style_control": "windowsvista",
     "themes": "dark_blue.xml",
     "ui": {
         "UI load path": "Plugin/*/ui.json",
@@ -39,13 +40,13 @@
             "OpticalImageDivisorUI": false,
             "OpticalImagesUI": false,
             "PIPluginUI": false,
-            "Thorlabs_MTS50PluginUI": false,
+            "Thorlabs_MTS50PluginUI": true,
             "UIDesigner": true,
             "ZaberPluginUI": false
         }
     },
     "version": {
-        "main_version": 9,
-        "sub_version": 2
+        "main_version": 10,
+        "sub_version": 0
     }
 }

@@ -198,6 +198,10 @@ class QPSLTrackedScalePixmapLabel(QPSLScalePixmapLabel):
             if event.button() == Qt.MouseButton.LeftButton:
                 pos = self.convert_position_to_ratio(pos=event.pos())
                 self.sig_clicked_pos.emit(pos)
+        elif self.m_aspect_ratio_mode == Qt.AspectRatioMode.KeepAspectRatioByExpanding:
+            if event.button() == Qt.MouseButton.LeftButton:
+                pos = self.convert_position_to_ratio(pos=event.pos())
+                self.sig_clicked_pos.emit(pos)
         return super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):

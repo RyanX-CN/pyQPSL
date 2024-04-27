@@ -20,7 +20,8 @@ extern "C" {
     if (failed(controller->err_code =(functionCall)))\
         return deal_err(controller);
 // #define BUFFERSIZE 8388608 //(2048 * 2048 * 16)/8
-#define BUFFERSIZE 33554432 //(4096 * 4096 * 16)/8
+#define BUFFERSIZE 16777216
+// #define BUFFERSIZE 33554432 //(4096 * 4096 * 16)/8
 
 struct DCAMController{
     HDCAM hdcam; //the handle which specifies the target dcam
@@ -108,14 +109,16 @@ int32 DLL_EXPORT QPSL_DCAM_setExposureTime(DCAMController *controller, double ex
     return 0;
 }
 int32 DLL_EXPORT QPSL_DCAM_setInternalTrigger(DCAMController *controller){
-    DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERSOURCE,DCAMPROP_TRIGGERSOURCE__EXTERNAL));
-    return 0;
-}
-int32 DLL_EXPORT QPSL_DCAM_setExternalTrigger(DCAMController *controller){
     DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERSOURCE,DCAMPROP_TRIGGERSOURCE__INTERNAL));
     return 0;
 }
+int32 DLL_EXPORT QPSL_DCAM_setExternalTrigger(DCAMController *controller){
+    DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERSOURCE,DCAMPROP_TRIGGERSOURCE__EXTERNAL));
+    DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERACTIVE,DCAMPROP_TRIGGERACTIVE__EDGE));
+    return 0;
+}
 int32 DLL_EXPORT QPSL_DCAM_setSyncReadout(DCAMController *controller){
+    DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERSOURCE,DCAMPROP_TRIGGERSOURCE__EXTERNAL));
     DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_TRIGGERACTIVE,DCAMPROP_TRIGGERACTIVE__SYNCREADOUT));
     return 0;
 }
@@ -194,7 +197,7 @@ int32 get_single_frame(DCAMController *controller, char *databuf){
         bufframe.iFrame = -1;    //last frame
     }
     DCAMErrChk(dcamwait_start(controller->hwait, &waitstart))
-    DCAMErrChk(dcambuf_copyframe(controller->hdcam, &bufframe))
+    DCAMErrChk(dcambuf_lockframe(controller->hdcam, &bufframe))
     int32 ox = bufframe.left;
     int32 oy = bufframe.top;
     int32 cx = bufframe.width;

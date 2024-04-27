@@ -56,17 +56,21 @@ class QPSLDCAMView(QPSLVFrameList):
     @QPSLObjectBase.log_decorator()
     def setup_ui(self):
         self.add_widget(widget=QPSLTrackedScalePixmapLabel().load_attr(
-            aspect_ratio_mode=Qt.AspectRatioMode.KeepAspectRatio))
+            aspect_ratio_mode=Qt.AspectRatioMode.KeepAspectRatioByExpanding))
         self.add_widget(widget=QPSLHFrameList().load_attr(
             spacing=5, margins=(0, 0, 0, 0)))
         self.add_widget(widget=QPSLLabel().load_attr())
         self.label_image:QPSLTrackedScalePixmapLabel = self.get_widget(0).remove_type()
         self.frame_image:QPSLHFrameList = self.get_widget(1).remove_type()
         self.label_info:QPSLLabel = self.get_widget(2).remove_type() 
+        self.frame_image.add_widget(widget=QPSLLabel().load_attr(
+            text="ratio:")) 
         self.frame_image.add_widget(widget=QPSLDoubleSpinBox().load_attr(
-            prefix="ratio: ", value=200))
+            value=20))
+        self.frame_image.add_widget(widget=QPSLLabel().load_attr(
+            text="ratio:")) 
         self.frame_image.add_widget(widget=QPSLDoubleSpinBox().load_attr(
-            prefix="ratio: ", value=200))
+            value=20))
         self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
             prefix="x0: ", value=0))
         self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
@@ -75,12 +79,14 @@ class QPSLDCAMView(QPSLVFrameList):
             prefix="width: ",value=2048))
         self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
             prefix="height: ",value=2048))
-        self.sbox_ratio_1:QPSLDoubleSpinBox = self.frame_image.get_widget(0).remove_type()
-        self.sbox_ratio_2:QPSLDoubleSpinBox = self.frame_image.get_widget(1).remove_type()
-        self.sbox_ROI_x0:QPSLSpinBox = self.frame_image.get_widget(2).remove_type()
-        self.sbox_ROI_y0:QPSLSpinBox = self.frame_image.get_widget(3).remove_type()
-        self.sbox_ROI_width:QPSLSpinBox = self.frame_image.get_widget(4).remove_type()
-        self.sbox_ROI_height:QPSLSpinBox = self.frame_image.get_widget(5).remove_type()
+        self.label_ratio_1:QPSLLabel = self.frame_image.get_widget(0).remove_type()
+        self.sbox_ratio_1:QPSLDoubleSpinBox = self.frame_image.get_widget(1).remove_type()
+        self.label_ratio_2:QPSLLabel = self.frame_image.get_widget(2).remove_type()
+        self.sbox_ratio_2:QPSLDoubleSpinBox = self.frame_image.get_widget(3).remove_type()
+        self.sbox_ROI_x0:QPSLSpinBox = self.frame_image.get_widget(4).remove_type()
+        self.sbox_ROI_y0:QPSLSpinBox = self.frame_image.get_widget(5).remove_type()
+        self.sbox_ROI_width:QPSLSpinBox = self.frame_image.get_widget(6).remove_type()
+        self.sbox_ROI_height:QPSLSpinBox = self.frame_image.get_widget(7).remove_type()
 
     @QPSLObjectBase.log_decorator()
     def setup_logic(self):
@@ -89,14 +95,19 @@ class QPSLDCAMView(QPSLVFrameList):
         
     @QPSLObjectBase.log_decorator()
     def on_show_click_position(self, pos: QPointF):
+        if self.m_pixmap == None:
+            return
         pixmap_width = self.m_pixmap.width()
         pixmap_height = self.m_pixmap.height()
-        pixmap_x = int(pos.x() * (pixmap_width / self.width()))
-        pixmap_y = int(pos.y() * (pixmap_height / self.height()))
+        qpoint = QPoint(int(pos.x() * (pixmap_width - 1e-10)), int(pos.y() * (pixmap_height - 1e-10)))
+        # pixmap_x = int(pos.x() * (pixmap_width / self.width()))
+        # pixmap_y = int(pos.y() * (pixmap_height / self.height()))
         image = self.m_pixmap.toImage()
-        pixel_color = QColor(image.pixel(pixmap_x, pixmap_y))
-        grayscale_value = pixel_color.lightness() / self.sbox_ratio_1.value()
-        self.label_info.setText("pos:({0},{1}), {2}".format(pixmap_x,pixmap_y,grayscale_value))
+        # image.convertTo(QImage.Format.Format_Grayscale16)
+        pixel_color = QColor(image.pixel(qpoint.x(), qpoint.y()))
+        # grayscale_value = pixel_color.lightness() / self.sbox_ratio_1.value()
+        grayscale_value = pixel_color.lightness() * (1 << 8) / self.sbox_ratio_1.value()
+        self.label_info.setText("pos:({0},{1}), {2}".format(qpoint.x(),qpoint.y(),grayscale_value))
         
         
     @QPSLObjectBase.log_decorator()
@@ -115,6 +126,8 @@ class QPSLDCAMView(QPSLVFrameList):
     def on_show_pixmap(self,pixmap:QPixmap):
         pixmap = pixmap.copy(self.sbox_ROI_x0.value(),self.sbox_ROI_y0.value(),
                           self.sbox_ROI_width.value(),self.sbox_ROI_height.value())
+        # pixmap_scaled = pixmap.scaled(pixmap.size()/4)
+        # self.label_image.set_pixmap(pixmap_scaled)
         self.label_image.set_pixmap(pixmap)
         self.m_pixmap = pixmap
         

@@ -1,7 +1,7 @@
 from QPSLClass.Base import *
 from ctypes import c_byte, c_char
 
-BUFFERSIZE = 33554432
+BUFFERSIZE = 16777216
 DCAMERR_ABORT = -2147483390
 
 class ImageData(Structure):
