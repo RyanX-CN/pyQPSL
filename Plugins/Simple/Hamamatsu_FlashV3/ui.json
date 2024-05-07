@@ -859,6 +859,7 @@
             {
                 "Type": "QPSLTabWidget",
                 "backgroud_color": "#ffffff",
+                "ObjectName":"tab_view",
                 "h_size_policy":13,
                 "titles": [
                     "View_Separately",

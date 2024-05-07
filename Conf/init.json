@@ -17,8 +17,8 @@
     },
     "plugin_mode": {
         "is_single_plugin": false,
-        "single_plugin_module": "Plugins.Simple.DoubleDCAMPlugin",
-        "single_plugin_size": "1268; 784"
+        "single_plugin_module": "Plugins.Simple.Hamamatsu_FlashV3",
+        "single_plugin_size": "1977; 872"
     },
     "style_control": "windowsvista",
     "themes": "dark_blue.xml",

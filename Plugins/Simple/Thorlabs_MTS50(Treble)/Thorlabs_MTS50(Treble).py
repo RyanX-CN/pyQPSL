@@ -343,7 +343,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                 self.z_stage.move_absolute(min_z)
                 self.x_stage.move_relative(interval_x)
                 self.z_stage.wait_on_ready()
-                sleep_for(5000)
+                sleep_for(30000)
             if self.y_stage.move_flag == False:
                 break
             self.y_stage.move_relative(interval_y)

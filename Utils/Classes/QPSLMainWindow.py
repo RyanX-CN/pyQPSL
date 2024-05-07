@@ -63,7 +63,7 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
                                    value="1000; 500"))
             self.resize(*single_plugin_size)
             self.setWindowTitle(single_plugin_module.split('.')[-1])
-            self.menuBar().hide()
+            # self.menuBar().hide()
         else:
             self.resize(1000, 500)
             self.setWindowTitle("QPSL-pyQt-{0}.{1}".format(
