@@ -20,7 +20,7 @@
         "single_plugin_module": "Plugins.Simple.Hamamatsu_FlashV3",
         "single_plugin_size": "1977; 872"
     },
-    "style_control": "windowsvista",
+    "style_control": "Fusion",
     "themes": "dark_blue.xml",
     "ui": {
         "UI load path": "Plugin/*/ui.json",

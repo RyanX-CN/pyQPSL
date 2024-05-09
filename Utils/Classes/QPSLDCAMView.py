@@ -80,8 +80,10 @@ class QPSLDCAMView(QPSLVFrameList):
         self.frame_image.add_widget(widget=QPSLSpinBox().load_attr(
             prefix="height: ",value=2048))
         self.label_ratio_1:QPSLLabel = self.frame_image.get_widget(0).remove_type()
+        self.label_ratio_1.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.sbox_ratio_1:QPSLDoubleSpinBox = self.frame_image.get_widget(1).remove_type()
         self.label_ratio_2:QPSLLabel = self.frame_image.get_widget(2).remove_type()
+        self.label_ratio_2.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.sbox_ratio_2:QPSLDoubleSpinBox = self.frame_image.get_widget(3).remove_type()
         self.sbox_ROI_x0:QPSLSpinBox = self.frame_image.get_widget(4).remove_type()
         self.sbox_ROI_y0:QPSLSpinBox = self.frame_image.get_widget(5).remove_type()
