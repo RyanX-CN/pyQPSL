@@ -1,7 +1,8 @@
 from Tool import *
 from ctypes import *
 from PyQt5 import QtCore
-from PyQt5.QtGui import QIcon, QTextCursor
+from PyQt5.QtGui import QIcon, QTextCursor, QTextCharFormat, QColor 
+from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
 
@@ -17,14 +18,14 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1.0)
 
 # Serial number of each stage (Simulator)
-# SERIAL_NUMBER_X = b"27000001"
-# SERIAL_NUMBER_Y = b"27000002"
-# SERIAL_NUMBER_Z = b"27000003"
+SERIAL_NUMBER_X = b"27000001"
+SERIAL_NUMBER_Y = b"27000002"
+SERIAL_NUMBER_Z = b"27000003"
 
 # Serial number of each stage (True)
-SERIAL_NUMBER_X = b"27258500"
-SERIAL_NUMBER_Y = b"27258730"
-SERIAL_NUMBER_Z = b"27258489"
+# SERIAL_NUMBER_X = b"27258500"
+# SERIAL_NUMBER_Y = b"27258730"
+# SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -35,6 +36,7 @@ class Thorlabs_MTS50Base(QPSLWorker):
     
     _lib = load_dll("Thorlabs.MotionControl.KCube.DCServo.dll")
     move_flag = bool
+    sig_send_message = pyqtSignal(str,int)
 
     def __init__(self,serial_number:str):
         super().__init__()
@@ -49,7 +51,7 @@ class Thorlabs_MTS50Base(QPSLWorker):
         self._lib.CC_SetMotorParamsExt(self.m_serial_number, STEPS_PER_REV, GEARBOX_RATIO, PITCH)
         self._lib.CC_StartPolling(self.m_serial_number,c_int(200))
         self.m_message = "Device %s Opened" %(self.m_serial_number.value)
-        self.add_info("Device %s Opened" %(self.m_serial_number.value))
+        self.sig_send_message.emit(self.m_message,1)
         # trigger1Mode  = c_int()
         # trigger1Polarity = c_int()
         # self._lib.CC_GetTriggerConfigParams(self.m_serial_number,byref(trigger1Mode),byref(trigger1Polarity))
@@ -59,13 +61,14 @@ class Thorlabs_MTS50Base(QPSLWorker):
         self._lib.CC_StopPolling(self.m_serial_number)
         self._lib.CC_Close(self.m_serial_number)
         self.m_message = "Device %s Closed" % (self.m_serial_number.value)
-        self.add_info("Device %s Closed" % (self.m_serial_number.value))
+        self.sig_send_message.emit(self.m_message,1)
         # self._lib.TLI_UninitializeSimulations() #Better not use this line when using more than one stage
 
     @QPSLObjectBase.log_decorator()
     def move_home(self):
         self._lib.CC_Home(self.m_serial_number)
-        self.m_message = "Device %s is Homed" % (self.m_serial_number.value)
+        self.m_message = "Device %s is Homing" % (self.m_serial_number.value)
+        self.sig_send_message.emit(self.m_message,2)
 
     @QPSLObjectBase.log_decorator()
     def move_absolute(self, position_real: c_double):
@@ -183,13 +186,13 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
     sig_init_scan, sig_to_init_scan = pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double)
     sig_start_scan, sig_to_start_scan, sig_scan_started = pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal()
     sig_stop_scan, sig_to_stop_scan, sig_scan_stopped = pyqtSignal(), pyqtSignal(), pyqtSignal()
+    sig_send_message = pyqtSignal(str,int)
 
     def __init__(self):
         super().__init__()
         self.x_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_X)
         self.y_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_Y)
         self.z_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_Z)
-        self.m_log = []
         self.setup_logic()
 
     def to_delete(self):
@@ -233,10 +236,6 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.x_stage.open_device()
         self.y_stage.open_device()
         self.z_stage.open_device()
-        self.m_log.clear()
-        self.m_log.append(self.x_stage.m_message)
-        self.m_log.append(self.y_stage.m_message)
-        self.m_log.append(self.z_stage.m_message)
         self.sig_device_opened.emit()
 
     @QPSLObjectBase.log_decorator()
@@ -244,10 +243,6 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.x_stage.close_device()
         self.y_stage.close_device()
         self.z_stage.close_device()
-        self.m_log.clear()
-        self.m_log.append(self.x_stage.m_message)
-        self.m_log.append(self.y_stage.m_message)
-        self.m_log.append(self.z_stage.m_message)
         self.sig_device_closed.emit()
 
     @QPSLObjectBase.log_decorator()
@@ -317,14 +312,15 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.x_stage.move_absolute(min_x)
         self.y_stage.move_absolute(min_y)
         self.z_stage.move_absolute(min_z)
+        self.sig_send_message.emit("Scan initializing", 1)
 
     @QPSLObjectBase.log_decorator()
     def on_start_scan(self, max_x:c_double, min_x:c_double, interval_x:c_double,
                          max_y:c_double, min_y:c_double, interval_y:c_double,
                          max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):        
         self.sig_scan_started.emit()
-        self.m_log.clear()
-        self.m_log.append("Scanning")
+        self.sig_send_message.emit("Scan START",2)
+
         self.x_stage.move_flag = True
         self.y_stage.move_flag = True
         self.z_stage.move_flag = True
@@ -351,8 +347,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
             self.y_stage.wait_on_ready()
             self.x_stage.wait_on_ready()
         self.sig_scan_stopped.emit()
-        self.m_log.clear()
-        self.m_log.append("Scan Stopped")
+        self.sig_send_message.emit("Scan STOPPED", 3)
 
     @QPSLObjectBase.log_decorator()
     def on_stop_scan(self):
@@ -492,22 +487,25 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.m_worker.load_attr()
         self.timer = QTimer(self)
         # self.plot_init()
-
+        connect_queued(self.m_worker.sig_send_message,
+                       self.add_log_message)
+        connect_queued(self.m_worker.x_stage.sig_send_message,
+                       self.add_log_message)
+        connect_queued(self.m_worker.y_stage.sig_send_message,
+                       self.add_log_message)
+        connect_queued(self.m_worker.z_stage.sig_send_message,
+                       self.add_log_message)
         # connect devices
         connect_direct(self.btn_open_all.sig_open,
                        self.m_worker.open_devices)
         connect_queued(self.m_worker.sig_device_opened,
                        self.btn_open_all.set_opened)
         connect_queued(self.m_worker.sig_device_opened,
-                       self.add_log_message)
-        connect_queued(self.m_worker.sig_device_opened,
                         self.start_polling)
         connect_direct(self.btn_open_all.sig_close,
                        self.m_worker.close_devices)
         connect_queued(self.m_worker.sig_device_closed,
                        self.btn_open_all.set_closed)
-        connect_queued(self.m_worker.sig_device_closed,
-                       self.add_log_message)
         connect_queued(self.m_worker.sig_device_closed,
                         self.stop_polling)
         connect_direct(self.btn_home_all.sig_clicked,
@@ -584,14 +582,10 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
                        self.start_scan)
         connect_queued(self.m_worker.sig_scan_started,
                        self.btn_start_scan.set_opened)
-        connect_queued(self.m_worker.sig_scan_started,
-                       self.add_log_message)
         connect_direct(self.btn_start_scan.sig_close,
                        self.m_worker.on_stop_scan)
         connect_queued(self.m_worker.sig_scan_stopped,
                        self.btn_start_scan.set_closed)
-        connect_queued(self.m_worker.sig_scan_stopped,
-                       self.add_log_message)
         
         #Utils
         connect_direct(self.sbox_exposure_time.sig_value_changed,
@@ -641,10 +635,19 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.btn_start_scan.setEnabled(False)
 
     @QPSLObjectBase.log_decorator()
-    def add_log_message(self):
-        for str in self.m_worker.m_log:
-            self.text_logger.append(str)
+    def add_log_message(self,log_message:str,level:int):
+        charformat = QTextCharFormat()
+        if level == 0:
+            charformat.setForeground(QColor("black"))
+        elif level ==1:
+            charformat.setForeground(QColor("green"))
+        elif level ==2:
+            charformat.setForeground(QColor("blue"))
+        elif level ==3:
+            charformat.setForeground(QColor("red"))
         self.text_logger.moveCursor(QTextCursor.End)
+        cursor = self.text_logger.textCursor()
+        cursor.insertText("{0}\t{1}\n".format(dt.now().time().replace(microsecond=0),log_message), charformat)
 
     @QPSLObjectBase.log_decorator()
     def on_move_absolute_x(self):

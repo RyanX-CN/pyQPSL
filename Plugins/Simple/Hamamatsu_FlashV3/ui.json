@@ -851,7 +851,7 @@
                         "widgets": [
                             {
                                 "ObjectName": "text_logger",
-                                "font": "Consolas; 10; 50; False",
+                                "font": "Consolas; 12; 50; False",
                                 "Type": "QPSLTextEdit"
                             }
                         ]

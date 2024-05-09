@@ -72,7 +72,7 @@
                                                         "Type": "QPSLLabel",
                                                         "backgroud_color": "#666666",
                                                         "h_size_policy": 3,
-                                                        "text": "Current position(mm): 0.0000",
+                                                        "text": "Current position(mm): 45.7900",
                                                         "v_size_policy": 4
                                                     }
                                                 ]
@@ -152,7 +152,7 @@
                                                         "Type": "QPSLLabel",
                                                         "backgroud_color": "#999999",
                                                         "h_size_policy": 3,
-                                                        "text": "Current position(mm): 0.0000",
+                                                        "text": "Current position(mm): 26.7700",
                                                         "v_size_policy": 4
                                                     }
                                                 ]
@@ -232,7 +232,7 @@
                                                         "Type": "QPSLLabel",
                                                         "backgroud_color": "#666666",
                                                         "h_size_policy": 3,
-                                                        "text": "Current position(mm): 0.0000",
+                                                        "text": "Current position(mm): 24.5000",
                                                         "v_size_policy": 4
                                                     }
                                                 ]
@@ -407,7 +407,7 @@
                                                         "backgroud_color": "#666666",
                                                         "range": "-0.5; 50.5",
                                                         "v_size_policy": 4,
-                                                        "value": 43.0
+                                                        "value": 48.0
                                                     }
                                                 ]
                                             }
@@ -521,7 +521,7 @@
                                                         "backgroud_color": "#666666",
                                                         "range": "-0.5; 50.5",
                                                         "v_size_policy": 4,
-                                                        "value": 24.0
+                                                        "value": 30.0
                                                     }
                                                 ]
                                             }
@@ -702,7 +702,8 @@
             {
                 "ObjectName": "text_logger",
                 "Type": "QPSLTextEdit",
-                "backgroud_color": "#b2b2b2"
+                "backgroud_color": "#000000",
+                "font": "Consolas; 12; 50; False"
             }
         ]
     }

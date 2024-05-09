@@ -2,7 +2,7 @@ from Tool import *
 from ctypes import *
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QElapsedTimer
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor 
 from datetime import datetime as dt
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
@@ -187,7 +187,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
     ), pyqtSignal(), pyqtSignal()
     sig_send_data_to_live = pyqtSignal(int, np.uint64)
     sig_refresh_frame_rate = pyqtSignal(float)
-    sig_send_message = pyqtSignal(str)
+    sig_send_message = pyqtSignal(str,int)
 
     def __init__(self):
         super().__init__()
@@ -1001,18 +1001,18 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def add_log_message(self,log_message:str,level:int):
-        self.text_logger.setFontFamily("Consolas")
-        self.text_logger.setFontPointSize(12)
+        charformat = QTextCharFormat()
         if level == 0:
-            self.text_logger.setStyleSheet("color: black;")
+            charformat.setForeground(QColor("black"))
         elif level ==1:
-            self.text_logger.setStyleSheet("color: green;")
+            charformat.setForeground(QColor("green"))
         elif level ==2:
-            self.text_logger.setStyleSheet("color: yellow;")
+            charformat.setForeground(QColor("blue"))
         elif level ==3:
-            self.text_logger.setStyleSheet("color: red;")
+            charformat.setForeground(QColor("red"))
         self.text_logger.moveCursor(QTextCursor.End)
-        self.text_logger.append(log_message)
+        cursor = self.text_logger.textCursor()
+        cursor.insertText(log_message+"\n",charformat)
 
     @QPSLObjectBase.log_decorator()
     def refresh_live_view_difference(self, cam_image_difference:QPixmap):
