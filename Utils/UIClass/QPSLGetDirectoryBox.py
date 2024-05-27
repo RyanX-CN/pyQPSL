@@ -28,7 +28,7 @@ class QPSLGetDirectoryBox(QPSLHFrameList):
         super().__init__()
         self.m_key_text = self.default_key_text()
         self.m_path = self.default_path()
-
+        
     def load_attr(self,
                   key_text: Optional[str] = None,
                   path: Optional[str] = None,

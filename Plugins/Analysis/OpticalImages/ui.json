@@ -228,6 +228,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Sample Input Path:"
                                             },
                                             {
@@ -236,8 +237,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -396,6 +398,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Recon Input Path:"
                                             },
                                             {
@@ -404,8 +407,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -420,6 +424,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Recon Save Path:"
                                             },
                                             {
@@ -428,8 +433,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -486,6 +492,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Sample Input Path:"
                                             },
                                             {
@@ -494,8 +501,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -562,6 +570,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Division Input Path:"
                                             },
                                             {
@@ -570,8 +579,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     }
@@ -645,6 +655,7 @@
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Flatten Input Path:"
                                             },
                                             {
@@ -653,8 +664,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -670,6 +682,7 @@
                                             {
                                                 "ObjectName": "box_flattern_get_save_path",
                                                 "Type": "QPSLLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "text": "Flatten Save Path:"
                                             },
                                             {
@@ -678,8 +691,9 @@
                                             },
                                             {
                                                 "Type": "QPSLIconLabel",
+                                                "backgroud_color": "#cdcdcd",
                                                 "dynamic": false,
-                                                "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                                "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                             }
                                         ]
                                     },
@@ -751,6 +765,7 @@
                                 "widgets": [
                                     {
                                         "Type": "QPSLLabel",
+                                        "backgroud_color": "#cdcdcd",
                                         "text": "Whole Reconstruction Path:"
                                     },
                                     {
@@ -759,8 +774,9 @@
                                     },
                                     {
                                         "Type": "QPSLIconLabel",
+                                        "backgroud_color": "#cdcdcd",
                                         "dynamic": false,
-                                        "path": "D:/softwaredata/vscode_file/pyQPSL/Resources/unchecked.png"
+                                        "path": "C:/Users/WeLab/Desktop/pyQPSL_9.2/Resources/unchecked.png"
                                     }
                                 ]
                             },

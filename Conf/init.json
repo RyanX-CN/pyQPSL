@@ -21,7 +21,7 @@
         "single_plugin_size": "1977; 872"
     },
     "style_control": "Fusion",
-    "themes": "dark_blue.xml",
+    "themes": "None",
     "ui": {
         "UI load path": "Plugin/*/ui.json",
         "autosave": {
@@ -32,14 +32,14 @@
             "DMPluginUI": false,
             "DemoPluginUI": false,
             "DoubleDCAMPluginUI": false,
-            "HongruPluginUI": true,
             "NIDAQmxAIPluginUI": false,
             "NIDAQmxAOPluginUI": false,
             "NIDAQmxDOPluginUI": false,
             "NIDAQmxOutput_ThorlabsMTS50_PluginUI": false,
             "OpticalImageDivisorUI": false,
-            "OpticalImagesUI": false,
+            "OpticalImagesUI": true,
             "PIPluginUI": false,
+            "QPSLInitializationWindow": false,
             "Thorlabs_MTS50PluginUI": true,
             "UIDesigner": true,
             "ZaberPluginUI": false

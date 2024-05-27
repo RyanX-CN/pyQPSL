@@ -17,6 +17,7 @@ class QPSLImage3dBase(QPSLVFrameList):
         self.m_mutex = QMutex()
         self.m_tasks = deque()
 
+    @QPSLObjectBase.log_decorator()
     def load_attr(self,
                   bit_width: Optional[int] = None,
                   image_format: Optional[QImage.Format] = None,
