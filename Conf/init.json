@@ -28,6 +28,7 @@
             "AGADPLoginBox": false,
             "AGADPUI": false,
             "CompilePluginUI": false,
+            "CompressedSensingSystemUI": false,
             "CppPluginUI": false,
             "DMPluginUI": false,
             "DemoPluginUI": false,

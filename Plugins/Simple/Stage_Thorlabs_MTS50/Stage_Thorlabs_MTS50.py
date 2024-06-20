@@ -347,6 +347,8 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                     # sleep_for(30000)
                 if self.y_stage.move_flag == False:
                     break
+                while shared_manager.Value() != 1:
+                    print("wait for save ready")
                 self.y_stage.move_relative(interval_y)
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
