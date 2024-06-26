@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon, QTextCursor, QTextCharFormat, QColor
 from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
+from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shared_state,shared_camsave_state,shared_stagemove_state
 
 '''
     This Plugin is for Thorlabs MTS50 Stage with KDC101 motor
@@ -18,14 +19,14 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1.0)
 
 # Serial number of each stage (Simulator)
-SERIAL_NUMBER_X = b"27000001"
-SERIAL_NUMBER_Y = b"27000002"
-SERIAL_NUMBER_Z = b"27000003"
+# SERIAL_NUMBER_X = b"27000001"
+# SERIAL_NUMBER_Y = b"27000002"
+# SERIAL_NUMBER_Z = b"27000003"
 
 # Serial number of each stage (True)
-# SERIAL_NUMBER_X = b"27258500"
-# SERIAL_NUMBER_Y = b"27258730"
-# SERIAL_NUMBER_Z = b"27258489"
+SERIAL_NUMBER_X = b"27258500"
+SERIAL_NUMBER_Y = b"27258730"
+SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -130,9 +131,9 @@ class Thorlabs_MTS50Base(QPSLWorker):
     def wait_on_ready(self) -> bool:
         messageType = c_ushort()
         messageID = c_ushort()
-        messageData = c_ulong()
-        self._lib.CC_ClearMessageQueue(self.m_serial_number)
-        if self.move_flag == True:
+        messageData = c_ulong() 
+        self._lib.CC_ClearMessageQueue(self.m_serial_number)   
+        if self.move_flag == True:            
             while messageType.value != 2 or messageID.value != 1:
                 self._lib.CC_WaitForMessage(
                     self.m_serial_number, byref(messageType), byref(messageID), byref(messageData))
@@ -183,8 +184,12 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
     sig_move_absolute_x, sig_to_move_absolute_x = pyqtSignal(c_double), pyqtSignal(c_double)
     sig_move_absolute_y, sig_to_move_absolute_y = pyqtSignal(c_double), pyqtSignal(c_double)
     sig_move_absolute_z, sig_to_move_absolute_z = pyqtSignal(c_double), pyqtSignal(c_double)
-    sig_init_scan, sig_to_init_scan = pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double)
-    sig_start_scan, sig_to_start_scan, sig_scan_started = pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal()
+    sig_init_scan, sig_to_init_scan = pyqtSignal(
+        c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(
+            c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double)
+    sig_start_scan, sig_to_start_scan, sig_scan_started = pyqtSignal(
+        str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double), pyqtSignal(
+            str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double), pyqtSignal()
     sig_stop_scan, sig_to_stop_scan, sig_scan_stopped = pyqtSignal(), pyqtSignal(), pyqtSignal()
     sig_send_message = pyqtSignal(str,int)
 
@@ -233,6 +238,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def open_devices(self):
+        print(shared_state.value)
         self.x_stage.open_device()
         self.y_stage.open_device()
         self.z_stage.open_device()
@@ -315,37 +321,79 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.sig_send_message.emit("Scan initializing", 1)
 
     @QPSLObjectBase.log_decorator()
-    def on_start_scan(self, max_x:c_double, min_x:c_double, interval_x:c_double,
-                         max_y:c_double, min_y:c_double, interval_y:c_double,
-                         max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):        
+    def on_start_scan(self, scan_mode:str,
+                      max_x:c_double, min_x:c_double, interval_x:c_double, loop_x:int,
+                      max_y:c_double, min_y:c_double, interval_y:c_double, loop_y:int,
+                      max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):        
         self.sig_scan_started.emit()
-        self.sig_send_message.emit("Scan START",2)
-
+        self.sig_send_message.emit("Scan START %s"%scan_mode,2)
         self.x_stage.move_flag = True
         self.y_stage.move_flag = True
         self.z_stage.move_flag = True
-        while self.y_pos < max_y.value - 1e-3:
-            QCoreApplication.instance().processEvents()
-            while self.x_pos < max_x.value - 1e-3:
+        shared_camsave_state.value = 0
+        if scan_mode == "Loop Mode":
+            for i in range(loop_y):
                 QCoreApplication.instance().processEvents()
-                if self.z_stage.move_flag == False:
+                for i in range(loop_x):
+                    QCoreApplication.instance().processEvents()
+                    if self.z_stage.move_flag == False:
+                        break
+                    self.z_stage.set_output_mode_byvelocity(12, 1, 12, 1)
+                    self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
+                    self.z_stage.move_absolute(max_z)
+                    self.z_stage.wait_on_ready()
+                    self.z_stage.set_output_mode_byvelocity(0, 2, 0, 2)
+                    self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
+                    self.z_stage.move_absolute(min_z)
+                    self.x_stage.move_relative(interval_x)
+                    self.z_stage.wait_on_ready()
+                    # sleep_for(30000)
+                    shared_stagemove_state.value = 1
+                    print("stage",shared_stagemove_state.value,shared_camsave_state.value)
+                    while shared_state.value == 1 and shared_camsave_state.value == 0:
+                        print("stage",shared_stagemove_state.value,shared_camsave_state.value)
+                    if shared_state.value == 1:
+                        self.sig_send_message.emit("One Round Save Done",2)
+                        shared_camsave_state.value = 0
+                        shared_stagemove_state.value = 0
+                        print("stage set",shared_stagemove_state.value,shared_camsave_state.value)
+                if self.y_stage.move_flag == False:
                     break
-                self.z_stage.set_output_mode_byvelocity(12,1,12,1)
-                self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
-                self.z_stage.move_absolute(max_z)
-                self.z_stage.wait_on_ready()
-                self.z_stage.set_output_mode_byvelocity(0,2,0,2)
-                self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
-                self.z_stage.move_absolute(min_z)
-                self.x_stage.move_relative(interval_x)
-                self.z_stage.wait_on_ready()
-                sleep_for(30000)
-            if self.y_stage.move_flag == False:
-                break
-            self.y_stage.move_relative(interval_y)
-            self.x_stage.move_absolute(min_x)
-            self.y_stage.wait_on_ready()
-            self.x_stage.wait_on_ready()
+                self.y_stage.move_relative(interval_y)
+                self.x_stage.move_absolute(min_x)
+                self.y_stage.wait_on_ready()
+                self.x_stage.wait_on_ready()
+        
+        elif scan_mode == "Distance Mode":    
+            while self.y_pos < max_y.value - 1e-3:
+                QCoreApplication.instance().processEvents()
+                while self.x_pos < max_x.value - 1e-3:
+                    QCoreApplication.instance().processEvents()
+                    if self.z_stage.move_flag == False:
+                        break
+                    self.z_stage.set_output_mode_byvelocity(12,1,12,1)
+                    self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
+                    self.z_stage.move_absolute(max_z)
+                    self.z_stage.wait_on_ready()
+                    self.z_stage.set_output_mode_byvelocity(0,2,0,2)
+                    self.z_stage.set_accleration_and_velocity(c_double(1.5), c_double(2.0))
+                    self.z_stage.move_absolute(min_z)
+                    self.x_stage.move_relative(interval_x)
+                    self.z_stage.wait_on_ready()
+                    # sleep_for(30000)
+                    shared_stagemove_state.value = 1
+                    while shared_camsave_state.value == 0 and shared_state.value == 1:
+                        return
+                    if shared_state.value == 1:
+                        self.sig_send_message.emit("One Round Save Done",2)
+                    shared_camsave_state.value = 0
+                    shared_stagemove_state.value = 0
+                if self.y_stage.move_flag == False:
+                    break
+                self.y_stage.move_relative(interval_y)
+                self.x_stage.move_absolute(min_x)
+                self.y_stage.wait_on_ready()
+                self.x_stage.wait_on_ready()
         self.sig_scan_stopped.emit()
         self.sig_send_message.emit("Scan STOPPED", 3)
 
@@ -389,97 +437,55 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         return super().to_delete()
     
     def get_named_widgets(self):
-        #initialize
-        self.text_logger: QPSLTextEdit = self.findChild(QPSLTextEdit,
-                                                         "text_logger")
-        self.btn_open_all: QPSLToggleButton = self.findChild(QPSLToggleButton,
-                                                             "btn_open_all")
-        self.btn_home_all: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                           "btn_home_all")
-        self.btn_stop_all: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                           "btn_stop_all")
-        #x axis
-        self.label_pos_x: QPSLLabel = self.findChild(QPSLLabel,
-                                                    "label_pos_x")
-        self.btn_minus_x: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_minus_x")
-        self.btn_plus_x: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_plus_x")
-        self.btn_stop_x: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_stop_x")
-        self.sbox_vel_x: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_vel_x")
-        self.sbox_acc_x: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_acc_x")
-        self.sbox_move_x: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                             "sbox_move_x")
-        self.btn_move_x: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                         "btn_move_x")  
-        self.sbox_interval_x:QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                                "sbox_interval_x")
-        #y axis
-        self.label_pos_y: QPSLLabel = self.findChild(QPSLLabel,
-                                                    "label_pos_y")
-        self.btn_minus_y: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_minus_y")
-        self.btn_plus_y: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_plus_y")
-        self.btn_stop_y: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_stop_y")
-        self.sbox_vel_y: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_vel_y")
-        self.sbox_acc_y: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_acc_y")
-        self.sbox_move_y: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                             "sbox_move_y")
-        self.btn_move_y: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                         "btn_move_y")
-        self.sbox_interval_y:QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                                "sbox_interval_y")
-        #z axis
-        self.label_pos_z: QPSLLabel = self.findChild(QPSLLabel,
-                                                    "label_pos_z")
-        self.btn_minus_z: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_minus_z")
-        self.btn_plus_z: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_plus_z")
-        self.btn_stop_z: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                          "btn_stop_z")
-        self.sbox_vel_z: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_vel_z")
-        self.sbox_acc_z: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_acc_z")
-        self.sbox_move_z: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                             "sbox_move_z")
-        self.btn_move_z: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                         "btn_move_z")
-        #auto scan
-        self.sbox_min_x: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_min_x")
-        self.sbox_max_x: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_max_x")
-        self.sbox_min_y: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_min_y")
-        self.sbox_max_y: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_max_y")
-        self.sbox_min_z: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_min_z")
-        self.sbox_max_z: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                            "sbox_max_z")
-        self.btn_init_scan: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                            "btn_init_scan")
-        self.btn_start_scan: QPSLToggleButton = self.findChild(QPSLToggleButton,
-                                                             "btn_start_scan")
-        self.btn_mark_point: QPSLPushButton = self.findChild(QPSLPushButton,
-                                                             "btn_mark_point")
-        # self.position_3d: QPSLOpenGLWidget = self.findChild(QPSLOpenGLWidget,
-        #                                                         "plot_path_tracing")
-        #utils
-        self.sbox_exposure_time: QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox,
-                                                                "sbox_exposure_time")
-        self.text_caputuring_number: QPSLLabel = self.findChild(QPSLLabel,
-                                                                "text_capturing_number")
-
+        self.btn_open_all : QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_open_all")
+        self.btn_home_all : QPSLPushButton = self.findChild(QPSLPushButton, "btn_home_all")
+        self.btn_stop_all : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_all")
+        self.label_pos_x : QPSLLabel = self.findChild(QPSLLabel, "label_pos_x")
+        self.btn_stop_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_x")
+        self.btn_minus_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_x")
+        self.btn_plus_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_plus_x")
+        self.sbox_move_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_move_x")
+        self.btn_move_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_move_x")
+        self.label_pos_y : QPSLLabel = self.findChild(QPSLLabel, "label_pos_y")
+        self.btn_stop_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_y")
+        self.btn_minus_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_y")
+        self.btn_plus_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_plus_y")
+        self.sbox_move_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_move_y")
+        self.btn_move_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_move_y")
+        self.label_pos_z : QPSLLabel = self.findChild(QPSLLabel, "label_pos_z")
+        self.btn_stop_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_z")
+        self.btn_minus_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_z")
+        self.btn_plus_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_plus_z")
+        self.sbox_move_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_move_z")
+        self.btn_move_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_move_z")
+        self.cbox_scan_mode : QPSLComboBox = self.findChild(QPSLComboBox, "cbox_scan_mode")
+        self.sbox_interval_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_interval_x")
+        self.sbox_vel_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_vel_x")
+        self.sbox_acc_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_acc_x")
+        self.sbox_min_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_min_x")
+        self.frame_max_x : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_max_x")
+        self.sbox_max_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_max_x")
+        self.frame_loop_x : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_loop_x")
+        self.sbox_loop_x : QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_loop_x")
+        self.sbox_interval_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_interval_y")
+        self.sbox_vel_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_vel_y")
+        self.sbox_acc_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_acc_y")
+        self.sbox_min_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_min_y")
+        self.frame_max_y : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_max_y")
+        self.sbox_max_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_max_y")
+        self.frame_loop_y : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_loop_y")
+        self.sbox_loop_y : QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_loop_y")
+        self.sbox_vel_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_vel_z")
+        self.sbox_acc_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_acc_z")
+        self.sbox_min_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_min_z")
+        self.sbox_max_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_max_z")
+        self.btn_init_scan : QPSLPushButton = self.findChild(QPSLPushButton, "btn_init_scan")
+        self.btn_start_scan : QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_start_scan")
+        self.btn_mark_point : QPSLPushButton = self.findChild(QPSLPushButton, "btn_mark_point")
+        self.sbox_exposure_time : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_exposure_time")
+        self.text_capturing_number : QPSLLabel = self.findChild(QPSLLabel, "text_capturing_number")
+        self.text_logger : QPSLTextEdit = self.findChild(QPSLTextEdit, "text_logger")
+    
     @QPSLObjectBase.log_decorator()
     def setup_logic(self):
         self.marked_point_number = 0
@@ -574,6 +580,8 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
                        self.on_move_absolute_z)
 
         #Auto scan
+        connect_direct(self.cbox_scan_mode.currentTextChanged,
+                       self.set_scan_mode)
         connect_direct(self.btn_init_scan.sig_clicked,
                        self.init_scan)
         connect_direct(self.btn_mark_point.sig_clicked,
@@ -607,19 +615,46 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.btn_home_all.setIcon(QIcon(root + '/resources/home.png'))
         self.btn_stop_all.setIcon(QIcon(root + '/resources/stop.png'))
         self.btn_stop_x.setIcon(QIcon(root + '/resources/stop.png'))
-        self.btn_stop_x.setIconSize(QtCore.QSize(48, 48))
+        self.btn_stop_x.setIconSize(QtCore.QSize(36, 36))
+        self.btn_stop_x.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background: transparent;
+            }
+            QPushButton:pressed {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        """)
         self.btn_minus_x.setIcon(QIcon(root + '/resources/left-red.png'))
-        self.btn_minus_x.setIconSize(QtCore.QSize(32, 32))      
+        self.btn_minus_x.setIconSize(QtCore.QSize(40, 32))
         self.btn_plus_x.setIcon(QIcon(root + '/resources/right-red.png'))
-        self.btn_plus_x.setIconSize(QtCore.QSize(32, 32))  
+        self.btn_plus_x.setIconSize(QtCore.QSize(40, 32))
         self.btn_stop_y.setIcon(QIcon(root + '/resources/stop.png'))
-        self.btn_stop_y.setIconSize(QtCore.QSize(48, 48))
+        self.btn_stop_y.setIconSize(QtCore.QSize(36, 36))
+        self.btn_stop_y.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background: transparent;
+            }
+            QPushButton:pressed {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        """)        
         self.btn_minus_y.setIcon(QIcon(root + '/resources/left-green.png'))
         self.btn_minus_y.setIconSize(QtCore.QSize(32, 32))  
         self.btn_plus_y.setIcon(QIcon(root + '/resources/right-green.png'))
         self.btn_plus_y.setIconSize(QtCore.QSize(32, 32)) 
         self.btn_stop_z.setIcon(QIcon(root + '/resources/stop.png'))
-        self.btn_stop_z.setIconSize(QtCore.QSize(48, 48))
+        self.btn_stop_z.setIconSize(QtCore.QSize(36, 36))
+        self.btn_stop_z.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background: transparent;
+            }
+            QPushButton:pressed {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        """)
         self.btn_minus_z.setIcon(QIcon(root + '/resources/left-blue.png'))
         self.btn_minus_z.setIconSize(QtCore.QSize(32, 32)) 
         self.btn_plus_z.setIcon(QIcon(root + '/resources/right-blue.png'))
@@ -633,6 +668,9 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.sbox_vel_z.setSingleStep(0.1)
 
         self.btn_start_scan.setEnabled(False)
+        self.cbox_scan_mode.addItems(["Loop Mode","Distance Mode"])
+        self.frame_max_x.hide()
+        self.frame_max_y.hide()
 
     @QPSLObjectBase.log_decorator()
     def add_log_message(self,log_message:str,level:int):
@@ -714,6 +752,19 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.position_3d.addItem(self.mark_plot)
         print("Marked point {0} position ({1}, {2}, {3})".format(
             self.marked_point_number, self.label_pos_x.value(), self.label_pos_y.value(), self.label_pos_z.value()))
+
+    @QPSLObjectBase.log_decorator()
+    def set_scan_mode(self, mode:str):
+        if self.cbox_scan_mode.currentText() == "Loop Mode":
+            self.frame_max_x.hide()
+            self.frame_max_y.hide()
+            self.frame_loop_x.show()    
+            self.frame_loop_y.show()  
+        elif self.cbox_scan_mode.currentText() == "Distance Mode":
+            self.frame_max_x.show()
+            self.frame_max_y.show()
+            self.frame_loop_x.hide()    
+            self.frame_loop_y.hide()
     
     @QPSLObjectBase.log_decorator()
     def init_scan(self):
@@ -730,12 +781,15 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
     
     @QPSLObjectBase.log_decorator()
     def start_scan(self):
-        self.m_worker.sig_to_start_scan.emit(c_double(self.sbox_max_x.value()),
-                                             c_double(self.sbox_min_x.value()),
+        self.m_worker.sig_to_start_scan.emit(self.cbox_scan_mode.currentText(),
+                                            c_double(self.sbox_max_x.value()),
+                                            c_double(self.sbox_min_x.value()),
                                             c_double(self.sbox_interval_x.value()),
+                                            self.sbox_loop_x.value(),
                                             c_double(self.sbox_max_y.value()),
                                             c_double(self.sbox_min_y.value()),
                                             c_double(self.sbox_interval_y.value()),
+                                            self.sbox_loop_y.value(),
                                             c_double(self.sbox_max_z.value()),
                                             c_double(self.sbox_min_z.value()),
                                             c_double(self.sbox_acc_z.value()),
@@ -744,6 +798,6 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def utils_capturing_times(self):
         self.uniform_motion_time = 1000*(self.sbox_max_z.value()-self.sbox_min_z.value()-(self.sbox_vel_z.value()**2/self.sbox_acc_z.value()))/self.sbox_vel_z.value()
-        self.text_caputuring_number.setText(str(math.ceil(self.uniform_motion_time/self.sbox_exposure_time.value())))
+        self.text_capturing_number.setText(str(math.ceil(self.uniform_motion_time/self.sbox_exposure_time.value())))
 
 MainWidget = Thorlabs_MTS50PluginUI

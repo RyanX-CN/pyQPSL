@@ -109,7 +109,8 @@ class QPSLDCAMView(QPSLVFrameList):
         pixel_color = QColor(image.pixel(qpoint.x(), qpoint.y()))
         # grayscale_value = pixel_color.lightness() / self.sbox_ratio_1.value()
         grayscale_value = pixel_color.lightness() * (1 << 8) / self.sbox_ratio_1.value()
-        self.label_info.setText("pos:({0},{1}), {2}".format(qpoint.x(),qpoint.y(),grayscale_value))
+        #downsample rate = 2
+        self.label_info.setText("pos:({0},{1}), {2}".format(qpoint.x()*2,qpoint.y()*2,grayscale_value))
         
         
     @QPSLObjectBase.log_decorator()
@@ -126,8 +127,8 @@ class QPSLDCAMView(QPSLVFrameList):
     
     @QPSLObjectBase.log_decorator()
     def on_show_pixmap(self,pixmap:QPixmap):
-        pixmap = pixmap.copy(self.sbox_ROI_x0.value(),self.sbox_ROI_y0.value(),
-                          self.sbox_ROI_width.value(),self.sbox_ROI_height.value())
+        # pixmap = pixmap.copy(self.sbox_ROI_x0.value(),self.sbox_ROI_y0.value(),
+        #                   self.sbox_ROI_width.value(),self.sbox_ROI_height.value())
         # pixmap_scaled = pixmap.scaled(pixmap.size()/4)
         # self.label_image.set_pixmap(pixmap_scaled)
         self.label_image.set_pixmap(pixmap)
