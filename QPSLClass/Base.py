@@ -22,6 +22,7 @@ import traceback
 import typing
 import warnings
 import weakref
+import array
 from collections import defaultdict, deque, namedtuple
 from ctypes import byref, c_bool, c_char, c_char_p, c_double, c_int, c_int32, c_uint, c_uint8, c_uint16, c_uint32, c_void_p, c_ushort,c_ulong, pointer, py_object, sizeof, POINTER, Structure
 from typing import Any, Callable, Dict, Generic, Generator, Iterable, Iterator, List, Mapping, NoReturn, Optional, Set, Tuple, TypeVar, Union
@@ -796,7 +797,7 @@ def sleep_for(msec: int):
 
     本函数比起 time.sleep 更为精准，误差在 1 毫秒以下。
 
-    本函数并不等价于 time.sleep，因为在执行到 eventloop.exec 的时候，本函数会放弃线程的所有权，所以本线程会趁这个时机去处理别的事件。
+    本函数并不等价于 time.sleep,因为在执行到 eventloop.exec 的时候，本函数会放弃线程的所有权，所以本线程会趁这个时机去处理别的事件。
 
     Args:
         msec (int): 表示要睡眠的毫秒数

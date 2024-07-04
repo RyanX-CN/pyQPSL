@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QTextCursor, QTextCharFormat, QColor
 from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
-from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shared_state,shared_camsave_state,shared_stagemove_state
+from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
 
 '''
     This Plugin is for Thorlabs MTS50 Stage with KDC101 motor
@@ -238,7 +238,12 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def open_devices(self):
-        print(shared_state.value)
+        # print(shared_state.value)
+        if shm_device_buf[0]:
+            print("位移台运动将与滨松相机0采集同步")
+        if shm_device_buf[1]:
+            print("位移台运动将与滨松相机1采集同步")
+        shm_device_buf[2] = 1
         self.x_stage.open_device()
         self.y_stage.open_device()
         self.z_stage.open_device()
@@ -246,6 +251,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def close_devices(self):
+        shm_device_buf[2] = 0
         self.x_stage.close_device()
         self.y_stage.close_device()
         self.z_stage.close_device()
@@ -330,14 +336,15 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.x_stage.move_flag = True
         self.y_stage.move_flag = True
         self.z_stage.move_flag = True
-        shared_camsave_state.value = 0
+        # shared_camsave_state.value = 0
+        # shm_status_buf[1] = 0
         if scan_mode == "Loop Mode":
             for i in range(loop_y):
                 QCoreApplication.instance().processEvents()
                 for i in range(loop_x):
                     QCoreApplication.instance().processEvents()
                     if self.z_stage.move_flag == False:
-                        break
+                        return
                     self.z_stage.set_output_mode_byvelocity(12, 1, 12, 1)
                     self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
                     self.z_stage.move_absolute(max_z)
@@ -348,29 +355,34 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                     self.x_stage.move_relative(interval_x)
                     self.z_stage.wait_on_ready()
                     # sleep_for(30000)
-                    shared_stagemove_state.value = 1
-                    print("stage",shared_stagemove_state.value,shared_camsave_state.value)
-                    while shared_state.value == 1 and shared_camsave_state.value == 0:
-                        print("stage",shared_stagemove_state.value,shared_camsave_state.value)
-                    if shared_state.value == 1:
-                        self.sig_send_message.emit("One Round Save Done",2)
-                        shared_camsave_state.value = 0
-                        shared_stagemove_state.value = 0
-                        print("stage set",shared_stagemove_state.value,shared_camsave_state.value)
+                    shm_status_buf[2] = 1
+                    print("位移台移动完成",array.array('b',shm_status_buf))
+                    while shm_device_buf[0] and not shm_status_buf[0]:
+                        print("等待相机0存储完成",array.array('b',shm_status_buf))  
+                    while shm_device_buf[1] and not shm_status_buf[1]:
+                        print("等待相机1存储完成",array.array('b',shm_status_buf))                         
+                    # while shm_status_buf[0] == 1 and (not shm_status_buf[2] or not shm_status_buf[3]):
+                    #     print("等待图像存储完成",array.array('b',shm_status_buf))
+                    sleep_for(100)
+                    if shm_device_buf[0] or shm_device_buf[1]:
+                        self.sig_send_message.emit("A Round Save Done",2)
+                        shm_status_buf[1] = 0                  
+                        shm_status_buf[2] = 0
+                        shm_status_buf[3] = 0
+                        print("状态重置",array.array('b',shm_status_buf))                  
                 if self.y_stage.move_flag == False:
-                    break
+                    return
                 self.y_stage.move_relative(interval_y)
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
-                self.x_stage.wait_on_ready()
-        
+                self.x_stage.wait_on_ready()        
         elif scan_mode == "Distance Mode":    
             while self.y_pos < max_y.value - 1e-3:
                 QCoreApplication.instance().processEvents()
                 while self.x_pos < max_x.value - 1e-3:
                     QCoreApplication.instance().processEvents()
                     if self.z_stage.move_flag == False:
-                        break
+                        return
                     self.z_stage.set_output_mode_byvelocity(12,1,12,1)
                     self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
                     self.z_stage.move_absolute(max_z)
@@ -380,20 +392,24 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                     self.z_stage.move_absolute(min_z)
                     self.x_stage.move_relative(interval_x)
                     self.z_stage.wait_on_ready()
-                    # sleep_for(30000)
-                    shared_stagemove_state.value = 1
-                    while shared_camsave_state.value == 0 and shared_state.value == 1:
-                        return
-                    if shared_state.value == 1:
-                        self.sig_send_message.emit("One Round Save Done",2)
-                    shared_camsave_state.value = 0
-                    shared_stagemove_state.value = 0
+                    shm_device_buf[1] = 1
+                    print("位移台移动完成",array.array('b',shm_device_buf))  
+                    while shm_device_buf[0] == 1 and (not shm_device_buf[2] or not shm_device_buf[3]):
+                        print("等待图像存储完成",array.array('b',shm_device_buf))
+                    sleep_for(100)
+                    if shm_device_buf[0]==1:
+                        self.sig_send_message.emit("A Round Save Done",2)
+                        shm_device_buf[1] = 0                  
+                        shm_device_buf[2] = 0
+                        shm_device_buf[3] = 0
+                        print("状态重置",array.array('b',shm_device_buf))                  
                 if self.y_stage.move_flag == False:
-                    break
+                    return
                 self.y_stage.move_relative(interval_y)
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
                 self.x_stage.wait_on_ready()
+        
         self.sig_scan_stopped.emit()
         self.sig_send_message.emit("Scan STOPPED", 3)
 

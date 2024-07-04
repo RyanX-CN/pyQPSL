@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QElapsedTimer
 from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor 
 from datetime import datetime as dt
-from multiprocessing import Manager
+from multiprocessing import Manager,shared_memory
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
 from .DCAMAPI import *
@@ -12,12 +12,15 @@ from .DCAMAPI import *
 '''
     This Plugin is for controll 2 Hamamatsu CMOS camera ORCA-Flash4.0 V3
 '''
-shared_manager1 = Manager()
-shared_manager2 = Manager()
-shared_manager3 = Manager()
-shared_state = shared_manager1.Value(int,0)
-shared_camsave_state = shared_manager2.Value(int,0)
-shared_stagemove_state = shared_manager3.Value(int,0)
+
+# 下标0-2分别表示相机0开启状态，相机1开启状态，位移台开启状态
+shm_device = shared_memory.SharedMemory(create=True, size=10)
+shm_device_buf = shm_device.buf
+shm_device_buf[:3] = bytearray([0,0,0])
+# 下标0-2分别表示相机0存储状态，相机1开启状态，位移台运动状态
+shm_status = shared_memory.SharedMemory(create=True,size=10)
+shm_status_buf = shm_status.buf
+shm_status_buf[:3] = bytes([0,0,0])
 
 TARGET_MIN = 0 
 TARGET_MAX = 65535
@@ -61,7 +64,7 @@ class DCAMLiveWorker(QPSLWorker):
         framebuffer_cam = np.frombuffer(imagedata_cam.buffer, dtype=np.uint16, count=self.m_data_count[index])
         framebuffer_cam = np.reshape(framebuffer_cam,self.m_data_shape[index])
         framebuffer_cam = framebuffer_cam.astype(np.uint16)
-        # =============== Emit ndarray data to save as TIF file ===============
+        # =============== Emit ndarray data to save as TIFF file ===============
         if self.m_save_flag:
             if index == 0:
                 self.sig_report_ndarray_cam0.emit(framebuffer_cam)
@@ -100,7 +103,9 @@ class DCAMLiveWorker(QPSLWorker):
     
     @QPSLObjectBase.log_decorator()    
     def calculate_difference(self):
-        image_difference = np.uint16(self.m_tmp0 + self.m_tmp1 )
+        tmp = self.m_tmp0 - self.m_tmp1
+        tmp = tmp - np.min(tmp)
+        image_difference = np.uint16( tmp )
         qimg_difference = QImage(image_difference.copy(),image_difference.shape[1], image_difference.shape[0],
                       image_difference.shape[1] * 2, QImage.Format.Format_Grayscale16)
         pixmap_cam = QPixmap.fromImage(qimg_difference)
@@ -117,12 +122,11 @@ class DCAMSaveWorker(QPSLWorker):
 
     def __init__(self):
         super().__init__()
-        self.m_save_flag:bool = True
+        self.m_save_flag:bool = False
         self.m_endframe = 0
         self.m_index_image = 0
         self.m_scan_round = 0
         self.m_save_path:str
-        # shared_data.value[0] = 1
         # self.m_save_buffer = np.empty((SAVE_BATCH_SIZE, 2048, 2048), dtype=np.uint16)
         # self.m_batch_number = 0
     
@@ -156,8 +160,13 @@ class DCAMSaveWorker(QPSLWorker):
         self.m_index_image += 1
         if self.m_index_image == self.m_endframe:
             # self.sig_single_round_save_done.emit()
-            shared_camsave_state.value = 1
-            print("shared_camsave_state",shared_camsave_state.value)
+            # shared_camsave_state.value = 1
+            # print("shared_camsave_state",shared_camsave_state.value)
+            if self.index == 0:
+                shm_status_buf[0] = 1
+            elif self.index == 1:
+                shm_status_buf[1] = 1
+            print("相机%d图像存储完成"%self.index,array.array('b',shm_status_buf))
             self.m_index_image = 0
         # =============== Save tiff files as batch ===============
         # self.m_save_buffer[self.m_index_image] = data
@@ -363,42 +372,6 @@ class DoubleDCAMPluginWorker(QPSLWorker):
     @QPSLObjectBase.log_decorator()
     def on_scan_cam(self,endframe:int):
         self.m_continue_flag = True
-        """
-        while self.m_scan_continus_flag:
-            QCoreApplication.instance().processEvents()
-            if not self.m_scan_loop_flag:
-                # self.m_continue_flag = True
-                self.m_worker_self = py_object(self)
-                self.add_warning("Camera {0} is scaning".format(self.index))
-                self.sig_scan_cam_started.emit("Camera {0} is scaning".format(self.index))
-                self.m_cam.pre_live()
-                while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag and self.m_id < endframe:
-                    QCoreApplication.instance().processEvents()
-                    self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
-                                    callback= DoubleDCAMPluginWorker.on_everyframe_callback)
-                self.m_cam.post_live()
-                self.m_scan_continus_flag = False
-                break
-            else:
-                # self.m_continue_flag = True
-                self.m_id = 0
-                self.m_worker_self = py_object(self)
-                self.add_warning("Camera {0} is scaning(Loop)".format(self.index))
-                self.sig_scan_cam_started.emit("Camera {0} is scaning(Loop)".format(self.index))
-                self.m_cam.pre_live()
-                while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag and self.m_id < endframe:
-                    QCoreApplication.instance().processEvents()
-                    self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
-                                    callback= DoubleDCAMPluginWorker.on_everyframe_callback)
-                self.m_cam.post_live()
-                self.add_warning("Camera {0} scaning round {1} done".format(self.index,i))
-                self.sig_single_round_done.emit("Camera {0} scaning round {1} done".format(self.index,i))
-                i += 1
-                sleep_for(4000)
-        self.add_warning("Camera {0} scaning done".format(self.index))
-        self.sig_scan_cam_stopped.emit("Camera {0} scaning done".format(self.index)) 
-        """
-
         if not self.m_scan_loop_flag:
             # self.m_continue_flag = True
             self.m_worker_self = py_object(self)
@@ -432,9 +405,17 @@ class DoubleDCAMPluginWorker(QPSLWorker):
                 self.m_cam.post_live()
                 self.sig_send_message.emit(
                 "{0}\nCAM{1} round{2} scan DONE".format(dt.now().time().replace(microsecond=0),self.index,i),2)
-                print("cam",shared_stagemove_state.value,shared_camsave_state.value)
-                while shared_stagemove_state != 1 and shared_camsave_state != 1:
-                    print("cam",shared_stagemove_state.value,shared_camsave_state.value)
+                print("相机%d扫描完成"%self.index, array.array('b',shm_status_buf))
+                if shm_device_buf[2]: # Thorlabs stages is opened
+                    if shm_device_buf[0] and not shm_device_buf[1]:# Only cam0 opened
+                        while not shm_status_buf[0] or not shm_status_buf[2]:
+                            print("相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))
+                    elif not shm_device_buf[0] and shm_device_buf[1]:# Only cam1 opened
+                        while not shm_status_buf[1] or not shm_status_buf[2]:
+                            print("相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))                 
+                    elif shm_device_buf[0] and shm_device_buf[1]: # Both cam are opened
+                        while not shm_status_buf[0] or not shm_status_buf[1] or not shm_status_buf[2]:
+                            print("双相机等待上轮采集完成ing", array.array('b',shm_status_buf))
                 # sleep_for(15000)
                 if i != self.m_loop_round-1:
                     self.sig_single_round_scan_done.emit(i+1)
@@ -507,6 +488,10 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.m_save_worker_cam1.to_delete()
         if self.auto_save():
             self.save_into_json(json_path=self.get_json_file())
+        shm_device.close()
+        shm_device.unlink()
+        shm_status.close()
+        shm_status.unlink()
         return super().to_delete()
     
     def get_named_widgets(self):        
@@ -751,6 +736,7 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.timer_temp_1.start(1000)
         for btn in self.btn_after_cam0_opened:
             btn.setEnabled(True)
+        shm_device_buf[0] = 1
 
     @QPSLObjectBase.log_decorator()
     def on_click_close_cam0(self):
@@ -759,10 +745,12 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.label_device_cam0.clear()
         self.label_temperature_cam0.clear()
         self.label_framerate_cam0.clear()
+        shm_device_buf[1] = 0
 
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam0(self):
         self.m_live_worker.m_live_flag = True
+        self.m_live_worker.m_save_flag = False
         self.m_worker_cam0.sig_to_live_cam.emit()
     
     @QPSLObjectBase.log_decorator()
@@ -863,7 +851,6 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         if self.m_live_worker.m_save_flag:
             self.m_live_worker.m_save_flag = False
 
-
     @QPSLObjectBase.log_decorator()
     def choose_path_cam0(self, event):
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder",'./')
@@ -879,6 +866,7 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.timer_temp_2.start(1000)
         for btn in self.btn_after_cam1_opened:
             btn.setEnabled(True)
+        shm_device_buf[1] = 1
 
     @QPSLObjectBase.log_decorator()
     def on_click_close_cam1(self):
@@ -888,10 +876,12 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.label_device_cam1.clear()
         self.label_temperature_cam1.clear()
         self.label_framerate_cam1.clear()
+        shm_device_buf[1] = 0
 
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam1(self):
         self.m_live_worker.m_live_flag = True
+        self.m_live_worker.m_save_flag = False
         self.m_worker_cam1.sig_to_live_cam.emit()
 
     @QPSLObjectBase.log_decorator()
@@ -1000,8 +990,10 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
     @QPSLObjectBase.log_decorator()    
     def init_API(self):
         DCAMAPI_init()
-        shared_state.value = 1
-        print(shared_state.value)
+        # shared_state.value = 1
+        # print(shared_state.value)
+        # shm_device_buf[0] = 1
+        # print("滨松相机程序开启",array.array('b',shm_device_buf))
         self.add_log_message("DCAM_API init Done",2)
         self.btn_open_cam0.setEnabled(True)
         self.btn_open_cam1.setEnabled(True)

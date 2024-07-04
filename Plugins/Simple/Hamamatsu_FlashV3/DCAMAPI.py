@@ -126,7 +126,7 @@ class DCAMController(Structure):
         return self.err_code
     
     def set_trigger_delay(self, delay):
-        _QPSL_DCAM_setTriggerDelay(pointer(self), c_double(delay))
+        _QPSL_DCAM_setTriggerDelay(pointer(self), c_double(delay/1000))
         if self.err_code < 0:
             raise BaseException(
                 bytes.decode(self.err_buffer, encoding='utf8'))
