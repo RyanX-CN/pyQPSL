@@ -1,0 +1,161 @@
+{
+    "UIDesigner": {
+        "Type": "UIDesigner",
+        "backgroud_color": "#c0c4c8",
+        "lru": [
+            "QPSLIconDialog",
+            "QPSLIconLabel",
+            "QPSLListWidget",
+            "QPSLFrame",
+            "QPSLComboCurvePlotWidget",
+            "QPSLGetDirectoryBox",
+            "QPSLHScrollArea",
+            "QPSLHDialogList",
+            "QPSLTableWidget",
+            "QPSLToolButton",
+            "QPSLHScrollList",
+            "QPSLPlotWidget",
+            "QPSLTabWidget",
+            "QPSLComboLineEdit",
+            "QPSLRadioButton",
+            "QPSLDockWidget",
+            "QPSLLineEdit",
+            "QPSLTrackedScalePixmapLabel",
+            "QPSLDoubleSpinBox",
+            "QPSLTextEdit",
+            "QPSLToggleButton",
+            "QPSLComboBox",
+            "QPSLSpinBox",
+            "QPSLPushButton",
+            "QPSLLabel",
+            "QPSLDCAMView",
+            "QPSLScalePixmapLabel",
+            "QPSLSplitter",
+            "QPSLHFrameList",
+            "QPSLHSplitter",
+            "QPSLVFrameList"
+        ],
+        "widgets": [
+            {
+                "ObjectName": "tab_edit_json",
+                "Type": "QPSLTabWidget",
+                "backgroud_color": "#fafafa",
+                "h_size_policy": 7,
+                "titles": [
+                    "edit",
+                    "json"
+                ],
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#fafafa",
+                        "margins": "5; 5; 5; 5",
+                        "spacing": 5,
+                        "stretch": "4; 4; 1",
+                        "widgets": [
+                            {
+                                "ObjectName": "tree_view",
+                                "Type": "QPSLTreeView",
+                                "backgroud_color": "#fafafa",
+                                "h_size_policy": 7,
+                                "v_size_policy": 7
+                            },
+                            {
+                                "ObjectName": "scroll_attribute",
+                                "Type": "QPSLVScrollArea",
+                                "backgroud_color": "#fafafa",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLToolBox",
+                                        "backgroud_color": "#fafafa"
+                                    }
+                                ]
+                            },
+                            {
+                                "ObjectName": "box_buttons",
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#fafafa",
+                                "spacing": 10,
+                                "stretch": "1; 0; 0; 1; 1",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "button_add",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#c0c4c8",
+                                        "m_text": "add"
+                                    },
+                                    {
+                                        "ObjectName": "button_insert",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#c0c4c8",
+                                        "m_text": "insert"
+                                    },
+                                    {
+                                        "ObjectName": "button_copy",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#c0c4c8",
+                                        "m_text": "copy"
+                                    },
+                                    {
+                                        "ObjectName": "button_remove",
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#c0c4c8",
+                                        "m_text": "remove"
+                                    },
+                                    {
+                                        "ObjectName": "checkbox_move_cursor",
+                                        "Type": "QPSLCheckBox",
+                                        "backgroud_color": "#fafafa",
+                                        "text": "move cursor"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "ObjectName": "box_json",
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#fafafa",
+                        "margins": "5; 5; 5; 5",
+                        "spacing": 10,
+                        "stretch": "5; 1",
+                        "widgets": [
+                            {
+                                "ObjectName": "edit_of_json",
+                                "Type": "QPSLTextEdit",
+                                "backgroud_color": "#fafafa"
+                            },
+                            {
+                                "ObjectName": "button_load_json",
+                                "Type": "QPSLPushButton",
+                                "backgroud_color": "#c0c4c8",
+                                "m_text": "load json"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "ObjectName": "box_show",
+                "Type": "QPSLHFrameList",
+                "backgroud_color": "#fafafa",
+                "widgets": [
+                    {
+                        "Type": "QPSLHSplitter",
+                        "backgroud_color": "#fafafa",
+                        "widgets": [
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#fafafa"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#fafafa"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

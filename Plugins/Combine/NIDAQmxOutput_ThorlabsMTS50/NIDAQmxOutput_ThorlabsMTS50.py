@@ -1,7 +1,7 @@
 from Tool import *
-from ...Simple.NIDAQmxAOPlugin.NIDAQmxAOPlugin import NIDAQmxAOPluginUI
-from ...Simple.NIDAQmxDOPlugin.NIDAQmxDOPlugin import NIDAQmxDOPluginUI
-from ...Simple.Thorlabs_MTS50Plugin.Thorlabs_MTS50Plugin import Thorlabs_MTS50PluginUI
+from ...Simple.NIDAQmxAO.NIDAQmxAO import NIDAQmxAOPluginUI
+from ...Simple.NIDAQmxDO.NIDAQmxDO import NIDAQmxDOPluginUI
+from ...Simple.Stage_Thorlabs_MTS50.Stage_Thorlabs_MTS50 import Thorlabs_MTS50PluginUI
 from PyQt5.QtCore import pyqtSignal
 
 

@@ -1,0 +1,799 @@
+{
+    "Thorlabs_MTS50PluginUI": {
+        "Type": "Thorlabs_MTS50PluginUI",
+        "backgroud_color": "#e5e5e5",
+        "h_size_policy": 13,
+        "v_size_policy": 13,
+        "widgets": [
+            {
+                "Type": "QPSLHSplitter",
+                "backgroud_color": "#e5e5e5",
+                "widgets": [
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#000000",
+                        "h_size_policy": 13,
+                        "stretch": "1; 2; 2; 2",
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#fafafa",
+                                "margins": "0; 10; 0; 0",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_open_all",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "Open devices",
+                                        "m_opened_text": "Close devices",
+                                        "m_text": "Open devices"
+                                    },
+                                    {
+                                        "ObjectName": "btn_home_all",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "Home all"
+                                    },
+                                    {
+                                        "ObjectName": "btn_stop_all",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "Stop all"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#fafafa",
+                                "margins": "0; 25; 0; 0",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#fafafa",
+                                        "frame_shadow": 48,
+                                        "spacing": 15,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#fafafa",
+                                                "frame_shadow": 48,
+                                                "frame_shape": 2,
+                                                "margins": "10; 0; 0; 0",
+                                                "spacing": 10,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#999999",
+                                                        "font": "Arial; 12; 75; False",
+                                                        "text": "X axis"
+                                                    },
+                                                    {
+                                                        "ObjectName": "label_pos_x",
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#666666",
+                                                        "h_size_policy": 3,
+                                                        "text": "Current position(mm): 0.0000",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "ObjectName": "btn_stop_x",
+                                                "Type": "QPSLPushButton",
+                                                "backgroud_color": "#000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#fafafa",
+                                        "spacing": 10,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_minus_x",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "ObjectName": "btn_plus_x",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#fafafa",
+                                                "spacing": 5,
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "sbox_move_x",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "backgroud_color": "#fafafa",
+                                                        "range": "-0.5; 50.5",
+                                                        "v_size_policy": 4,
+                                                        "value": 9.0
+                                                    },
+                                                    {
+                                                        "ObjectName": "btn_move_x",
+                                                        "Type": "QPSLPushButton",
+                                                        "m_text": "Move",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "margins": "0; 25; 0; 0",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "frame_shadow": 48,
+                                        "spacing": 15,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#b2b2b2",
+                                                "frame_shadow": 48,
+                                                "frame_shape": 2,
+                                                "margins": "10; 0; 0; 0",
+                                                "spacing": 10,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#7f7f7f",
+                                                        "font": "Arial; 12; 75; False",
+                                                        "text": "Y axis"
+                                                    },
+                                                    {
+                                                        "ObjectName": "label_pos_y",
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#999999",
+                                                        "h_size_policy": 3,
+                                                        "text": "Current position(mm): 0.0000",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "ObjectName": "btn_stop_y",
+                                                "Type": "QPSLPushButton",
+                                                "backgroud_color": "#000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "spacing": 10,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_minus_y",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "ObjectName": "btn_plus_y",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#b2b2b2",
+                                                "spacing": 5,
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "sbox_move_y",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "backgroud_color": "#b2b2b2",
+                                                        "range": "-0.5; 50.5",
+                                                        "v_size_policy": 4,
+                                                        "value": 2.0
+                                                    },
+                                                    {
+                                                        "ObjectName": "btn_move_y",
+                                                        "Type": "QPSLPushButton",
+                                                        "m_text": "Move",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "margins": "0; 25; 0; 0",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "frame_shadow": 48,
+                                        "spacing": 15,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#b2b2b2",
+                                                "frame_shadow": 48,
+                                                "frame_shape": 2,
+                                                "margins": "10; 0; 0; 0",
+                                                "spacing": 10,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#999999",
+                                                        "font": "Arial; 12; 75; False",
+                                                        "text": "Z axis"
+                                                    },
+                                                    {
+                                                        "ObjectName": "label_pos_z",
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#666666",
+                                                        "h_size_policy": 3,
+                                                        "text": "Current position(mm): 0.0000",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "ObjectName": "btn_stop_z",
+                                                "Type": "QPSLPushButton",
+                                                "backgroud_color": "#000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#b2b2b2",
+                                        "spacing": 10,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_minus_z",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "ObjectName": "btn_plus_z",
+                                                "Type": "QPSLPushButton"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#b2b2b2",
+                                                "spacing": 5,
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "sbox_move_z",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "backgroud_color": "#b2b2b2",
+                                                        "range": "-0.5; 50.5",
+                                                        "v_size_policy": 4,
+                                                        "value": 28.89
+                                                    },
+                                                    {
+                                                        "ObjectName": "btn_move_z",
+                                                        "Type": "QPSLPushButton",
+                                                        "m_text": "Move",
+                                                        "v_size_policy": 4
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#666666",
+                        "h_size_policy": 13,
+                        "margins": "0; 10; 0; 0",
+                        "spacing": 10,
+                        "stretch": "0; 0; 1; 0",
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#e5e5e5",
+                                "margins": "100; 0; 100; 0",
+                                "stretch": "1; 3",
+                                "v_size_policy": 4,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "alignment": 132,
+                                        "backgroud_color": "#666666",
+                                        "font": "Arial; 14; 75; False",
+                                        "text": "Scan mode\uff1a"
+                                    },
+                                    {
+                                        "ObjectName": "cbox_scan_mode",
+                                        "Type": "QPSLComboBox",
+                                        "backgroud_color": "#e5e5e5"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#666666",
+                                "spacing": 5,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#7f7f7f",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "stretch": "1; 0; 0",
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#4c4c4c",
+                                                        "font": "Arial; 12; 75; False",
+                                                        "text": "X stage:"
+                                                    },
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#666666",
+                                                        "text": "Interval:"
+                                                    },
+                                                    {
+                                                        "ObjectName": "sbox_interval_x",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "backgroud_color": "#666666",
+                                                        "v_size_policy": 4,
+                                                        "value": 3.0
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "spacing": 15,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Vel:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_vel_x",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 2.4",
+                                                                "v_size_policy": 4,
+                                                                "value": 2.4
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Acc:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_acc_x",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 4.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 1.5
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Min:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_min_x",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                                "value": 34.69
+=======
+                                                                "value": 42.79
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "ObjectName": "frame_max_x",
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Max:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_max_x",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 48.0
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "ObjectName": "frame_loop_x",
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "v_size_policy": 4,
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Loop\uff1a"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_loop_x",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0; 10000",
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                                "value": 1
+=======
+                                                                "value": 4
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "stretch": "1; 0; 0",
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#4c4c4c",
+                                                        "font": "Arial; 12; 75; False",
+                                                        "text": "Y stage:"
+                                                    },
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#666666",
+                                                        "text": "Interval:"
+                                                    },
+                                                    {
+                                                        "ObjectName": "sbox_interval_y",
+                                                        "Type": "QPSLDoubleSpinBox",
+                                                        "backgroud_color": "#666666",
+                                                        "v_size_policy": 4,
+                                                        "value": 3.0
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "spacing": 15,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Vel:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_vel_y",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 2.4",
+                                                                "v_size_policy": 4,
+                                                                "value": 2.4
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Acc:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_acc_y",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 4.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 1.5
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Min:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_min_y",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                                "value": 15.51
+=======
+                                                                "value": 23.77
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "ObjectName": "frame_max_y",
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Max:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_max_y",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 30.0
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "ObjectName": "frame_loop_y",
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "v_size_policy": 4,
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Loop\uff1a"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_loop_y",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0; 10000",
+                                                                "value": 1
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#999999",
+                                                "font": "Arial; 12; 75; False",
+                                                "text": "Z stage:"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "spacing": 15,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Vel:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_vel_z",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 2.4",
+                                                                "v_size_policy": 4,
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                                "value": 1.44
+=======
+                                                                "value": 0.48
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Acc:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_acc_z",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "0.0; 4.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 1.5
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Min:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_min_z",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                                "value": 24.3
+=======
+                                                                "value": 24.5
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#666666",
+                                                                "text": "Max:"
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_max_z",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#666666",
+                                                                "range": "-0.5; 50.5",
+                                                                "v_size_policy": 4,
+                                                                "value": 30.0
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "margins": "10; 0; 10; 0",
+                                "spacing": 30,
+                                "v_size_policy": 4,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_init_scan",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "init scan"
+                                    },
+                                    {
+                                        "ObjectName": "btn_start_scan",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "start scan",
+                                        "m_opened_text": "stop scan",
+                                        "m_text": "start scan"
+                                    },
+                                    {
+                                        "ObjectName": "btn_mark_point",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "mark point"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#666666",
+                                "frame_shadow": 48,
+                                "frame_shape": 2,
+                                "spacing": 20,
+                                "v_size_policy": 4,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#e5e5e5",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Exposure time(ms): "
+                                            },
+                                            {
+                                                "ObjectName": "sbox_exposure_time",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#666666",
+                                                "decimals": 2,
+                                                "range": "1.0; 1000.0",
+<<<<<<< HEAD:Plugins/Simple/Thorlabs_MTS50(Treble)/ui.json
+                                                "value": 27.05
+=======
+                                                "value": 21.0
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598:Plugins/Simple/Stage_Thorlabs_MTS50/ui.json
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#666666",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Capturing number:"
+                                            },
+                                            {
+                                                "ObjectName": "text_capturing_number",
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "111"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "ObjectName": "text_logger",
+                "Type": "QPSLTextEdit",
+                "backgroud_color": "#000000",
+                "font": "Consolas; 12; 50; False"
+            }
+        ]
+    }
+}

@@ -2,6 +2,8 @@ from QPSLClass.Base import *
 from ..BaseClass import *
 from ..UIClass.QPSLDockWidget import QPSLDockWidget
 from ..UIClass.QPSLMenuBar import QPSLMenuBar
+from .QPSLInitialization import QPSLInitializationWindow
+from PyQt5.QtGui import QIcon
 
 
 class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
@@ -12,12 +14,19 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         super().__init__()
         self.m_is_single_plugin: bool = init_config_getset(
             keys=("plugin_mode", "is_single_plugin"), value=False)
+        self.setWindowIcon(QIcon(os.path.join("resources/logo.png")))
         self.setup_logic()
 
     def setup_logic(self):
+        self.frame_initialization = QPSLInitializationWindow().load_attr()
+        self.setCentralWidget(self.frame_initialization)
         self.setMenuBar(QPSLMenuBar())
-        if not self.m_is_single_plugin:
-            self.add_menu_plugins()
+        # if not self.m_is_single_plugin:
+        #     self.add_menu_plugins()
+        self.add_menu_logo()
+        self.add_menu_device_control_plugins()
+        self.add_menu_data_analysis_plugins()
+        self.add_menu_developer_plugins()
         self.add_menu_settings()
         add_global_single_choice_box(QPSL_App_Style_Choice_Box)
         QPSL_App_Style_Choice_Box.call()
@@ -42,10 +51,12 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             QPSL_App_Mode_PopBox.set_choice_as(choice="Multi Plugins",
                                                with_callback=False)
         add_global_single_choice_popbox(box=QPSL_App_Mode_PopBox)
-        action = QAction("reboot")
-        connect_direct(action.triggered, self.reboot)
-        add_global_action(action)
+        # action = QAction("reboot")
+        # connect_direct(action.triggered, self.reboot)
+        # add_global_action(action)
         connect_direct(self.sig_plugin_closed_of, self.remove_widget_in_dock)
+        self.btn_reboot = QPushButton("reboot")
+        self.menuBar().setCornerWidget(self.btn_reboot,Qt.Corner.TopRightCorner)
         if self.m_is_single_plugin:
             single_plugin_module = init_config_getset(
                 keys=(
@@ -65,10 +76,12 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             self.setWindowTitle(single_plugin_module.split('.')[-1])
             # self.menuBar().hide()
         else:
-            self.resize(1000, 500)
+            self.showMaximized()
             self.setWindowTitle("QPSL-pyQt-{0}.{1}".format(
                 init_config_get(keys=("version", "main_version")),
                 init_config_get(keys=("version", "sub_version"))))
+        connect_direct(self.btn_reboot.clicked,
+                       self.reboot)
 
     @staticmethod
     def _get_plugin_module_list(sub_dir: str) -> List[str]:
@@ -124,36 +137,82 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
                     self.on_module_clicked(module_path=path)
 
                 return callback
+            
+            if "Thorlabs" in module_path.split('.')[-1]:
+                icon_path = os.path.join("resources/Thorlabs_logo.png")
+            elif "NI" in module_path.split('.')[-1]:
+                icon_path = os.path.join("resources/NI_logo.png")
+            elif "Hamamatsu" in module_path.split('.')[-1]:
+                icon_path = os.path.join("resources/Hamamatsu_logo.png")
+            elif "PI" in module_path.split('.')[-1]:
+                icon_path = os.path.join("resources/PI_logo.png")
+            elif "Zaber" in module_path.split('.')[-1]:
+                icon_path = os.path.join("resources/Zaber_logo.png")
+            else:
+                icon_path = None
+            
+            if icon_path:
+                menu.addAction(QIcon(icon_path), 
+                            module_path.split('.')[-1], wrap(path=module_path))
+            else:
+                menu.addAction(module_path.split('.')[-1], wrap(path=module_path))
 
-            menu.addAction(module_path.split('.')[-1], wrap(path=module_path))
         return menu
 
-    def add_menu_plugins(self):
-        menu = self.menuBar().addMenu("plugins")
-        # menu.addMenu(
-        #     self.make_plugin_action_menu(action_name="python plugins.",
-        #                                  dir_name="Plugins/Plugins"))
-        # menu.addMenu(
-        #     self.make_plugin_action_menu(action_name="external plugins.",
-        #                                  dir_name="Plugins/Externals"))
-        # menu.addMenu(
-        #     self.make_plugin_action_menu(action_name="combined plugins.",
-        #                                  dir_name="Plugins/Combines"))
+    def add_menu_logo(self):
+        menu = self.menuBar().addMenu("")
+        menu.setIcon(QIcon(QIcon(os.path.join("resources/logo.png"))))
+
+    def add_menu_device_control_plugins(self):
+        menu = self.menuBar().addMenu("Device control")
         menu.addMenu(
-            self.make_sub_plugin_menu(action_name="simple plugins.",
+            self.make_sub_plugin_menu(action_name="simple plugins",
                                       sub_dir="Simple"))
         menu.addMenu(
-            self.make_sub_plugin_menu(action_name="combined plugins.",
+            self.make_sub_plugin_menu(action_name="combined plugins",
                                       sub_dir="Combine"))
+<<<<<<< HEAD
         menu.addMenu(
             self.make_sub_plugin_menu(action_name="developer plugins.",
                                       sub_dir="Developer"))
         menu.addMenu(
             self.make_sub_plugin_menu(action_name="analysis plugins.",
                                       sub_dir="Analysis"))
+=======
+        
+    def add_menu_data_analysis_plugins(self):
+        menu = self.menuBar().addMenu("Data analysis")
+        dict.update(self.action_dict)
+        module_list = self._get_plugin_module_list(sub_dir="Analysis")
+        for module_path in module_list:
+
+            def wrap(path: str):
+
+                def callback():
+                    self.on_module_clicked(module_path=path)
+
+                return callback
+
+            menu.addAction(module_path.split('.')[-1], wrap(path=module_path))
+        
+    def add_menu_developer_plugins(self):
+        menu = self.menuBar().addMenu("Developer tools")
+        dict.update(self.action_dict)
+        module_list = self._get_plugin_module_list(sub_dir="Developer")
+        for module_path in module_list:
+
+            def wrap(path: str):
+
+                def callback():
+                    self.on_module_clicked(module_path=path)
+
+                return callback
+
+            menu.addAction(module_path.split('.')[-1], wrap(path=module_path))   
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598
 
     def add_menu_settings(self):
-        action = self.menuBar().addAction("settings")
+        action = self.menuBar().addAction("Settings")
         menu = QMenu()
         action.setMenu(menu)
         self = weakref.proxy(self)
@@ -164,7 +223,8 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
                 action_attach_to_menu(act=act, menu=menu)
 
         connect_direct(action.menu().aboutToShow, callback)
-
+    
+    @QPSLWidgetBase.log_decorator()
     def add_widget_in_dock(self, widget: QPSLWidgetBase) -> QPSLDockWidget:
         name = auto_generate_plugin_name(widget.__class__.__name__)
         dock_widget = QPSLDockWidget()
@@ -172,9 +232,12 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         dock_widget.setWindowTitle(name)
         if any(get_opened_plugins()):
             self.tabifyDockWidget(next(get_opened_plugins()), dock_widget)
+            # self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock_widget)
         else:
-            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea,
+            # self.label_test.hide()
+            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea,
                                dock_widget)
+            # self.setCentralWidget(dock_widget)
         QTimer.singleShot(0, self.move_to_center_of_desktop)
         add_opened_plugins(dock_widget)
         return dock_widget

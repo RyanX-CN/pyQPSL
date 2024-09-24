@@ -9,14 +9,22 @@ from ..UIClass.QPSLLabel import QPSLLabel, QPSLTrackedScalePixmapLabel
 class QPSLDCAMView(QPSLVFrameList):
     sig_hovered_pos = pyqtSignal(QPointF)
     sig_report_ratio = pyqtSignal(int)
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598
     def __init__(self):
         super().__init__()
         self.m_image: np.ndarray = None
         self.m_pixmap: QPixmap = None
         self.m_mutex = QMutex()
         self.m_tasks = deque()
+<<<<<<< HEAD
         # self.load_attr()
+=======
+        self.load_attr()
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598
     
     def load_attr(self,
                   bit_width:Optional[int] = None,

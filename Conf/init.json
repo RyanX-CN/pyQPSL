@@ -21,26 +21,31 @@
         "single_plugin_size": "1977; 872"
     },
     "style_control": "Fusion",
-    "themes": "dark_blue.xml",
+    "themes": "None",
     "ui": {
         "UI load path": "Plugin/*/ui.json",
         "autosave": {
             "AGADPLoginBox": false,
             "AGADPUI": false,
             "CompilePluginUI": false,
+            "CompressedSensingSystemUI": false,
             "CppPluginUI": false,
             "DMPluginUI": false,
             "DemoPluginUI": false,
             "DoubleDCAMPluginUI": false,
+<<<<<<< HEAD
             "HongruPluginUI": true,
             "ImageKPluginUI": false,
+=======
+>>>>>>> dfe0559ed69ae7ea06b58d0ecbf69791d6211598
             "NIDAQmxAIPluginUI": false,
             "NIDAQmxAOPluginUI": false,
             "NIDAQmxDOPluginUI": false,
             "NIDAQmxOutput_ThorlabsMTS50_PluginUI": false,
             "OpticalImageDivisorUI": false,
-            "OpticalImagesUI": false,
+            "OpticalImagesUI": true,
             "PIPluginUI": false,
+            "QPSLInitializationWindow": false,
             "Thorlabs_MTS50PluginUI": true,
             "UIDesigner": true,
             "ZaberPluginUI": false

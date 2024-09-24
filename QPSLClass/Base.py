@@ -27,6 +27,8 @@ from collections import defaultdict, deque, namedtuple
 from ctypes import byref, c_bool, c_char, c_char_p, c_double, c_int, c_int32, c_uint, c_uint8, c_uint16, c_uint32, c_void_p, c_ushort,c_ulong, pointer, py_object, sizeof, POINTER, Structure
 from typing import Any, Callable, Dict, Generic, Generator, Iterable, Iterator, List, Mapping, NoReturn, Optional, Set, Tuple, TypeVar, Union
 from Utils.Hooks import *
+from multiprocessing import Manager
+
 
 loading_warning("pyQPSL initializing...")
 loading_info("python version = {0}".format(sys.version))
@@ -884,3 +886,7 @@ def weakref_member_function(obj: Any, func: Callable) -> Callable:
         return func(obj, *args, **kwargs)
 
     return callback
+
+def wait_for_ready():
+    pass
+

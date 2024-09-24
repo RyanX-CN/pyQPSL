@@ -1,4 +1,34 @@
 {
+    "QPSLInitializationWindow":{
+        "Type": "QPSLVFrameList",
+        "backgroud_color": "#fafafa",
+        "stretch": "1; 0; 0; 5",
+        "h_size_policy": 13,
+        "v_size_policy": 13,
+        "widgets": [
+            {
+                "Type": "QPSLLabel",
+                "backgroud_color": "#fafafa"
+            },
+            {
+                "Type": "QPSLLabel",
+                "backgroud_color": "#fafafa",
+                "font": "Consolas; 24; 50; False",
+                "text": " Qt based Plugin System Launcher (QPSL)"
+            },
+            {
+                "ObjectName": "label_info",
+                "Type": "QPSLLabel",
+                "backgroud_color": "#fafafa",
+                "font": "Consolas; 16; 50; False",
+                "text": "  version:"
+            },
+            {
+                "Type": "QPSLLabel",
+                "backgroud_color": "#fafafa"
+            }
+        ]
+    },
     "AGADPLoginBox": {
         "Type": "AGADPLoginBox",
         "size": "1023; 639",
