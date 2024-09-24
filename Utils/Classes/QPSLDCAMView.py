@@ -10,20 +10,14 @@ class QPSLDCAMView(QPSLVFrameList):
     sig_hovered_pos = pyqtSignal(QPointF)
     sig_report_ratio = pyqtSignal(int)
 
-    # def to_json(self):
-    #     return super().to_json()
-    
-    def load_by_json(self, json: Dict):
-        super().load_by_json(json)
-        self.load_attr()
-    
     def __init__(self):
         super().__init__()
         self.m_image: np.ndarray = None
         self.m_pixmap: QPixmap = None
         self.m_mutex = QMutex()
         self.m_tasks = deque()
-
+        # self.load_attr()
+    
     def load_attr(self,
                   bit_width:Optional[int] = None,
                   image_format: Optional[QImage.Format] = None):
@@ -36,10 +30,17 @@ class QPSLDCAMView(QPSLVFrameList):
         self.m_max_color = (1 << bit_width) - 1
         self.m_byte_width = bit_width // 8
         self.m_image_format = image_format
+        return self
+    
+    def load_by_json(self, json: Dict):
+        super().load_by_json(json)
         self.setup_ui()
         self.set_stretch([10,0])
         self.setup_logic()
-        return self
+
+    def to_json(self):
+        res: Dict = super().to_json()
+        return res
 
     @classmethod
     def default_bit_width(cls):

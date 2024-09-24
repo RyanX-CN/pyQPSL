@@ -33,6 +33,7 @@
             "DemoPluginUI": false,
             "DoubleDCAMPluginUI": false,
             "HongruPluginUI": true,
+            "ImageKPluginUI": false,
             "NIDAQmxAIPluginUI": false,
             "NIDAQmxAOPluginUI": false,
             "NIDAQmxDOPluginUI": false,

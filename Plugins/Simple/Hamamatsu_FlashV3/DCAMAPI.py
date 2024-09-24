@@ -132,6 +132,20 @@ class DCAMController(Structure):
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
     
+    def set_bitwidth_8bit(self):
+        _QPSL_DCAM_set8bit(pointer(self))
+        if self.err_code < 0:
+            raise BaseException(
+                bytes.decode(self.err_buffer, encoding='utf8'))                
+        return self.err_code
+    
+    def set_bitwidth_16bit(self):
+        _QPSL_DCAM_set16bit(pointer(self))
+        if self.err_code < 0:
+            raise BaseException(
+                bytes.decode(self.err_buffer, encoding='utf8'))                
+        return self.err_code
+    
     def capture(self):
         _QPSL_DCAM_Capture(pointer(self))
         if self.err_code < 0:
@@ -139,6 +153,13 @@ class DCAMController(Structure):
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
         
+    def get_single_frame_8bit(self, pyworker: c_void_p, callback: Callable):
+        _QPSL_DCAM_Get_single_frame_8bit(pointer(self), pyworker, callback)
+        if self.err_code < 0:
+            raise BaseException(
+                bytes.decode(self.err_buffer, encoding='utf8'))
+        return self.err_code
+    
     def get_single_frame(self, pyworker: c_void_p, callback: Callable):
         _QPSL_DCAM_Get_single_frame(pointer(self), pyworker, callback)
         if self.err_code < 0:
@@ -167,12 +188,12 @@ class DCAMController(Structure):
                 bytes.decode(self.err_buffer, encoding='utf8'))
         return self.err_code
 
-    def scan(self, endframe):
-        _QPSL_DCAM_Scan(pointer(self),c_int(endframe))
-        if self.err_code < 0:
-            raise BaseException(
-                bytes.decode(self.err_buffer, encoding='utf8'))
-        return self.err_code
+    # def scan(self, endframe):
+    #     _QPSL_DCAM_Scan(pointer(self),c_int(endframe))
+    #     if self.err_code < 0:
+    #         raise BaseException(
+    #             bytes.decode(self.err_buffer, encoding='utf8'))
+    #     return self.err_code
 
     def has_handle(self) ->bool:
         return self.hdcam
@@ -297,6 +318,20 @@ except:
     loading_error("failed to load function {0}".format("QPSL_DCAM_setTriggerDelay"))
 
 try:
+    _QPSL_DCAM_set8bit = getattr(_library,"QPSL_DCAM_set8bit")
+    _QPSL_DCAM_set8bit.argtypes = [c_DCAMController_p]
+    _QPSL_DCAM_set8bit.restype = c_int32
+except:
+    loading_error("failed to load function {0}".format("QPSL_DCAM_set8bit"))
+
+try:
+    _QPSL_DCAM_set16bit = getattr(_library,"QPSL_DCAM_set16bit")
+    _QPSL_DCAM_set16bit.argtypes = [c_DCAMController_p]
+    _QPSL_DCAM_set16bit.restype = c_int32
+except:
+    loading_error("failed to load function {0}".format("QPSL_DCAM_set16bit"))
+
+try:
     _QPSL_DCAM_bufferRelease = getattr(_library, "QPSL_DCAM_bufferRelease")
     _QPSL_DCAM_bufferRelease.argtypes = [c_DCAMController_p]
     _QPSL_DCAM_bufferRelease.restype = c_int32
@@ -309,6 +344,13 @@ try:
     _QPSL_DCAM_Capture.restype = c_int32
 except:
     loading_error("failed to load function {0}".format("QPSL_DCAM_Capture"))
+
+try:
+    _QPSL_DCAM_Get_single_frame_8bit = getattr(_library, "QPSL_DCAM_Get_single_frame_8bit")
+    _QPSL_DCAM_Get_single_frame_8bit.argtypes = [c_DCAMController_p, c_void_p, c_void_p]
+    _QPSL_DCAM_Get_single_frame_8bit.restype = c_int32
+except:
+    loading_error("failed to load function {0}".format("QPSL_DCAM_Get_single_frame_8bit"))
 
 try:
     _QPSL_DCAM_Get_single_frame = getattr(_library, "QPSL_DCAM_Get_single_frame")
@@ -338,12 +380,12 @@ try:
 except:
     loading_error("failed to load function {0}".format("QPSL_DCAM_Abort"))
 
-try:
-    _QPSL_DCAM_Scan = getattr(_library, "QPSL_DCAM_Scan")
-    _QPSL_DCAM_Scan.argtypes = [c_DCAMController_p, c_int]
-    _QPSL_DCAM_Scan.restype = c_int32
-except:
-    loading_error("failed to load function {0}".format("QPSL_DCAM_Scan"))
+# try:
+#     _QPSL_DCAM_Scan = getattr(_library, "QPSL_DCAM_Scan")
+#     _QPSL_DCAM_Scan.argtypes = [c_DCAMController_p, c_int]
+#     _QPSL_DCAM_Scan.restype = c_int32
+# except:
+#     loading_error("failed to load function {0}".format("QPSL_DCAM_Scan"))
 
 try:
     _Delete_Data_pointer = getattr(_library,"Delete_Data_pointer")

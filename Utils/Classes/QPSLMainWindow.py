@@ -148,6 +148,9 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         menu.addMenu(
             self.make_sub_plugin_menu(action_name="developer plugins.",
                                       sub_dir="Developer"))
+        menu.addMenu(
+            self.make_sub_plugin_menu(action_name="analysis plugins.",
+                                      sub_dir="Analysis"))
 
     def add_menu_settings(self):
         action = self.menuBar().addAction("settings")

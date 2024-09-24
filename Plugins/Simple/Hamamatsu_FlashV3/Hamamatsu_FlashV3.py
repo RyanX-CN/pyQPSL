@@ -80,7 +80,7 @@ class DCAMLiveWorker(QPSLWorker):
                         self.m_tmp0 = np.uint16(framebuffer_cam * self.m_muti_ratio[0])
                     elif index == 1:
                         self.m_tmp1 = np.uint16(framebuffer_cam * self.m_muti_ratio[1])
-                        self.m_tmp1 = np.flip(np.flip(self.m_tmp1,0),1)
+                        self.m_tmp1 = np.flip(self.m_tmp1,0)
                     self.calculate_difference()
                 else:
                     if index == 0:
@@ -103,11 +103,15 @@ class DCAMLiveWorker(QPSLWorker):
     
     @QPSLObjectBase.log_decorator()    
     def calculate_difference(self):
-        tmp = self.m_tmp0 - self.m_tmp1
-        tmp = tmp - np.min(tmp)
-        image_difference = np.uint16( tmp )
+        tmp0 = self.m_tmp0
+        tmp1 = self.m_tmp1
+        tmp = tmp0 + tmp1
+        tmp[tmp<0] = 0
+        tmp[tmp>65535] = 65535
+        #tmp = (tmp0/(np.max(tmp0)-np.min(tmp0)) - tmp1/(np.max(tmp1)-np.min(tmp1)))*65535        
+        image_difference = np.uint16(tmp)
         qimg_difference = QImage(image_difference.copy(),image_difference.shape[1], image_difference.shape[0],
-                      image_difference.shape[1] * 2, QImage.Format.Format_Grayscale16)
+                      image_difference.shape[1]*2, QImage.Format.Format_Grayscale16)
         pixmap_cam = QPixmap.fromImage(qimg_difference)
         # self.sig_report_ndarray_difference.emit(image_difference)
         self.sig_report_pixmap_difference.emit(pixmap_cam)

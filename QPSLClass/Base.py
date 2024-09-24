@@ -104,6 +104,11 @@ try:
     loading_info("win32gui version = {0}".format("unknown"))
 except:
     loading_warning("no win32gui")
+try:
+    import cupy as cp
+    loading_info("cupy verision = {0}".format(cp.__version__))
+except:
+    loading_warning("no cupy")
 
 
 class SharedStateController:
