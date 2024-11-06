@@ -5,7 +5,9 @@ from PyQt5.QtGui import QIcon, QTextCursor, QTextCharFormat, QColor
 from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
-from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
+# from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
+from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
+
 
 '''
     This Plugin is for Thorlabs MTS50 Stage with KDC101 motor
@@ -238,20 +240,20 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def open_devices(self):
-        # print(shared_state.value)
-        if shm_device_buf[0]:
+        if device_status_controller.m_device_dict.get['dcam0'] == State.Opened:
             print("位移台运动将与滨松相机0采集同步")
-        if shm_device_buf[1]:
+        if device_status_controller.m_device_dict.get['dcam1'] == State.Opened:
             print("位移台运动将与滨松相机1采集同步")
-        shm_device_buf[2] = 1
         self.x_stage.open_device()
         self.y_stage.open_device()
         self.z_stage.open_device()
+        device_status_controller.set_device_opened('stagez')
         self.sig_device_opened.emit()
+
 
     @QPSLObjectBase.log_decorator()
     def close_devices(self):
-        shm_device_buf[2] = 0
+        device_status_controller.set_device_opened('stagez')
         self.x_stage.close_device()
         self.y_stage.close_device()
         self.z_stage.close_device()
@@ -409,7 +411,12 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
                 self.x_stage.wait_on_ready()
-        
+        elif scan_mode == "ETL Mode":
+            for i in range(loop_x):
+                QCoreApplication.instance().processEvents()
+                pass
+
+
         self.sig_scan_stopped.emit()
         self.sig_send_message.emit("Scan STOPPED", 3)
 
@@ -684,7 +691,7 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.sbox_vel_z.setSingleStep(0.1)
 
         self.btn_start_scan.setEnabled(False)
-        self.cbox_scan_mode.addItems(["Loop Mode","Distance Mode"])
+        self.cbox_scan_mode.addItems(["Loop Mode","Distance Mode","ETL Mode"])
         self.frame_max_x.hide()
         self.frame_max_y.hide()
 

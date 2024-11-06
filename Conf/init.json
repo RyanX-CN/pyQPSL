@@ -4,7 +4,7 @@
         "AGADPWorker": true,
         "DMPluginWorker": true,
         "DoubleDCAMPluginWorker": true,
-        "PIPluginUI": false,
+        "Hamamatsu_camera_Worker": true,
         "PIPluginWorker": true,
         "Thorlabs_MTS50": true,
         "Thorlabs_MTS50PluginWorker": false,
@@ -20,8 +20,8 @@
         "single_plugin_module": "Plugins.Simple.Hamamatsu_FlashV3",
         "single_plugin_size": "1977; 872"
     },
-    "style_control": "Fusion",
-    "themes": "dark_blue.xml",
+    "style_control": "windowsvista",
+    "themes": "None",
     "ui": {
         "UI load path": "Plugin/*/ui.json",
         "autosave": {
@@ -32,6 +32,7 @@
             "DMPluginUI": false,
             "DemoPluginUI": false,
             "DoubleDCAMPluginUI": false,
+            "Hamamatsu_camera_PluginUI": false,
             "HongruPluginUI": true,
             "ImageKPluginUI": false,
             "NIDAQmxAIPluginUI": false,
@@ -48,6 +49,6 @@
     },
     "version": {
         "main_version": 10,
-        "sub_version": 0
+        "sub_version": "0--Alpha"
     }
 }

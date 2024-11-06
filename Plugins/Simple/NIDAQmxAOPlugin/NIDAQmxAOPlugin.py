@@ -2,6 +2,7 @@ from Tool import *
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
 from .NIDAQmxAOAPI import *
+from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
 
 
 class NIDAQmxAOPluginWorker(QPSLWorker):
@@ -89,6 +90,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
                               arr2d=arr2d)
         self.m_self = py_object(self)
         self.m_arr2d = arr2d
+        # print(arr2d.shape)
         self.m_task.write_data(arr2d=arr2d)
         if everyn:
             self.m_task.register_everyn_callback(
@@ -100,6 +102,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
             callback_data=byref(self.m_self))
         self.sig_task_inited.emit()
         self.add_warning("ao task inited")
+        device_status_controller.set_device_opened('nidaq')
 
     @QPSLObjectBase.log_decorator()
     def on_clear_task(self):
@@ -108,6 +111,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.sig_task_clear.emit()
         del self.m_self
         self.add_warning("ao task cleared")
+        device_status_controller.set_device_closed('nidaq')
+
 
     @QPSLObjectBase.log_decorator()
     def on_start_task(self):
@@ -115,6 +120,26 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.m_task.start_task()
         self.sig_task_started.emit()
         self.add_warning("ao task started")
+
+    @QPSLObjectBase.log_decorator()
+    def on_start_task_with_thorlabs_stage(self):
+        '''
+        start task with thorlabs stage
+        '''
+        self.m_write_per_channel = 0
+        task_status_controller.m_task_dict['ao_task']['status'] = State.Wait
+        interval = task_status_controller.m_task_dict['stage_task']['loop_round']
+        for i in range(interval):
+            while not task_status_controller.m_task_dict['stage_task']['status'] == State.Done:
+                pass
+            task_status_controller.m_task_dict['ao_task']['status'] = State.Running
+            task_status_controller.m_task_dict['stage_task']['status'] == State.Wait
+            self.add_warning("ao task round {0} started".format(i))
+            self.m_task.start_task()            
+            self.sig_task_started.emit()
+        task_status_controller.m_task_dict['ao_task']['status'] = State.Done
+        self.add_warning("ao task done")
+
 
     @QPSLObjectBase.log_decorator()
     def on_stop_task(self):
@@ -143,8 +168,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
     @ctypes.WINFUNCTYPE(c_int32, c_void_p, c_int32, c_uint32, c_void_p)
     def on_everyn_callback(handle: c_void_p, event_type: c_int32,
                            n_sample: c_uint32, callback_data: c_void_p):
-        print(type(callback_data))
-        print(type(handle))
+        # print(type(callback_data))
+        # print(type(handle))
         self = ctypes.cast(callback_data, POINTER(py_object)).contents.value
         self: NIDAQmxAOPluginWorker
         index = self.m_write_per_channel % self.m_arr2d.shape[1]

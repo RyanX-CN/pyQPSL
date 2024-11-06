@@ -1,5 +1,6 @@
-from .QPSLImage3d import QPSLImage3dBase, QPSLImage3d, QPSLImageCompare3d
+from .QPSLCameraView import QPSLCameraView
 from .QPSLDCAMView import QPSLDCAMView
+from .QPSLImage3d import QPSLImage3dBase, QPSLImage3d, QPSLImageCompare3d
 from .QPSLMainWindow import QPSLMainWindow
 from .QPSLMessageBox import QPSLMessageBox
 from .QPSLPenDialog import QPSLPenDialog, QPenDialog

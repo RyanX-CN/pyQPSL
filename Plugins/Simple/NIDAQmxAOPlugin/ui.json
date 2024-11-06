@@ -3,22 +3,14 @@
         "Type": "NIDAQmxAOPluginUI",
         "generators": [
             {
-                "Cycle": 200000,
-                "Length": 200000,
-                "Max": 5.0,
-                "Min": -5.0,
-                "Phase": 0,
-                "Stage Number": 100,
-                "Type": "Trapezoid Wave"
+                "Length": 100,                
+                "Type": "File Wave",
+                "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.txt"
             },
             {
-                "Cycle": 100000,
-                "Length": 200000,
-                "Max": 5.0,
-                "Min": -5.0,
-                "Phase": 0,
-                "Stage Number": 100,
-                "Type": "Trapezoid Wave"
+                "Length": 100,                
+                "Type": "File Wave",
+                "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.npy"
             }
         ],
         "margins": "10; 10; 10; 10",
@@ -68,7 +60,7 @@
                         "Type": "QPSLSpinBox",
                         "prefix": " Sample Rate:",
                         "range": "1; 20000000",
-                        "value": 200000
+                        "value": 10000
                     },
                     {
                         "ObjectName": "spin_sample_number",
@@ -82,7 +74,7 @@
                         "prefix": " Min:",
                         "range": "-10.0; 10.0",
                         "suffix": " Vol.",
-                        "value": -9.0
+                        "value": -10.0
                     },
                     {
                         "ObjectName": "spin_max_val",
@@ -90,7 +82,7 @@
                         "prefix": " Max:",
                         "range": "-10.0; 10.0",
                         "suffix": " Vol.",
-                        "value": 8.0
+                        "value": 10.0
                     },
                     {
                         "ObjectName": "area_channels",
@@ -109,6 +101,28 @@
                                         "Type": "QPSLPushButton",
                                         "backgroud_color": "#cdcdcd",
                                         "m_text": "Channel 1:"
+                                    },
+                                    {
+                                        "Type": "QPSLComboBox",
+                                        "backgroud_color": "#ffffff"
+                                    },
+                                    {
+                                        "Type": "QPSLCheckBox",
+                                        "backgroud_color": "#ffffff",
+                                        "checked": true,
+                                        "text": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#ffffff",
+                                "stretch": "1; 2; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLPushButton",
+                                        "backgroud_color": "#cdcdcd",
+                                        "m_text": "Channel 2:"
                                     },
                                     {
                                         "Type": "QPSLComboBox",
@@ -235,7 +249,7 @@
                                 "ObjectName": "spin_everyn",
                                 "Type": "QPSLSpinBox",
                                 "prefix": " Everyn:",
-                                "value": 10000
+                                "value": 100
                             },
                             {
                                 "ObjectName": "spin_time_window",

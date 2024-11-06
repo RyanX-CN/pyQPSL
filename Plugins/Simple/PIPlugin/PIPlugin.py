@@ -39,6 +39,7 @@ class PIPluginWorker(QPSLWorker):
         self.m_dllpath = "./{0}/bin/PI_GCS2_DLL_x64.dll".format(
             __package__.replace('.', '/'))
         if self.is_virtual:
+            print("Virtual Stage")
             self.m_stage = QPSLVirtualStage(
                 minimum=virtual_minimum,
                 maximum=virtual_maximum,

@@ -19,6 +19,7 @@ from .QPSLLayout import QPSLBoxLayoutBase,QPSLHBoxLayout, QPSLVBoxLayout
 from .QPSLLineEdit import QPSLLineEdit
 from .QPSLListWidget import QPSLListWidget
 from .QPSLMenuBar import QPSLMenuBar
+from .QPSLMdiArea import QPSLMdiArea
 from .QPSLPushButton import QPSLPushButton, QPSLToggleButton
 from .QPSLRadioButton import QPSLRadioButton
 from .QPSLScrollArea import QPSLScrollArea, QPSLHScrollArea, QPSLVScrollArea, make_QPSLScrollArea_class

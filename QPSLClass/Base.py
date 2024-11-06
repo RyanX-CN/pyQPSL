@@ -111,14 +111,14 @@ except:
     loading_warning("no cupy")
 
 
-class SharedStateController:
-
+class SharedStateController(QObject):
+    sig_value_changed = pyqtSignal()
     class State(enum.Enum):
         Stop = 0
         Continue = 1
 
     __slots__ = "m_value", "m_replied"
-    """共享状态控制器
+    """线程共享状态控制器
 
     当不同线程持有同一个共享状态控制器时，可以使用该对象进行开关控制
 
@@ -126,11 +126,17 @@ class SharedStateController:
     """
 
     def __init__(self, value: 'SharedStateController.State' = State.Continue):
+        super().__init__()
         self.m_value = value
         self.m_replied = True
+        connect_direct(self.sig_value_changed, self.print_status)
+
+    def print_status(self):
+        print(f"SharedStateController: {self.m_value}")
 
     def set_continue(self):
         self.m_value = SharedStateController.State.Continue
+        self.sig_value_changed.emit()
 
     def set_continue_until_reply(self, interval_msec: int = 15):
         self.m_replied = False
@@ -140,6 +146,7 @@ class SharedStateController:
 
     def set_stop(self):
         self.m_value = SharedStateController.State.Stop
+        self.sig_value_changed.emit()
 
     def set_stop_until_reply(self, interval_msec: int = 15):
         self.m_replied = False
@@ -175,6 +182,71 @@ class SharedStateController:
             return True
         else:
             return False
+
+class State(enum.Enum):
+    Closed = 0
+    Opened = 1
+    Wait = 2
+    Running = 3
+    Done  = 4
+
+class DeviceStateController(QObject):
+    sig_value_changed = pyqtSignal(str)
+
+    __slots__ = "m_device_dict"
+    """设备开关状态控制器
+
+    用于控制设备的开关状态，当设备状态发生变化时，可以通过该对象发出信号
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.m_device_dict = dict()
+        connect_direct(self.sig_value_changed, self.print_status)
+
+    def print_status(self,device:str):
+        print(f"{device} is {self.m_device_dict[device]}")
+
+    def set_device_opened(self, device:str):
+        self.m_device_dict[device] = State.Opened
+        self.sig_value_changed.emit(device)
+
+    def set_device_closed(self, device:str):
+        self.m_device_dict[device] = State.Closed
+        self.sig_value_changed.emit(device)
+
+    def get_device_status_dict(self) -> dict:
+        return self.m_device_dict
+    
+class TaskStateController(QObject):
+    sig_value_changed = pyqtSignal(str)
+
+    __slots__ = "m_task_dict"
+    """设备任务状态控制器
+
+    用于控制设备的开关状态，当设备状态发生变化时，可以通过该对象发出信号
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.m_task_dict = dict()
+        connect_direct(self.sig_value_changed, self.print_status)
+
+    def print_status(self,device:str):
+        print(f"{device} is {self.m_task_dict[device]}")
+
+    def set_device_opened(self, device:str):
+        self.m_task_dict[device] = State.Opened
+        self.sig_value_changed.emit(device)
+
+    def set_device_closed(self, device:str):
+        self.m_task_dict[device] = State.Closed
+        self.sig_value_changed.emit(device)
+
+    def get_device_status_dict(self) -> dict:
+        return self.m_task_dict
 
 
 #

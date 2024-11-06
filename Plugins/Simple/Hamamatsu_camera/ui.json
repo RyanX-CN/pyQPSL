@@ -1,0 +1,483 @@
+{
+    "Hamamatsu_camera_PluginUI":{
+        "Type": "QPSLSplitter",
+        "backgroud_color": "#fafafa",
+        "stretch": "1; 8",
+        "v_size_policy": 13,
+        "widgets": [
+            {
+                "Type": "QPSLVFrameList",
+                "backgroud_color": "#fafafa",
+                "margins": "2; 2; 2; 2",
+                "h_size_policy":13,
+                "spacing": 5,
+                "widgets": [
+                    {
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#fafafa",
+                        "spacing": 15,
+                        "v_size_policy": 4,
+                        "widgets": [
+                            {
+                                "ObjectName": "btn_init_API",
+                                "Type": "QPSLPushButton",
+                                "m_text": "Init DCAM-API"
+                            },
+                            {
+                                "ObjectName": "btn_uninit_API",
+                                "Type": "QPSLPushButton",
+                                "m_text": "Uninit DCAM-API"
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLVFrameList",
+                        "backgroud_color": "#4c4c4c",
+                        "widgets": [
+                            {
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#999999",
+                                "margins": "30; 10; 30; 10",
+                                "spacing": 30,
+                                "widgets": [
+                                    {
+                                        "ObjectName": "btn_open_cam0",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "Open camera",
+                                        "m_opened_text": "Close camera",
+                                        "m_text": "Open camera"
+                                    },
+                                    {
+                                        "ObjectName": "btn_live_cam0",
+                                        "Type": "QPSLToggleButton",
+                                        "backgroud_color": "#a2a2a2",
+                                        "m_closed_text": "Live",
+                                        "m_opened_text": "Abort",
+                                        "m_text": "Live"
+                                    },
+                                    {
+                                        "ObjectName": "btn_capture_cam0",
+                                        "Type": "QPSLPushButton",
+                                        "m_text": "Capture"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#999999",
+                                "frame_shadow": 32,
+                                "frame_shape": 1,
+                                "margins": "10; 5; 0; 5",
+                                "widgets": [
+                                    {
+                                        "ObjectName": "label_device_cam0",
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#999999",
+                                        "text": "Device:"
+                                    },
+                                    {
+                                        "ObjectName": "label_temperature_cam0",
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#999999",
+                                        "text": "Temperature:"
+                                    },
+                                    {
+                                        "ObjectName": "label_framerate_cam0",
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#999999",
+                                        "text": "Frame rate:"
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#999999",
+                                "font": "Arial; 12; 75; False",
+                                "text": "Settings:"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#999999",
+                                "frame_shadow": 32,
+                                "frame_shape": 1,
+                                "margins": "0; 5; 0; 5",
+                                "spacing": 5,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#999999",
+                                        "margins": "5; 0; 0; 0",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#999999",
+                                                "text": "Subarray range:"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#4c4c4c",
+                                                "margins": "10; 5; 20; 5",
+                                                "spacing": 30,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#4c4c4c",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "alignment": 130,
+                                                                "backgroud_color": "#4c4c4c",
+                                                                "text": "X0 "
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_x0_cam0",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#4c4c4c",
+                                                                "h_size_policy": 4,
+                                                                "range": "0; 2048",
+                                                                "v_size_policy": 4
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#4c4c4c",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "alignment": 130,
+                                                                "backgroud_color": "#ffffff",
+                                                                "text": "Width "
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_width_cam0",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#4c4c4c",
+                                                                "h_size_policy": 4,
+                                                                "range": "0; 2048",
+                                                                "v_size_policy": 4,
+                                                                "value": 2048
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#4c4c4c"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#000000",
+                                                "margins": "10; 0; 20; 0",
+                                                "spacing": 25,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#e5e5e5",
+                                                        "margins": "0; 0; 3; 0",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "alignment": 130,
+                                                                "backgroud_color": "#e5e5e5",
+                                                                "text": "Y0 "
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_y0_cam0",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#e5e5e5",
+                                                                "h_size_policy": 4,
+                                                                "range": "0; 2048",
+                                                                "v_size_policy": 4
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#e5e5e5",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "alignment": 130,
+                                                                "backgroud_color": "#e5e5e5",
+                                                                "text": "Height "
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_height_cam0",
+                                                                "Type": "QPSLSpinBox",
+                                                                "backgroud_color": "#e5e5e5",
+                                                                "h_size_policy": 4,
+                                                                "range": "0; 2048",
+                                                                "v_size_policy": 4,
+                                                                "value": 2048
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "ObjectName": "btn_applyROI_cam0",
+                                                        "Type": "QPSLPushButton",
+                                                        "backgroud_color": "#fcfcfc",
+                                                        "m_text": "apply"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#191919",
+                                        "margins": "5; 0; 0; 0",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#666666",
+                                                "text": "Trigger:"
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#191919",
+                                                "margins": "5; 0; 9; 0",
+                                                "widgets": [
+                                                    {
+                                                        "ObjectName": "cbox_trigger_cam0",
+                                                        "Type": "QPSLComboBox",
+                                                        "backgroud_color": "#333333",
+                                                        "h_size_policy": 1
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#191919",
+                                                "margins": "10; 0; 10; 0",
+                                                "spacing": 20,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#191919",
+                                                        "spacing": 5,
+                                                        "widgets": [
+                                                            {
+                                                                "ObjectName": "btn_trigger_positive_cam0",
+                                                                "Type": "QPSLRadioButton",
+                                                                "backgroud_color": "#999999",
+                                                                "is_checked": true,
+                                                                "text": "Positive"
+                                                            },
+                                                            {
+                                                                "ObjectName": "btn_trigger_negative_cam0",
+                                                                "Type": "QPSLRadioButton",
+                                                                "backgroud_color": "#191919",
+                                                                "text": "Negative"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "Type": "QPSLHFrameList",
+                                                        "backgroud_color": "#666666",
+                                                        "widgets": [
+                                                            {
+                                                                "Type": "QPSLLabel",
+                                                                "backgroud_color": "#191919",
+                                                                "text": "Delay: "
+                                                            },
+                                                            {
+                                                                "ObjectName": "sbox_trigger_delay_cam0",
+                                                                "Type": "QPSLDoubleSpinBox",
+                                                                "backgroud_color": "#333333",
+                                                                "suffix": " ms"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#999999",
+                                        "margins": "5; 0; 10; 0",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#999999",
+                                                "text": "Exposure time:"
+                                            },
+                                            {
+                                                "ObjectName": "sbox_exposure_time_cam0",
+                                                "Type": "QPSLDoubleSpinBox",
+                                                "backgroud_color": "#999999",
+                                                "decimals": 1,
+                                                "suffix": " ms",
+                                                "v_size_policy": 4,
+                                                "value": 10.0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "Type": "QPSLLabel",
+                                "backgroud_color": "#000000",
+                                "font": "Arial; 12; 75; False",
+                                "text": "Scan:"
+                            },
+                            {
+                                "Type": "QPSLVFrameList",
+                                "backgroud_color": "#999999",
+                                "frame_shadow": 32,
+                                "frame_shape": 1,
+                                "margins": "5; 5; 5; 5",
+                                "spacing": 10,
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#999999",
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_scan_continous_cam0",
+                                                "Type": "QPSLRadioButton",
+                                                "backgroud_color": "#4c4c4c",
+                                                "text": "Continous Mode"
+                                            },
+                                            {
+                                                "ObjectName": "btn_scan_loop_cam0",
+                                                "Type": "QPSLRadioButton",
+                                                "backgroud_color": "#191919",
+                                                "text": "Loop Mode"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "ObjectName": "frame_loop_setting",
+                                        "Type": "QPSLVFrameList",
+                                        "backgroud_color": "#999999",
+                                        "margins": "50; 0; 50; 0",
+                                        "spacing": 5,
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#333333",
+                                                "spacing": 32,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#999999",
+                                                        "text": "End frame:"
+                                                    },
+                                                    {
+                                                        "ObjectName": "sbox_scan_endframe_cam0",
+                                                        "Type": "QPSLSpinBox",
+                                                        "backgroud_color": "#999999",
+                                                        "h_size_policy": 7,
+                                                        "value": 100
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "Type": "QPSLHFrameList",
+                                                "backgroud_color": "#666666",
+                                                "spacing": 13,
+                                                "widgets": [
+                                                    {
+                                                        "Type": "QPSLLabel",
+                                                        "backgroud_color": "#999999",
+                                                        "text": "Loop Round: "
+                                                    },
+                                                    {
+                                                        "ObjectName": "sbox_scan_loop_cam0",
+                                                        "Type": "QPSLSpinBox",
+                                                        "backgroud_color": "#999999",
+                                                        "h_size_policy": 7,
+                                                        "value": 10
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#999999",
+                                        "margins": "0; 0; 7; 0",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#999999",
+                                                "text": "Compress Method\uff1a"
+                                            },
+                                            {
+                                                "ObjectName": "cbox_compress_method",
+                                                "Type": "QPSLComboBox",
+                                                "backgroud_color": "#999999",
+                                                "h_size_policy": 7
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#4c4c4c",
+                                        "spacing": 5,
+                                        "stretch": "1; 8; 1; 0",
+                                        "widgets": [
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#e5e5e5",
+                                                "text": "Path "
+                                            },
+                                            {
+                                                "ObjectName": "line_path_cam0",
+                                                "Type": "QPSLLineEdit",
+                                                "backgroud_color": "#4c4c4c"
+                                            },
+                                            {
+                                                "ObjectName": "btn_path_cam0",
+                                                "Type": "QPSLPushButton",
+                                                "h_size_policy": 13,
+                                                "m_text": "..."
+                                            },
+                                            {
+                                                "Type": "QPSLLabel",
+                                                "backgroud_color": "#4c4c4c"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Type": "QPSLHFrameList",
+                                        "backgroud_color": "#4c4c4c",
+                                        "margins": "30; 0; 30; 0",
+                                        "spacing": 30,
+                                        "widgets": [
+                                            {
+                                                "ObjectName": "btn_start_scan_cam0",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Start"
+                                            },
+                                            {
+                                                "ObjectName": "btn_stop_scan_cam0",
+                                                "Type": "QPSLPushButton",
+                                                "m_text": "Stop"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "Type": "QPSLLabel",
+                        "backgroud_color": "#fafafa",
+                        "v_size_policy": 7
+                    }
+                ]
+            },
+            {
+                "Type": "QPSLCameraView",
+                "backgroud_color": "#fafafa",
+                "object_name": "camview_DCAM"
+            }
+        ]
+    }
+}

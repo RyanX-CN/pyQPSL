@@ -2180,19 +2180,19 @@
                                                 "Type": "QPSLCurveDeque",
                                                 "capacity": 80,
                                                 "color": "#ffaa00",
-                                                "text": "series 1"
+                                                "text": "channel 1"
                                             },
                                             {
                                                 "Type": "QPSLCurveDeque",
                                                 "capacity": 40,
                                                 "color": "#22ffff",
-                                                "text": "series 2"
+                                                "text": "channel 2"
                                             },
                                             {
                                                 "Type": "QPSLCurveDeque",
                                                 "capacity": 40,
                                                 "color": "#a946ff",
-                                                "text": "series 3"
+                                                "text": "channel 3"
                                             }
                                         ]
                                     },

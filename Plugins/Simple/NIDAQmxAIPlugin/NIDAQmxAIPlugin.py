@@ -380,7 +380,7 @@ class NIDAQmxAIPluginUI(QPSLHFrameList, QPSLPluginBase):
                                             everyn)
         while len(self.plot_show.get_deques()) < len(channels):
             self.plot_show.add_deque(deque=QPSLCurveDeque().load_attr(
-                deque_name="series {0}".format(
+                deque_name="channel {0}".format(
                     len(self.plot_show.get_deques()) + 1)))
         if self.spin_sample_number.value():
             limit = (self.spin_sample_number.value() +

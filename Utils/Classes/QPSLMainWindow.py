@@ -3,6 +3,17 @@ from ..BaseClass import *
 from ..UIClass.QPSLDockWidget import QPSLDockWidget
 from ..UIClass.QPSLMenuBar import QPSLMenuBar
 
+# '''多进程共享状态控制器'''
+# try: 
+#     from shared_memory_dict import SharedMemoryDict
+#     shm_device_status = SharedMemoryDict(name="device_status", size=1024)
+#     shm_task = SharedMemoryDict(name="task_status", size=1024)
+# except:
+#     loading_warning("no shared-memory-dict(status monitor is not available)")
+
+# '''多线程共享状态控制器'''
+device_status_controller = DeviceStateController()
+task_status_controller = TaskStateController()
 
 class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
     sig_plugin_closed = pyqtSignal()
@@ -13,6 +24,13 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         self.m_is_single_plugin: bool = init_config_getset(
             keys=("plugin_mode", "is_single_plugin"), value=False)
         self.setup_logic()
+        # side_window = QMainWindow(self)
+        # side_window.setWindowTitle('Side Window')
+        # main_window_width = self.width()
+        # main_window_height = self.height()
+        # side_window.setGeometry(self.x(), self.y(), main_window_width // 2, main_window_height)
+        # side_window.show()
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
     def setup_logic(self):
         self.setMenuBar(QPSLMenuBar())
@@ -42,9 +60,13 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             QPSL_App_Mode_PopBox.set_choice_as(choice="Multi Plugins",
                                                with_callback=False)
         add_global_single_choice_popbox(box=QPSL_App_Mode_PopBox)
-        action = QAction("reboot")
-        connect_direct(action.triggered, self.reboot)
-        add_global_action(action)
+        # action = QAction("reboot")
+        # connect_direct(action.triggered, self.reboot)
+        # add_global_action(action)
+        self.btn_reboot = QPushButton("reboot")
+        self.menuBar().setCornerWidget(self.btn_reboot,Qt.Corner.TopRightCorner)
+        connect_direct(self.btn_reboot.clicked,
+                       self.reboot)
         connect_direct(self.sig_plugin_closed_of, self.remove_widget_in_dock)
         if self.m_is_single_plugin:
             single_plugin_module = init_config_getset(
@@ -66,7 +88,7 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             # self.menuBar().hide()
         else:
             self.resize(1000, 500)
-            self.setWindowTitle("QPSL-pyQt-{0}.{1}".format(
+            self.setWindowTitle("pyQPSL-{0}.{1}".format(
                 init_config_get(keys=("version", "main_version")),
                 init_config_get(keys=("version", "sub_version"))))
 

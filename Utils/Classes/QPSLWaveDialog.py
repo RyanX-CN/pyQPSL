@@ -3,7 +3,7 @@ from QPSLClass.Base import Any
 from ..BaseClass import *
 from ..Enum import *
 from ..UIClass.QPSLDialog import QPSLDialog
-
+import pandas as pd 
 
 class AttrType(QObject):
     sig_value_changed = pyqtSignal()
@@ -413,9 +413,12 @@ class QPSLFileWaveGenerator(QPSLWaveGenerator):
         arr = []
         file = self.m_attr_file.get_value()
         length = self.m_attr_length.get_value()
-        with open(file, "rt") as f:
-            for line in f.readlines():
-                arr.extend(map(float, line.strip().split()))
+        if file.endswith(".npy"):
+            arr = np.load(file).tolist()
+        else:
+            with open(file, "rt") as f:
+                for line in f.readlines():
+                    arr.extend(map(float, line.strip().split()))
         arr = np.tile(arr, (length + len(arr) - 1) // len(arr))
         self.set_wave(wave=arr)
 
