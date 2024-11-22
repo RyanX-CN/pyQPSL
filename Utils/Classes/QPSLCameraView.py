@@ -7,8 +7,6 @@ from ..UIClass.QPSLLabel import QPSLLabel, QPSLTrackedScalePixmapLabel
 from ..UIClass.QPSLMdiArea import QPSLMdiArea,QPSLSubWindow
 from ..UIClass.QPSLSpinBox import QPSLSpinBox, QPSLDoubleSpinBox
 
-import napari
-import imagej
 
 class QPSLCameraView(QPSLMdiArea, QPSLWidgetBase):
     sig_hovered_pos = pyqtSignal(QPointF)

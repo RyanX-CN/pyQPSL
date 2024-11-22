@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QTextCursor, QTextCharFormat, QColor
 from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
-# from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
+from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
 from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
 
 

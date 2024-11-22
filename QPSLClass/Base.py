@@ -109,6 +109,14 @@ try:
     loading_info("cupy verision = {0}".format(cp.__version__))
 except:
     loading_warning("no cupy")
+try:
+    import napari
+except:
+    loading_warning("no napari")
+try:
+    import imagej
+except:
+    loading_warning("no imagej")
 
 
 class SharedStateController(QObject):

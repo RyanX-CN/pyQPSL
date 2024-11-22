@@ -1,6 +1,3 @@
-import imagej
-import napari
-
 from ctypes import *
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QElapsedTimer
@@ -490,8 +487,6 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         self.m_live_worker = DCAMLiveWorker().load_attr()
         self.m_save_worker = DCAMSaveWorker().load_attr(0)
         self.m_time_queue = [deque(), deque()]
-        # Integrate napari
-        self.viewer = napari.Viewer()
         self.image_layer = None
 
     def load_attr(self):

@@ -3,14 +3,14 @@
         "Type": "NIDAQmxAOPluginUI",
         "generators": [
             {
-                "Length": 1000,                
+                "Length": 11000,                
                 "Type": "File Wave",
-                "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.txt"
+                "File": "E:/XHB_CODE/ETL_wave/cmos_wave.npy"
             },
             {
-                "Length": 1000,                
+                "Length": 11000,                
                 "Type": "File Wave",
-                "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.npy"
+                "File": "E:/XHB_CODE/ETL_wave/etl_wave.npy"
             }
         ],
         "margins": "10; 10; 10; 10",

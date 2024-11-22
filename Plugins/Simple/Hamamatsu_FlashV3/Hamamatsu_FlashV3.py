@@ -8,6 +8,7 @@ from multiprocessing import Manager,shared_memory
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
 from .DCAMAPI import *
+from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
 
 '''
     This Plugin is for controll 2 Hamamatsu CMOS camera ORCA-Flash4.0 V3
@@ -254,10 +255,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         connect_asynch_and_synch(self.sig_to_set_trigger_delay_cam,self.sig_set_trigger_dalay_cam,
                                  self.on_set_trigger_delay_cam)
         connect_asynch_and_synch(self.sig_to_setExposuretime_cam,self.sig_setExposuretime_cam,
-                                 self.on_set_exposure_time_cam)
-    #     connect_direct(shm_device.sig_value_changed,self.on_shm_device_value_changed)
-    # def on_shm_device_value_changed(self, value):
-    #     print(f"SharedStateController value changed to: {value}")        
+                                 self.on_set_exposure_time_cam)       
     
     
     @QPSLObjectBase.log_decorator()

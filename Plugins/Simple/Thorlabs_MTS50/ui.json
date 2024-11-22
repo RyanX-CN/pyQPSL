@@ -24,10 +24,10 @@
                                     {
                                         "ObjectName": "btn_open_all",
                                         "Type": "QPSLToggleButton",
-                                        "backgroud_color": "#ffffff",
+                                        "backgroud_color": "#a2a2a2",
                                         "m_closed_text": "Open devices",
                                         "m_opened_text": "Close devices",
-                                        "m_text": "Close devices"
+                                        "m_text": "Open devices"
                                     },
                                     {
                                         "ObjectName": "btn_home_all",

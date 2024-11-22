@@ -1,11 +1,9 @@
-import napari.viewer
 from QPSLClass.Base import *
 from ..BaseClass import *
 from ..UIClass.QPSLDockWidget import QPSLDockWidget
 from ..UIClass.QPSLMenuBar import QPSLMenuBar
 
-import napari
-# '''多进程共享状态控制器'''
+# '''多进程共享状态控制器初始化'''
 # try: 
 #     from shared_memory_dict import SharedMemoryDict
 #     shm_device_status = SharedMemoryDict(name="device_status", size=1024)
@@ -13,7 +11,7 @@ import napari
 # except:
 #     loading_warning("no shared-memory-dict(status monitor is not available)")
 
-# '''多线程共享状态控制器'''
+# '''多线程共享状态控制器初始化'''
 device_status_controller = DeviceStateController()
 task_status_controller = TaskStateController()
 
