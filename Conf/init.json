@@ -4,6 +4,7 @@
         "AGADPWorker": true,
         "DMPluginWorker": true,
         "DoubleDCAMPluginWorker": true,
+        "Hamamatsu_camera_PluginUI": true,
         "Hamamatsu_camera_Worker": true,
         "PIPluginWorker": true,
         "Thorlabs_MTS50": true,

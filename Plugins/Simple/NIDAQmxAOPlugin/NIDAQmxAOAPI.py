@@ -71,6 +71,7 @@ class DAQmxAnalogOutputTask(Structure):
         return self.error_code
 
     def write_data(self, arr2d: np.ndarray) -> Tuple[int, c_int32]:
+        print(arr2d,'\n',arr2d.shape)
         assert arr2d.shape[0] == self.channel_number
         assert self.sample_per_channel == 0 or arr2d.shape[
             1] == self.sample_per_channel

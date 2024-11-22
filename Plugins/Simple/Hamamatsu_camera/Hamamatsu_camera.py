@@ -1,11 +1,15 @@
+import imagej
+import napari
+
 from ctypes import *
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QElapsedTimer
 from PyQt5.QtGui import QTextCursor, QTextCharFormat, QColor 
 from datetime import datetime as dt
-from multiprocessing import shared_memory, Process
-from nvidia import nvcomp
+from itertools import cycle
+# from nvidia import nvcomp
 
+from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
 from Tool import *
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
@@ -15,16 +19,6 @@ from .DCAMAPI import *
     This Plugin is for controll Hamamatsu CMOS camera ORCA-Flash4.0 V3
 '''
 virtual_mode = True
-
-# 下标0-2分别表示相机0开启状态，相机1开启状态，位移台开启状态
-shm_device = shared_memory.SharedMemory(create=True, size=10)
-shm_device_buf = shm_device.buf
-shm_device_buf[:3] = bytearray([0,0,0])
-# 下标0-2分别表示相机0存储状态，相机1开启状态，位移台运动状态
-shm_status = shared_memory.SharedMemory(create=True,size=10)
-shm_status_buf = shm_status.buf
-shm_status_buf[:3] = bytes([0,0,0])
-
 
 TARGET_MIN = 0 
 TARGET_MAX = 65535
@@ -47,6 +41,10 @@ class DCAMLiveWorker(QPSLWorker):
         self.m_downsample_rate = 5
         self.m_muti_ratio = 20
         self.m_data_queues = deque()
+        # Integrate ImageJ
+        # self.ij = imagej.init(mode='interactive')
+        # self.ij.ui().showUI()
+        self.image_ij = None
 
     def to_delete(self):
         return super().to_delete()
@@ -67,19 +65,47 @@ class DCAMLiveWorker(QPSLWorker):
         # =============== Downsample data to show on UI ===============        
         if self.m_live_flag and self.m_image_id%self.m_downsample_rate == 0:
             # imagedata_host = imagedata_host[::2,::2]
-            imagedata_host = np.uint16(imagedata_host * self.m_muti_ratio[0])
-            qimg_cam = QImage(imagedata_host.data,imagedata_host.shape[1], imagedata_host.shape[0],
-                imagedata_host.shape[1] * 2, QImage.Format.Format_Grayscale16)
-            pixmap_cam = QPixmap.fromImage(qimg_cam)
-            self.sig_report_pixmap.emit(pixmap_cam)            
+            # imagedata_host = np.uint16(imagedata_host * self.m_muti_ratio[0])
+            # qimg_cam = QImage(imagedata_host.data,imagedata_host.shape[1], imagedata_host.shape[0],
+            #     imagedata_host.shape[1] * 2, QImage.Format.Format_Grayscale16)
+            # pixmap_cam = QPixmap.fromImage(qimg_cam)
+            # self.sig_report_pixmap.emit(pixmap_cam)
+            image_j = self.ij.py.to_imageplus(imagedata_host)
+            if image_ij is None:
+                image_ij = image_j
+                image_ij.show()
+            else:
+                image_ij.setProcessor(image_j.getProcessor())
+
+            self.ij.IJ.run(image_ij, "Enhance Contrast", "saturated=0.35")
         
         data_ptr = ctypes.cast(data_ptr,c_void_p)
-        Delete_Data_pointer(data_ptr)
+        Delete_Data_pointer(data_ptr)          
+        
+    @QPSLObjectBase.log_decorator()     
+    def receive_virtual_data_from_cam(self, imagedata_host:np.ndarray):
+        if self.m_save_flag:    
+            self.sig_report_ndarray.emit(imagedata_host)
+        self.m_image_id += 1
+        if self.m_live_flag:
+            # image_j = self.ij.py.to_imageplus(imagedata_host)
+            # if self.image_ij is None:
+            #     self.image_ij = image_j
+            #     self.image_ij.show()
+            # else:
+            #     self.image_ij.setProcessor(image_j.getProcessor())
+            # self.ij.IJ.run(self.image_ij, "Enhance Contrast", "saturated=0.35")
+            # self.ij.IJ.run(self.image_ij, "Measure", "")
+            # image_j.close()
+            self.sig_report_ndarray.emit(imagedata_host)
 
-    @QPSLObjectBase.log_decorator()
-    def multiprocessing_handle_image(self):
-        process = Process(target=self.receive_data_from_cam)
-        process.start()
+
+
+
+    # @QPSLObjectBase.log_decorator()
+    # def multiprocessing_handle_image(self):
+    #     process = Process(target=self.receive_data_from_cam)
+    #     process.start()
 
 class DCAMSaveWorker(QPSLWorker):
     '''
@@ -165,6 +191,7 @@ class DCAMSaveWorker(QPSLWorker):
 class DCAMCompressWorker(QPSLWorker):
     pass
 
+
 class Hamamatsu_camera_Worker(QPSLWorker):
     '''
     Worker for camera operation tasks
@@ -174,7 +201,7 @@ class Hamamatsu_camera_Worker(QPSLWorker):
     sig_close_cam, sig_to_close_cam, sig_cam_closed = pyqtSignal(
     ), pyqtSignal(), pyqtSignal()
     sig_live_cam, sig_to_live_cam, sig_cam_lived = pyqtSignal(
-    ), pyqtSignal(), pyqtSignal()
+    ), pyqtSignal(bool), pyqtSignal()
     sig_abort_cam, sig_to_abort_cam, sig_cam_aborted = pyqtSignal(
     ), pyqtSignal(), pyqtSignal()
     sig_setROI_cam, sig_to_setROI_cam = pyqtSignal(
@@ -189,6 +216,7 @@ class Hamamatsu_camera_Worker(QPSLWorker):
     sig_stop_scan_cam, sig_to_stop_scan_cam, sig_scan_cam_stopped = pyqtSignal(
     ), pyqtSignal(), pyqtSignal()
     sig_send_data_to_live = pyqtSignal(int, np.uint64)
+    sig_send_virtual_data_to_live = pyqtSignal(np.ndarray)
     sig_refresh_frame_rate = pyqtSignal(float)
     sig_send_message = pyqtSignal(str,int)
 
@@ -267,26 +295,40 @@ class Hamamatsu_camera_Worker(QPSLWorker):
         err, self.temp_cam = self.m_cam.get_temperature()
     
     @QPSLObjectBase.log_decorator()
-    def on_live_cam(self):
+    def on_live_cam(self, is_virtual:bool):
         self.m_continue_flag = True
         self.sig_cam_lived.emit()
-        self.sig_send_message.emit(
-            "{0}\nCAM{1} is living".format(dt.now().time().replace(microsecond=0),self.index),2
-            )
-        self.m_worker_self = py_object(self)
-        self.m_cam.pre_live()
-        self.m_timer_freq.start()
-        while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag:
-            QCoreApplication.instance().processEvents()
-            self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
-                            callback= Hamamatsu_camera_Worker.on_everyframe_callback)
-            elapsed_time = self.m_timer_freq.elapsed()
-            self.sig_refresh_frame_rate.emit(elapsed_time/1000.0)
-        self.m_cam.post_live()
+        if is_virtual:
+            self.sig_send_message.emit("virtual CAM is living",2)
+            image_files = glob.glob('resources/virtual_data/*.tif')
+            self.m_timer_freq.start()
+            for image_file in cycle(image_files):
+                QCoreApplication.instance().processEvents()
+                if not self.m_continue_flag:
+                    break
+                imagedata_host = tifffile.imread(image_file)
+                self.sig_send_virtual_data_to_live.emit(imagedata_host)
+                sleep_for(10) # Adjust sleep time as needed
+                elapsed_time = self.m_timer_freq.elapsed()
+                self.sig_refresh_frame_rate.emit(elapsed_time/1000.0)  
+        else:
+            self.sig_send_message.emit(
+                "{0}\nCAM{1} is living".format(dt.now().time().replace(microsecond=0),self.index),2
+                )
+            self.m_worker_self = py_object(self)
+            self.m_cam.pre_live()
+            self.m_timer_freq.start()
+            while self.m_cam.err_code != DCAMERR_ABORT and self.m_continue_flag:
+                QCoreApplication.instance().processEvents()
+                self.m_cam.get_single_frame(pyworker=byref(self.m_worker_self), 
+                                callback= Hamamatsu_camera_Worker.on_everyframe_callback)
+                elapsed_time = self.m_timer_freq.elapsed()
+                self.sig_refresh_frame_rate.emit(elapsed_time/1000.0)
+            self.m_cam.post_live()
+            self.sig_send_message.emit(
+                "{0}\nCAM{1} aborted".format(dt.now().time().replace(microsecond=0),self.index),3
+                )
         self.sig_cam_aborted.emit()
-        self.sig_send_message.emit(
-            "{0}\nCAM{1} aborted".format(dt.now().time().replace(microsecond=0),self.index),3
-            )
         # del self.m_worker_self
 
     @QPSLObjectBase.log_decorator()
@@ -435,7 +477,7 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
     def load_by_json(self,json:Dict):
         super().load_by_json(json)  
         self.setup_style()
-        # self.setup_logic()
+        self.setup_logic()
 
     def to_json(self):
         res: Dict = super().to_json()
@@ -443,10 +485,14 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
 
     def __init__(self):
         super().__init__()
+        self.is_virtual = True
         self.m_cam_worker = Hamamatsu_camera_Worker().load_attr(0)
         self.m_live_worker = DCAMLiveWorker().load_attr()
         self.m_save_worker = DCAMSaveWorker().load_attr(0)
         self.m_time_queue = [deque(), deque()]
+        # Integrate napari
+        self.viewer = napari.Viewer()
+        self.image_layer = None
 
     def load_attr(self):
         with open(self.get_json_file(),"rt") as f:
@@ -463,15 +509,14 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         self.m_save_worker.to_delete()
         if self.auto_save():
             self.save_into_json(json_path=self.get_json_file())
-        shm_device.close()
-        shm_device.unlink()
-        shm_status.close()
-        shm_status.unlink()
         return super().to_delete()
     
     def get_named_widgets(self):        
         self.btn_init_API : QPSLPushButton = self.findChild(QPSLPushButton, "btn_init_API")
         self.btn_uninit_API : QPSLPushButton = self.findChild(QPSLPushButton, "btn_uninit_API")
+        self.cbox_none_view : QPSLCheckBox = self.findChild(QPSLCheckBox, "cbox_none_view")
+        self.cbox_view_with_napari : QPSLCheckBox = self.findChild(QPSLCheckBox, "cbox_view_with_napari")
+        self.cbox_view_with_imagej : QPSLCheckBox = self.findChild(QPSLCheckBox, "cbox_view_with_imagej")
         self.btn_open_cam0 : QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_open_cam0")
         self.btn_live_cam0 : QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_live_cam0")
         self.btn_capture_cam0 : QPSLPushButton = self.findChild(QPSLPushButton, "btn_capture_cam0")
@@ -498,11 +543,15 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         self.btn_path_cam0 : QPSLPushButton = self.findChild(QPSLPushButton, "btn_path_cam0")
         self.btn_start_scan_cam0 : QPSLPushButton = self.findChild(QPSLPushButton, "btn_start_scan_cam0")
         self.btn_stop_scan_cam0 : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_scan_cam0")
-
-        self.camview_DCAM :QPSLCameraView = self.findChild(QPSLCameraView, "camview_DCAM")        
+        self.camview_DCAM : QPSLCameraView = self.findChild(QPSLCameraView, "camview_DCAM")     
         
     def setup_style(self):
         self.get_named_widgets()
+        self.view_choice_group = QtWidgets.QButtonGroup(self)
+        self.view_choice_group.addButton(self.cbox_none_view)
+        self.view_choice_group.addButton(self.cbox_view_with_napari)
+        self.view_choice_group.addButton(self.cbox_view_with_imagej)
+        self.cbox_none_view.setChecked(True)
         self.cbox_trigger_cam0.addItems(["Internal","External","Syncreadout"])
         self.scan_radiobuttongroup1 = QtWidgets.QButtonGroup(self)
         self.scan_radiobuttongroup1.addButton(self.btn_scan_continous_cam0)
@@ -513,14 +562,17 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         self.line_path_cam0.setText("E:/Custom_Control_Software/Test")
         for btn in self.btn_after_API_init:
             btn.setDisabled(True)
+        # self.viewer = napari.Viewer()
+        # self.camview_DCAM.addSubWindow(self.viewer.window.qt_viewer)  
+
     
     def setup_logic(self):
-        self.get_named_widgets()
+        # self.get_named_widgets()
         # self.m_worker_cam0.load_attr()
         self.timer_temp_1 = QTimer(self)
         self.timer_temp_2 = QTimer(self)
-        connect_direct(self.tab_view.sig_index_changed_to,
-                       self.on_show_difference)
+        # connect_direct(self.tab_view.sig_index_changed_to,
+        #                self.on_show_difference)
         '''============================================= DCAM-API ============================================='''
         connect_direct(self.btn_init_API.sig_clicked,
                        self.init_API)
@@ -544,27 +596,33 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         connect_direct(self.btn_capture_cam0.sig_clicked,
                        self.on_click_capture_cam0)
         # Live/Abort
+        connect_queued(self.cbox_view_with_napari.clicked,
+                       self.camview_DCAM.startup_napari)
         connect_direct(self.btn_live_cam0.sig_open,
                        self.on_click_live_cam0)
         connect_queued(self.m_cam_worker.sig_cam_lived,
                        self.btn_live_cam0.set_opened)
         connect_queued(self.m_cam_worker.sig_send_data_to_live,
-                       self.m_live_worker.receive_data_from_cam)  
+                       self.m_live_worker.receive_data_from_cam)
+        connect_queued(self.m_cam_worker.sig_send_virtual_data_to_live,
+                       self.m_live_worker.receive_virtual_data_from_cam)  
         connect_queued(self.m_live_worker.sig_report_pixmap,
                        self.refresh_live_view1)
         connect_direct(self.btn_live_cam0.sig_close,
                        self.on_click_abort_cam0)    
         connect_queued(self.m_cam_worker.sig_cam_aborted,
                        self.btn_live_cam0.set_closed)
-        connect_queued(self.view_cam0.sbox_ratio_1.sig_value_changed_to,
-                       self.on_change_live_ratio_cam0)
+        # connect_queued(self.view_cam0.sbox_ratio_1.sig_value_changed_to,
+        #                self.on_change_live_ratio_cam0)
         connect_queued(self.m_cam_worker.sig_refresh_frame_rate,
                        self.refresh_framerate_cam0)
         # Scan/Stop
         connect_direct(self.btn_start_scan_cam0.sig_clicked,
                        self.on_clicked_scan_cam0)
+        # connect_queued(self.m_live_worker.sig_report_ndarray,
+        #                self.m_save_worker.save_tiff_file)
         connect_queued(self.m_live_worker.sig_report_ndarray,
-                       self.m_save_worker.save_tiff_file)
+                       self.refresh_napari)
         connect_direct(self.btn_stop_scan_cam0.sig_clicked,
                        self.on_clicked_stop_cam0)
         connect_queued(self.m_cam_worker.sig_single_round_scan_done,
@@ -585,104 +643,114 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
         connect_direct(self.btn_path_cam0.clicked,
                        self.choose_path_cam0)
         '''============================================= CAMERA 1 ============================================='''
-        connect_queued(self.m_worker_cam1.sig_send_message,
-                       self.add_log_message)
-        # Open/Close       
-        connect_direct(self.btn_open_cam1.sig_open,
-                       self.on_click_open_cam1)
-        connect_queued(self.m_worker_cam1.sig_cam_opened,
-                       self.btn_open_cam1.set_opened)
-        connect_direct(self.timer_temp_2.timeout,
-                       self.refresh_temperature_cam1)
-        connect_direct(self.btn_open_cam1.sig_close,
-                       self.on_click_close_cam1)
-        connect_queued(self.m_worker_cam1.sig_cam_closed,
-                       self.btn_open_cam1.set_closed)
-        # Capture
-        connect_direct(self.btn_capture_cam1.sig_clicked,
-                       self.on_click_capture_cam1)
-        # Live/Abort      
-        connect_direct(self.btn_live_cam1.sig_open,
-                       self.on_click_live_cam1)
-        connect_queued(self.m_worker_cam1.sig_cam_lived,
-                       self.btn_live_cam1.set_opened)
-        connect_queued(self.m_worker_cam1.sig_cam_aborted,
-                       self.btn_live_cam1.set_closed)
-        connect_queued(self.m_worker_cam1.sig_send_data_to_live,
-                       self.m_live_worker.receive_data_from_cam)  
-        connect_queued(self.m_live_worker.sig_report_pixmap_cam1,
-                       self.refresh_live_view2)
-        connect_direct(self.btn_live_cam1.sig_close,
-                       self.on_click_abort_cam1)    
-        connect_queued(self.m_worker_cam1.sig_cam_aborted,
-                       self.btn_live_cam1.set_closed)
-        connect_direct(self.view_cam1.sbox_ratio_1.sig_value_changed_to,
-                       self.on_change_live_ratio_cam1)
-        connect_queued(self.m_worker_cam1.sig_refresh_frame_rate,
-                       self.refresh_framerate_cam1)
-        # Scan/Stop      
-        connect_direct(self.btn_start_scan_cam1.sig_clicked,
-                       self.on_clicked_scan_cam1)
-        connect_queued(self.m_live_worker.sig_report_ndarray_cam1,
-                       self.m_save_worker_cam1.save_tiff_file)
-        connect_direct(self.btn_stop_scan_cam1.sig_clicked,
-                       self.on_clicked_stop_cam1)
-        connect_queued(self.m_worker_cam1.sig_single_round_scan_done,
-                       self.m_save_worker_cam1.set_save_path)
-        # Setting       
-        connect_direct(self.btn_applyROI_cam1.sig_clicked,
-                       self.on_click_setROI_cam1)
-        connect_direct(self.cbox_trigger_cam1.activated,
-                       self.on_change_trigger_cam1)
-        connect_queued(self.btn_trigger_positive_cam1.clicked,
-                       self.m_worker_cam1.on_set_trigger_positive_cam)
-        connect_queued(self.btn_trigger_negative_cam1.clicked,
-                       self.m_worker_cam1.on_set_trigger_negative_cam)
-        connect_direct(self.sbox_trigger_delay_cam1.sig_value_changed,
-                       self.on_change_trigger_delay_cam1)        
-        connect_direct(self.sbox_exposure_time_cam1.sig_value_changed,
-                       self.on_change_Exposuretime_cam1)
-        connect_direct(self.btn_path_cam1.clicked,
-                       self.choose_path_cam1)
+        # connect_queued(self.m_worker_cam1.sig_send_message,
+        #                self.add_log_message)
+        # # Open/Close       
+        # connect_direct(self.btn_open_cam1.sig_open,
+        #                self.on_click_open_cam1)
+        # connect_queued(self.m_worker_cam1.sig_cam_opened,
+        #                self.btn_open_cam1.set_opened)
+        # connect_direct(self.timer_temp_2.timeout,
+        #                self.refresh_temperature_cam1)
+        # connect_direct(self.btn_open_cam1.sig_close,
+        #                self.on_click_close_cam1)
+        # connect_queued(self.m_worker_cam1.sig_cam_closed,
+        #                self.btn_open_cam1.set_closed)
+        # # Capture
+        # connect_direct(self.btn_capture_cam1.sig_clicked,
+        #                self.on_click_capture_cam1)
+        # # Live/Abort      
+        # connect_direct(self.btn_live_cam1.sig_open,
+        #                self.on_click_live_cam1)
+        # connect_queued(self.m_worker_cam1.sig_cam_lived,
+        #                self.btn_live_cam1.set_opened)
+        # connect_queued(self.m_worker_cam1.sig_cam_aborted,
+        #                self.btn_live_cam1.set_closed)
+        # connect_queued(self.m_worker_cam1.sig_send_data_to_live,
+        #                self.m_live_worker.receive_data_from_cam)  
+        # connect_queued(self.m_live_worker.sig_report_pixmap_cam1,
+        #                self.refresh_live_view2)
+        # connect_direct(self.btn_live_cam1.sig_close,
+        #                self.on_click_abort_cam1)    
+        # connect_queued(self.m_worker_cam1.sig_cam_aborted,
+        #                self.btn_live_cam1.set_closed)
+        # connect_direct(self.view_cam1.sbox_ratio_1.sig_value_changed_to,
+        #                self.on_change_live_ratio_cam1)
+        # connect_queued(self.m_worker_cam1.sig_refresh_frame_rate,
+        #                self.refresh_framerate_cam1)
+        # # Scan/Stop      
+        # connect_direct(self.btn_start_scan_cam1.sig_clicked,
+        #                self.on_clicked_scan_cam1)
+        # connect_queued(self.m_live_worker.sig_report_ndarray_cam1,
+        #                self.m_save_worker_cam1.save_tiff_file)
+        # connect_direct(self.btn_stop_scan_cam1.sig_clicked,
+        #                self.on_clicked_stop_cam1)
+        # connect_queued(self.m_worker_cam1.sig_single_round_scan_done,
+        #                self.m_save_worker_cam1.set_save_path)
+        # # Setting       
+        # connect_direct(self.btn_applyROI_cam1.sig_clicked,
+        #                self.on_click_setROI_cam1)
+        # connect_direct(self.cbox_trigger_cam1.activated,
+        #                self.on_change_trigger_cam1)
+        # connect_queued(self.btn_trigger_positive_cam1.clicked,
+        #                self.m_worker_cam1.on_set_trigger_positive_cam)
+        # connect_queued(self.btn_trigger_negative_cam1.clicked,
+        #                self.m_worker_cam1.on_set_trigger_negative_cam)
+        # connect_direct(self.sbox_trigger_delay_cam1.sig_value_changed,
+        #                self.on_change_trigger_delay_cam1)        
+        # connect_direct(self.sbox_exposure_time_cam1.sig_value_changed,
+        #                self.on_change_Exposuretime_cam1)
+        # connect_direct(self.btn_path_cam1.clicked,
+        #                self.choose_path_cam1)
 
-        connect_direct(self.view_combined.sbox_ratio_1.sig_value_changed_to,
-                       self.on_change_live_ratio_cam0)
-        connect_direct(self.view_combined.sbox_ratio_2.sig_value_changed_to,
-                       self.on_change_live_ratio_cam1)
-        connect_queued(self.m_live_worker.sig_report_pixmap_difference,
-                       self.refresh_live_view_difference)
+        # connect_direct(self.view_combined.sbox_ratio_1.sig_value_changed_to,
+        #                self.on_change_live_ratio_cam0)
+        # connect_direct(self.view_combined.sbox_ratio_2.sig_value_changed_to,
+        #                self.on_change_live_ratio_cam1)
+        # connect_queued(self.m_live_worker.sig_report_pixmap_difference,
+        #                self.refresh_live_view_difference)
         
         self.m_cam_worker.start_thread()
-        self.m_worker_cam1.start_thread()
         self.m_live_worker.start_thread()
         self.m_save_worker.start_thread()
-        self.m_save_worker_cam1.start_thread()
 
     '''============================================= CAMERA 0 =============================================''' 
     @QPSLObjectBase.log_decorator()
     def on_click_open_cam0(self):
-        self.m_cam_worker.sig_to_open_cam.emit()
-        sleep_for(1000)
-        self.on_set_deviceID_cam0()
-        self.timer_temp_1.start(1000)
+        if self.is_virtual:
+            self.add_log_message("CAM opened under virtual mode",2)
+            device_status_controller.set_device_opened('dcam_virtual')
+        else:
+            self.m_cam_worker.sig_to_open_cam.emit()
+            sleep_for(1000)
+            self.on_set_deviceID_cam0()
+            self.timer_temp_1.start(1000)
+            device_status_controller.set_device_opened('dcam')
+        
         for btn in self.btn_after_cam0_opened:
             btn.setEnabled(True)
-        shm_device_buf[0] = 1
 
     @QPSLObjectBase.log_decorator()
     def on_click_close_cam0(self):
-        self.m_cam_worker.sig_to_close_cam.emit()
-        self.timer_temp_1.stop()
-        self.label_device_cam0.clear()
-        self.label_temperature_cam0.clear()
-        self.label_framerate_cam0.clear()
-        shm_device_buf[1] = 0
+        if self.is_virtual:
+            self.add_log_message("CAM closed under virtual mode",2)
+            device_status_controller.set_device_closed('dcam_virtual')
+        else:
+            self.m_cam_worker.sig_to_open_cam.emit()
+            self.timer_temp_1.stop()
+            self.label_device_cam0.clear()
+            self.label_temperature_cam0.clear()
+            self.label_framerate_cam0.clear()
+            device_status_controller.set_device_closed('dcam')
+
+        for btn in self.btn_after_cam0_opened:
+            btn.setDisabled(True)
 
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam0(self):
         self.m_live_worker.m_live_flag = True
         self.m_live_worker.m_save_flag = False
-        self.m_cam_worker.sig_to_live_cam.emit()
+        self.m_cam_worker.sig_to_live_cam.emit(self.is_virtual)
     
     @QPSLObjectBase.log_decorator()
     def on_change_live_ratio_cam0(self, ratio:float):
@@ -790,21 +858,25 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
     '''============================================= Global =============================================''' 
     @QPSLObjectBase.log_decorator()    
     def init_API(self):
-        DCAMAPI_init()
-        # shared_state.value = 1
-        # print(shared_state.value)
-        # shm_device_buf[0] = 1
-        # print("滨松相机程序开启",array.array('b',shm_device_buf))
-        self.add_log_message("DCAM_API init Done",2)
+        if self.is_virtual:
+            self.add_log_message("Init under virtual mode",2)
+        else:
+            DCAMAPI_init()
+            self.add_log_message("DCAM_API init Done",2)
+
         self.btn_open_cam0.setEnabled(True)
-        self.btn_open_cam1.setEnabled(True)
         self.btn_init_API.setDisabled(True)
         self.btn_uninit_API.setEnabled(True)
     
     @QPSLObjectBase.log_decorator()
     def uninit_API(self):
+        if self.is_virtual:
+            self.add_log_message("Uninit under virtual mode",2)
+        else:
+            DCAMAPI_init()
+            self.add_log_message("DCAM_API uninit Done",2)
         DCAMAPI_uninit()
-        self.add_log_message("DCAM_API uninit Done",0)
+
         for btn in self.btn_after_API_init:
             btn.setDisabled(True)
         self.btn_init_API.setEnabled(True)
@@ -812,18 +884,26 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def add_log_message(self,log_message:str,level:int):
-        charformat = QTextCharFormat()
-        if level == 0:
-            charformat.setForeground(QColor("black"))
-        elif level ==1:
-            charformat.setForeground(QColor("green"))
-        elif level ==2:
-            charformat.setForeground(QColor("blue"))
-        elif level ==3:
-            charformat.setForeground(QColor("red"))
-        self.text_logger.moveCursor(QTextCursor.End)
-        cursor = self.text_logger.textCursor()
-        cursor.insertText(log_message+"\n",charformat)
+        # charformat = QTextCharFormat()
+        # if level == 0:
+        #     charformat.setForeground(QColor("black"))
+        # elif level ==1:
+        #     charformat.setForeground(QColor("green"))
+        # elif level ==2:
+        #     charformat.setForeground(QColor("blue"))
+        # elif level ==3:
+        #     charformat.setForeground(QColor("red"))
+        # self.text_logger.moveCursor(QTextCursor.End)
+        # cursor = self.text_logger.textCursor()
+        # cursor.insertText(log_message+"\n",charformat)
+        pass
+
+    @QPSLObjectBase.log_decorator()
+    def refresh_napari(self, cam_image:np.ndarray):
+        if self.image_layer is None or 'cam_image' not in self.camview_DCAM.napari.layers:
+            self.image_layer = self.camview_DCAM.napari.add_image(cam_image)
+        else:
+            self.image_layer.data = cam_image
 
     @QPSLObjectBase.log_decorator()
     def refresh_live_view_difference(self, cam_image_difference:QPixmap):

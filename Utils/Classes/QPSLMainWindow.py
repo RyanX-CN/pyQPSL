@@ -1,8 +1,10 @@
+import napari.viewer
 from QPSLClass.Base import *
 from ..BaseClass import *
 from ..UIClass.QPSLDockWidget import QPSLDockWidget
 from ..UIClass.QPSLMenuBar import QPSLMenuBar
 
+import napari
 # '''多进程共享状态控制器'''
 # try: 
 #     from shared_memory_dict import SharedMemoryDict
@@ -24,6 +26,7 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         self.m_is_single_plugin: bool = init_config_getset(
             keys=("plugin_mode", "is_single_plugin"), value=False)
         self.setup_logic()
+        self.setWindowIcon(QIcon('resources/logo.png'))
         # side_window = QMainWindow(self)
         # side_window.setWindowTitle('Side Window')
         # main_window_width = self.width()
@@ -214,6 +217,8 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         widget: QPSLWidgetBase = _class()
         try:
             widget.load_attr()
+            if _class.__name__ == 'Hamamatsu_camera_PluginUI':
+                self.resize(2000,1000)
             return widget
         except BaseException as e:
             widget.to_delete()

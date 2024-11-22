@@ -60,6 +60,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
                                  self.on_stop_task)
         connect_queued(self.sig_to_start_show, self.on_start_show)
         connect_queued(self.sig_to_stop_show, self.on_stop_show)
+        connect_queued(task_status_controller.sig_to_start_task,
+                        self.on_start_task_with_another_task)
 
     @QPSLObjectBase.log_decorator()
     def on_query_device(self):
@@ -103,6 +105,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.sig_task_inited.emit()
         self.add_warning("ao task inited")
         device_status_controller.set_device_opened('nidaq')
+        task_status_controller.set_task_wait('ao_task')
 
     @QPSLObjectBase.log_decorator()
     def on_clear_task(self):
@@ -122,23 +125,29 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.add_warning("ao task started")
 
     @QPSLObjectBase.log_decorator()
-    def on_start_task_with_thorlabs_stage(self):
+    def on_start_task_with_another_task(self,task:str):
         '''
         start task with thorlabs stage
         '''
-        self.m_write_per_channel = 0
-        task_status_controller.m_task_dict['ao_task']['status'] = State.Wait
-        interval = task_status_controller.m_task_dict['stage_task']['loop_round']
-        for i in range(interval):
-            while not task_status_controller.m_task_dict['stage_task']['status'] == State.Done:
-                pass
-            task_status_controller.m_task_dict['ao_task']['status'] = State.Running
-            task_status_controller.m_task_dict['stage_task']['status'] == State.Wait
-            self.add_warning("ao task round {0} started".format(i))
-            self.m_task.start_task()            
-            self.sig_task_started.emit()
-        task_status_controller.m_task_dict['ao_task']['status'] = State.Done
-        self.add_warning("ao task done")
+        # self.m_write_per_channel = 0
+        # task_status_controller.m_task_dict['ao_task']['status'] = State.Wait
+        # interval = task_status_controller.m_task_dict['stage_task']['loop_round']
+        # for i in range(interval):
+        #     while not task_status_controller.m_task_dict['stage_task']['status'] == State.Done:
+        #         pass
+        #     task_status_controller.m_task_dict['ao_task']['status'] = State.Running
+        #     task_status_controller.m_task_dict['stage_task']['status'] == State.Wait
+        #     self.add_warning("ao task round {0} started".format(i))
+        #     self.m_task.start_task()            
+        #     self.sig_task_started.emit()
+        # task_status_controller.m_task_dict['ao_task']['status'] = State.Done
+        # self.add_warning("ao task done")
+        print(task)
+        task_status_controller.set_task_wait('ao_task')
+        self.on_start_task()
+        task_status_controller.set_task_running('ao_task')
+        # task_status_controller.m_task_dict['ao_task']['status'] = State.Done
+
 
 
     @QPSLObjectBase.log_decorator()
@@ -184,6 +193,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self = ctypes.cast(callback_data, POINTER(py_object)).contents.value
         self: NIDAQmxAOPluginWorker
         self.on_stop_task()
+        task_status_controller.m_task_dict['ao_task'] = State.Done
         return status
 
 

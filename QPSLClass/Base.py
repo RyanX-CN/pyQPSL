@@ -187,8 +187,9 @@ class State(enum.Enum):
     Closed = 0
     Opened = 1
     Wait = 2
-    Running = 3
-    Done  = 4
+    Start = 3
+    Running = 4
+    Done  = 5
 
 class DeviceStateController(QObject):
     sig_value_changed = pyqtSignal(str)
@@ -220,6 +221,8 @@ class DeviceStateController(QObject):
         return self.m_device_dict
     
 class TaskStateController(QObject):
+    sig_to_start_task = pyqtSignal(str)
+    sig_task_done = pyqtSignal(str)
     sig_value_changed = pyqtSignal(str)
 
     __slots__ = "m_task_dict"
@@ -237,13 +240,19 @@ class TaskStateController(QObject):
     def print_status(self,device:str):
         print(f"{device} is {self.m_task_dict[device]}")
 
-    def set_device_opened(self, device:str):
-        self.m_task_dict[device] = State.Opened
-        self.sig_value_changed.emit(device)
+    def set_task_wait(self, task:str):
+        self.m_task_dict[task] = State.Wait
+    
+    def to_task_start(self, task:str):
+        self.m_task_dict[task]= State.Start
+        self.sig_to_start_task.emit(task)
 
-    def set_device_closed(self, device:str):
-        self.m_task_dict[device] = State.Closed
-        self.sig_value_changed.emit(device)
+    def set_task_running(self, task:str):
+        self.m_task_dict[task] = State.Running
+
+    def set_task_done(self, task:str):
+        self.m_task_dict[task] = State.Done
+        self.sig_task_done.emit(task)
 
     def get_device_status_dict(self) -> dict:
         return self.m_task_dict

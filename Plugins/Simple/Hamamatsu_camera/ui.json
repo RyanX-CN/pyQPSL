@@ -1,21 +1,21 @@
 {
     "Hamamatsu_camera_PluginUI":{
-        "Type": "QPSLSplitter",
+        "Type": "QPSLHSplitter",
         "backgroud_color": "#fafafa",
-        "stretch": "1; 8",
         "v_size_policy": 13,
+        "stretch":"1;4",
         "widgets": [
             {
                 "Type": "QPSLVFrameList",
                 "backgroud_color": "#fafafa",
+                "h_size_policy": 4,
                 "margins": "2; 2; 2; 2",
-                "h_size_policy":13,
-                "spacing": 5,
                 "widgets": [
                     {
                         "Type": "QPSLHFrameList",
                         "backgroud_color": "#fafafa",
-                        "spacing": 15,
+                        "margins": "10; 0; 10; 0",
+                        "spacing": 20,
                         "v_size_policy": 4,
                         "widgets": [
                             {
@@ -31,14 +31,42 @@
                         ]
                     },
                     {
+                        "Type": "QPSLHFrameList",
+                        "backgroud_color": "#7f7f7f",
+                        "margins": "10; 0; 10; 0",
+                        "spacing": 15,
+                        "v_size_policy": 4,
+                        "widgets": [
+                            {
+                                "ObjectName": "cbox_none_view",
+                                "Type": "QPSLCheckBox",
+                                "backgroud_color": "#7f7f7f",
+                                "text": "none view"
+                            },
+                            {
+                                "ObjectName": "cbox_view_with_napari",
+                                "Type": "QPSLCheckBox",
+                                "backgroud_color": "#7f7f7f",
+                                "text": "with napari"
+                            },
+                            {
+                                "ObjectName": "cbox_view_with_imagej",
+                                "Type": "QPSLCheckBox",
+                                "backgroud_color": "#7f7f7f",
+                                "text": "with imagej"
+                            }
+                        ]
+                    },
+                    {
                         "Type": "QPSLVFrameList",
-                        "backgroud_color": "#4c4c4c",
+                        "backgroud_color": "#b2b2b2",
+                        "v_size_policy": 0,
                         "widgets": [
                             {
                                 "Type": "QPSLHFrameList",
                                 "backgroud_color": "#999999",
-                                "margins": "30; 10; 30; 10",
-                                "spacing": 30,
+                                "margins": "10; 10; 10; 10",
+                                "spacing": 15,
                                 "widgets": [
                                     {
                                         "ObjectName": "btn_open_cam0",
@@ -91,17 +119,24 @@
                                 ]
                             },
                             {
-                                "Type": "QPSLLabel",
-                                "backgroud_color": "#999999",
-                                "font": "Arial; 12; 75; False",
-                                "text": "Settings:"
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "margins": "0; 10; 0; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#4c4c4c",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "Settings:"
+                                    }
+                                ]
                             },
                             {
                                 "Type": "QPSLVFrameList",
                                 "backgroud_color": "#999999",
                                 "frame_shadow": 32,
                                 "frame_shape": 1,
-                                "margins": "0; 5; 0; 5",
+                                "margins": "0; 5; 0; 0",
                                 "spacing": 5,
                                 "widgets": [
                                     {
@@ -320,10 +355,17 @@
                                 ]
                             },
                             {
-                                "Type": "QPSLLabel",
-                                "backgroud_color": "#000000",
-                                "font": "Arial; 12; 75; False",
-                                "text": "Scan:"
+                                "Type": "QPSLHFrameList",
+                                "backgroud_color": "#b2b2b2",
+                                "margins": "0; 10; 0; 0",
+                                "widgets": [
+                                    {
+                                        "Type": "QPSLLabel",
+                                        "backgroud_color": "#4c4c4c",
+                                        "font": "Arial; 12; 75; False",
+                                        "text": "Scan and save:"
+                                    }
+                                ]
                             },
                             {
                                 "Type": "QPSLVFrameList",
@@ -401,7 +443,7 @@
                                     {
                                         "Type": "QPSLHFrameList",
                                         "backgroud_color": "#999999",
-                                        "margins": "0; 0; 7; 0",
+                                        "margins": "0; 0; 8; 0",
                                         "widgets": [
                                             {
                                                 "Type": "QPSLLabel",
@@ -467,16 +509,16 @@
                         ]
                     },
                     {
-                        "Type": "QPSLLabel",
-                        "backgroud_color": "#fafafa",
-                        "v_size_policy": 7
+                        "Type": "QPSLTextEdit",
+                        "backgroud_color": "#fafafa"
                     }
                 ]
             },
             {
+                "ObjectName": "camview_DCAM",
                 "Type": "QPSLCameraView",
                 "backgroud_color": "#fafafa",
-                "object_name": "camview_DCAM"
+                "v_size_policy": 7
             }
         ]
     }

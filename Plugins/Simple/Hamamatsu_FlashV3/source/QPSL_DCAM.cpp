@@ -80,6 +80,15 @@ int32 DLL_EXPORT QPSL_DCAM_close(DCAMController *controller){
     DCAMErrChk(dcamdev_close(controller->hdcam))
     return 0;
 }
+int32 DLL_EXPORT QPSL_DACM_setPixelType(DCAMController *controller, const char* PixelType){
+    if(strcmp(PixelType, "8bit") == 0){
+        DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_IMAGE_PIXELTYPE,DCAM_PIXELTYPE_MONO8));
+    }
+    else if(strcmp(PixelType, "16bit") == 0){
+        DCAMErrChk(dcamprop_setvalue(controller->hdcam,DCAM_IDPROP_IMAGE_PIXELTYPE,DCAM_PIXELTYPE_MONO16));
+    }
+    
+    return 0;   }
 int32 DLL_EXPORT QPSL_DCAM_getstring(DCAMController *controller, char *cameraid){
     DCAMDEV_STRING	param;
 	memset(&param, 0, sizeof(param));
@@ -203,19 +212,32 @@ int32 get_single_frame(DCAMController *controller, char *databuf){
     int32 cx = bufframe.width;
     int32 cy = bufframe.height;
     int32 rowbytes = bufframe.rowbytes;
-    int32 copyrowbytes = cx * 2;
-    char* pSrc = (char*)bufframe.buf + oy * bufframe.rowbytes + ox * 2;
-    char* pDst = (char*)databuf;
+    int32 type = bufframe.type;
+    if (type == DCAM_PIXELTYPE_MONO8) {
+        int32 copyrowbytes = cx;
+        char* pSrc = (char*)bufframe.buf + oy * bufframe.rowbytes + ox;
+        char* pDst = (char*)databuf;
 
-    int y;
-    for(y = 0;y < cy; y++)
-    {
-        memcpy_s(pDst, copyrowbytes, pSrc, copyrowbytes);
-        pSrc += bufframe.rowbytes;
-        pDst += copyrowbytes;
+        for (int y = 0; y < cy; y++) {
+            memcpy_s(pDst, copyrowbytes, pSrc, copyrowbytes);
+            pSrc += bufframe.rowbytes;
+            pDst += copyrowbytes;
+        }
+    } 
+    else if (type == DCAM_PIXELTYPE_MONO16) {
+        int32 copyrowbytes = cx * 2;
+        char* pSrc = (char*)bufframe.buf + oy * bufframe.rowbytes + ox * 2;
+        char* pDst = (char*)databuf;
+
+        for (int y = 0; y < cy; y++) {
+            memcpy_s(pDst, copyrowbytes, pSrc, copyrowbytes);
+            pSrc += bufframe.rowbytes;
+            pDst += copyrowbytes;
+        }
     }
     return 0;
 }
+
 typedef int32 (*DCAM_GetFramesCallback)(void*, void*);
 int32 DLL_EXPORT QPSL_DCAM_Get_single_frame(DCAMController *controller, void* pyWorker, DCAM_GetFramesCallback callback){
     auto data = new ImageData;
@@ -238,62 +260,6 @@ int32 DLL_EXPORT QPSL_Live_post_processer(DCAMController *controller){
     DCAMErrChk(dcamcap_stop(controller->hdcam));
     DCAMErrChk(dcambuf_release(controller->hdcam));
     DCAMErrChk(dcamwait_abort(controller->hwait));
-    return 0;
-}
-int32 DLL_EXPORT QPSL_DCAM_Scan(DCAMController *controller, int endframe){
-    HDCAMREC hrec = NULL;
-    HDCAMWAIT hwait = NULL;
-    DCAMWAIT_OPEN waitopen;
-    DCAMWAIT_START waitstart;
-    DCAMBUF_FRAME bufframe;
-	DCAMREC_OPEN recopen;
-	memset(&recopen, 0, sizeof(recopen));
-	recopen.size = sizeof(recopen);
-	recopen.path = _T(controller->save_path);
-	recopen.ext = _T("tiff");
-	recopen.maxframepersession = endframe;
-	recopen.userdatasize_file = 0;
-	recopen.usertextsize_file = 0;
-	recopen.userdatasize_session = 0;
-	recopen.usertextsize_session = 0;
-	recopen.userdatasize = 0;
-	recopen.usertextsize = 0;
-    DCAMErrChk(dcamrec_open(&recopen))
-    else{
-        hrec = recopen.hrec;
-    }    
-    memset(&waitopen, 0, sizeof(waitopen));
-    waitopen.size = sizeof(waitopen);
-    waitopen.hdcam = controller->hdcam;
-    DCAMErrChk(dcamwait_open(&waitopen))
-    else{
-        hwait = waitopen.hwait;
-        DCAMErrChk(dcambuf_alloc(controller->hdcam,10));
-        if((hwait!=NULL) && (hrec!=NULL)){
-            memset(&waitstart, 0, sizeof(waitstart));
-            waitstart.size = sizeof(waitstart);
-            waitstart.eventmask = DCAMWAIT_CAPEVENT_FRAMEREADY;
-            waitstart.timeout = DCAMWAIT_TIMEOUT_INFINITE;
-            //bufframe param
-	        memset( &bufframe, 0, sizeof(bufframe) );
-            bufframe.size = sizeof(bufframe);
-            bufframe.iFrame = -1;    //last frame
-            DCAMErrChk(dcamwait_start(hwait, &waitstart))
-        }
-        for(int i=0;i < endframe;){
-            DCAMErrChk(dcamcap_start(controller->hdcam, DCAMCAP_START_SEQUENCE))
-            if(controller->err_code == DCAMERR_ABORT){
-                break;
-            }
-            else continue;
-            DCAMErrChk(dcambuf_lockframe(controller->hdcam, &bufframe))
-            i++;
-        }
-        DCAMErrChk(dcamcap_stop(controller->hdcam));
-        DCAMErrChk(dcambuf_release(controller->hdcam));
-    }
-    DCAMErrChk(dcamrec_close(hrec));
-    DCAMErrChk(dcamwait_abort(hwait));
     return 0;
 }
 int32 DLL_EXPORT QPSL_DCAM_Abort(DCAMController *controller){

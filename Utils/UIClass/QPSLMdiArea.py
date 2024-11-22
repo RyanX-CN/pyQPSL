@@ -8,6 +8,7 @@ class QPSLMdiArea(QMdiArea,QPSLWidgetBase):
 
     def __init__(self):
         super().__init__()
+        return self
 
 class QPSLSubWindow(QMdiSubWindow,QPSLWidgetBase):
 

@@ -3,12 +3,12 @@
         "Type": "NIDAQmxAOPluginUI",
         "generators": [
             {
-                "Length": 100,                
+                "Length": 1000,                
                 "Type": "File Wave",
                 "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.txt"
             },
             {
-                "Length": 100,                
+                "Length": 1000,                
                 "Type": "File Wave",
                 "File": "C:/Users/WeLab/Desktop/pyQPSL/resources/wave.npy"
             }

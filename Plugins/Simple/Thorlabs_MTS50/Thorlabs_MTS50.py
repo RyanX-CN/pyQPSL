@@ -21,14 +21,14 @@ GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1.0)
 
 # Serial number of each stage (Simulator)
-# SERIAL_NUMBER_X = b"27000001"
-# SERIAL_NUMBER_Y = b"27000002"
-# SERIAL_NUMBER_Z = b"27000003"
+SERIAL_NUMBER_X = b"27000001"
+SERIAL_NUMBER_Y = b"27000002"
+SERIAL_NUMBER_Z = b"27000003"
 
 # Serial number of each stage (True)
-SERIAL_NUMBER_X = b"27258500"
-SERIAL_NUMBER_Y = b"27258730"
-SERIAL_NUMBER_Z = b"27258489"
+# SERIAL_NUMBER_X = b"27258500"
+# SERIAL_NUMBER_Y = b"27258730"
+# SERIAL_NUMBER_Z = b"27258489"
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -190,8 +190,8 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double), pyqtSignal(
             c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double,c_double)
     sig_start_scan, sig_to_start_scan, sig_scan_started = pyqtSignal(
-        str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double), pyqtSignal(
-            str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double), pyqtSignal()
+        str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double,c_double), pyqtSignal(
+            str,c_double,c_double,c_double,int,c_double,c_double,c_double,int,c_double,c_double,c_double,c_double,c_double), pyqtSignal()
     sig_stop_scan, sig_to_stop_scan, sig_scan_stopped = pyqtSignal(), pyqtSignal(), pyqtSignal()
     sig_send_message = pyqtSignal(str,int)
 
@@ -240,9 +240,9 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def open_devices(self):
-        if device_status_controller.m_device_dict.get['dcam0'] == State.Opened:
+        if device_status_controller.m_device_dict.get('dcam0') == State.Opened:
             print("位移台运动将与滨松相机0采集同步")
-        if device_status_controller.m_device_dict.get['dcam1'] == State.Opened:
+        if device_status_controller.m_device_dict.get('dcam1') == State.Opened:
             print("位移台运动将与滨松相机1采集同步")
         self.x_stage.open_device()
         self.y_stage.open_device()
@@ -332,7 +332,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
     def on_start_scan(self, scan_mode:str,
                       max_x:c_double, min_x:c_double, interval_x:c_double, loop_x:int,
                       max_y:c_double, min_y:c_double, interval_y:c_double, loop_y:int,
-                      max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double):        
+                      max_z:c_double, min_z:c_double, acc_z:c_double, vel_z:c_double, interval_z:c_double):        
         self.sig_scan_started.emit()
         self.sig_send_message.emit("Scan START %s"%scan_mode,2)
         self.x_stage.move_flag = True
@@ -412,9 +412,28 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                 self.y_stage.wait_on_ready()
                 self.x_stage.wait_on_ready()
         elif scan_mode == "ETL Mode":
-            for i in range(loop_x):
+            for i in range(loop_y):
                 QCoreApplication.instance().processEvents()
-                pass
+                for i in range(loop_x):
+                    QCoreApplication.instance().processEvents()
+                    while self.z_pos < max_z.value - 1e-3:
+                        if self.z_stage.move_flag == False:
+                            return
+                        # self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
+                        self.z_stage.move_relative(interval_z)
+                        self.z_stage.wait_on_ready()
+                        task_status_controller.set_task_done('z_stage_move')
+                        task_status_controller.to_task_start('ao_task')
+                        sleep_for(10)
+                        while task_status_controller.m_task_dict['ao_task'] != State.Done:
+                            print("等待AO任务结束")
+                    self.x_stage.move_relative(interval_x)
+                    self.z_stage.move_absolute(min_z)
+                    self.z_stage.wait_on_ready()
+                self.y_stage.move_relative(interval_z)
+                self.x_stage.move_absolute(min_x)
+                self.z_stage.move_absolute(min_z)
+                self.z_stage.wait_on_ready()
 
 
         self.sig_scan_stopped.emit()
@@ -498,6 +517,8 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.sbox_max_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_max_y")
         self.frame_loop_y : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_loop_y")
         self.sbox_loop_y : QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_loop_y")
+        self.frame_interval_z : QPSLHFrameList = self.findChild(QPSLHFrameList, "frame_interval_z")
+        self.sbox_interval_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_interval_z")
         self.sbox_vel_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_vel_z")
         self.sbox_acc_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_acc_z")
         self.sbox_min_z : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_min_z")
@@ -781,13 +802,23 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         if self.cbox_scan_mode.currentText() == "Loop Mode":
             self.frame_max_x.hide()
             self.frame_max_y.hide()
+            self.frame_interval_z.hide()  
             self.frame_loop_x.show()    
-            self.frame_loop_y.show()  
+            self.frame_loop_y.show()
         elif self.cbox_scan_mode.currentText() == "Distance Mode":
             self.frame_max_x.show()
             self.frame_max_y.show()
             self.frame_loop_x.hide()    
             self.frame_loop_y.hide()
+            self.frame_interval_z.hide()  
+        elif self.cbox_scan_mode.currentText() == "ETL Mode":
+            self.frame_max_x.hide()
+            self.frame_max_y.hide()
+            self.frame_loop_x.show()    
+            self.frame_loop_y.show()  
+            self.frame_interval_z.show()  
+
+
     
     @QPSLObjectBase.log_decorator()
     def init_scan(self):
@@ -816,7 +847,8 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
                                             c_double(self.sbox_max_z.value()),
                                             c_double(self.sbox_min_z.value()),
                                             c_double(self.sbox_acc_z.value()),
-                                            c_double(self.sbox_vel_z.value()))
+                                            c_double(self.sbox_vel_z.value()),
+                                            c_double(self.sbox_interval_z.value()))
 
     @QPSLObjectBase.log_decorator()
     def utils_capturing_times(self):

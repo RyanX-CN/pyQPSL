@@ -255,9 +255,9 @@ class DoubleDCAMPluginWorker(QPSLWorker):
                                  self.on_set_trigger_delay_cam)
         connect_asynch_and_synch(self.sig_to_setExposuretime_cam,self.sig_setExposuretime_cam,
                                  self.on_set_exposure_time_cam)
-        connect_direct(shm_device.sig_value_changed,self.on_shm_device_value_changed)
-    def on_shm_device_value_changed(self, value):
-        print(f"SharedStateController value changed to: {value}")        
+    #     connect_direct(shm_device.sig_value_changed,self.on_shm_device_value_changed)
+    # def on_shm_device_value_changed(self, value):
+    #     print(f"SharedStateController value changed to: {value}")        
     
     
     @QPSLObjectBase.log_decorator()
@@ -567,6 +567,7 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.view_cam0: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_cam0")
         self.view_cam1: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_cam1")
         self.view_combined: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_combined")
+        print(type(self.view_combined))
         
     def setup_style(self):
         self.get_named_widgets()
