@@ -3,7 +3,7 @@
     "is_virtual": {
         "AGADPWorker": true,
         "DMPluginWorker": true,
-        "DoubleDCAMPluginWorker": true,
+        "DoubleDCAMPluginWorker": false,
         "Hamamatsu_camera_PluginUI": true,
         "Hamamatsu_camera_Worker": true,
         "PIPluginWorker": true,
@@ -44,7 +44,7 @@
             "OpticalImagesUI": false,
             "PIPluginUI": false,
             "Thorlabs_MTS50PluginUI": true,
-            "UIDesigner": true,
+            "UIDesigner": false,
             "ZaberPluginUI": false
         }
     },

@@ -3,14 +3,14 @@
         "Type": "NIDAQmxAOPluginUI",
         "generators": [
             {
-                "Length": 11000,                
+                "Length": 63,                
                 "Type": "File Wave",
-                "File": "E:/XHB_CODE/ETL_wave/cmos_wave.npy"
+                "File": "E:/XHB_CODE/shift_light_sheet/wave/cmos_wave.npy"
             },
             {
-                "Length": 11000,                
+                "Length": 63,                
                 "Type": "File Wave",
-                "File": "E:/XHB_CODE/ETL_wave/etl_wave.npy"
+                "File": "E:/XHB_CODE/shift_light_sheet/wave/golva_wave.npy"
             }
         ],
         "margins": "10; 10; 10; 10",

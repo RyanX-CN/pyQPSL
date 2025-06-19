@@ -12,7 +12,7 @@ from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_co
 '''
     This Plugin is for Thorlabs MTS50 Stage with KDC101 motor
 '''
-# os.chdir("C:\Program Files\Thorlabs\Kinesis")
+
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
 
 # Parameters for MTS50/M-Z8
@@ -20,15 +20,11 @@ STEPS_PER_REV = c_double(512)
 GEARBOX_RATIO = c_double(67.49)
 PITCH = c_double(1.0)
 
-# Serial number of each stage (Simulator)
-SERIAL_NUMBER_X = b"27000001"
-SERIAL_NUMBER_Y = b"27000002"
-SERIAL_NUMBER_Z = b"27000003"
+##============== Serial number of each stage (Simulator)==============
+# SERIAL_NUMBERS = ["27000001", "27000002", "27000003"]
 
-# Serial number of each stage (True)
-# SERIAL_NUMBER_X = b"27258500"
-# SERIAL_NUMBER_Y = b"27258730"
-# SERIAL_NUMBER_Z = b"27258489"
+##============== Serial number of each stage (True)==============
+SERIAL_NUMBERS = ["27258500", "27258730", "27258489"]
 
 # Relative move distance in realunit(mm)
 minus_distance = c_double(-1)
@@ -43,7 +39,8 @@ class Thorlabs_MTS50Base(QPSLWorker):
 
     def __init__(self,serial_number:str):
         super().__init__()
-        self.m_serial_number = c_char_p(serial_number)
+        self.m_serial_number = c_char_p(serial_number.encode("utf-8"))
+        print()
         self.m_message = str()
     
     @QPSLObjectBase.log_decorator()
@@ -53,8 +50,8 @@ class Thorlabs_MTS50Base(QPSLWorker):
         self._lib.CC_Open(self.m_serial_number)
         self._lib.CC_SetMotorParamsExt(self.m_serial_number, STEPS_PER_REV, GEARBOX_RATIO, PITCH)
         self._lib.CC_StartPolling(self.m_serial_number,c_int(200))
-        self.m_message = "Device %s Opened" %(self.m_serial_number.value)
-        self.sig_send_message.emit(self.m_message,1)
+        self.m_message = "Stage(S/N) %s Opened" %(self.m_serial_number.value.decode("utf-8"))
+        self.sig_send_message.emit(self.m_message, 1)
         # trigger1Mode  = c_int()
         # trigger1Polarity = c_int()
         # self._lib.CC_GetTriggerConfigParams(self.m_serial_number,byref(trigger1Mode),byref(trigger1Polarity))
@@ -63,15 +60,15 @@ class Thorlabs_MTS50Base(QPSLWorker):
     def close_device(self):
         self._lib.CC_StopPolling(self.m_serial_number)
         self._lib.CC_Close(self.m_serial_number)
-        self.m_message = "Device %s Closed" % (self.m_serial_number.value)
-        self.sig_send_message.emit(self.m_message,1)
+        self.m_message = "Stage(S/N %s) Closed" % (self.m_serial_number.value.decode("utf-8"))
+        self.sig_send_message.emit(self.m_message, 1)
         # self._lib.TLI_UninitializeSimulations() #Better not use this line when using more than one stage
 
     @QPSLObjectBase.log_decorator()
     def move_home(self):
         self._lib.CC_Home(self.m_serial_number)
-        self.m_message = "Device %s is Homing" % (self.m_serial_number.value)
-        self.sig_send_message.emit(self.m_message,2)
+        self.m_message = "Stage(S/N %s) is Homing" % (self.m_serial_number.value.decode("utf-8"))
+        self.sig_send_message.emit(self.m_message, 2)
 
     @QPSLObjectBase.log_decorator()
     def move_absolute(self, position_real: c_double):
@@ -197,9 +194,9 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     def __init__(self):
         super().__init__()
-        self.x_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_X)
-        self.y_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_Y)
-        self.z_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBER_Z)
+        self.x_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBERS[0])
+        self.y_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBERS[1])
+        self.z_stage = Thorlabs_MTS50Base(serial_number=SERIAL_NUMBERS[2])
         self.setup_logic()
 
     def to_delete(self):
@@ -238,8 +235,13 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.y_stage.start_thread()
         self.z_stage.start_thread()
 
+    def change_pairs(self, x_serial_number:str, y_serial_number:str, z_serial_number:str):
+        self.x_stage.m_serial_number = x_serial_number
+        self.y_stage.m_serial_number = y_serial_number
+        self.z_stage.m_serial_number = z_serial_number
+
     @QPSLObjectBase.log_decorator()
-    def open_devices(self):
+    def open_devices(self): 
         if device_status_controller.m_device_dict.get('dcam0') == State.Opened:
             print("位移台运动将与滨松相机0采集同步")
         if device_status_controller.m_device_dict.get('dcam1') == State.Opened:
@@ -249,7 +251,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
         self.z_stage.open_device()
         device_status_controller.set_device_opened('stagez')
         self.sig_device_opened.emit()
-
+        shm_device_buf[2]=1
 
     @QPSLObjectBase.log_decorator()
     def close_devices(self):
@@ -368,16 +370,18 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                     sleep_for(100)
                     if shm_device_buf[0] or shm_device_buf[1]:
                         self.sig_send_message.emit("A Round Save Done",2)
-                        shm_status_buf[1] = 0                  
+                        shm_status_buf[0] = 0                  
+                        shm_status_buf[1] = 0
                         shm_status_buf[2] = 0
-                        shm_status_buf[3] = 0
                         print("状态重置",array.array('b',shm_status_buf))                  
+                print("001")
                 if self.y_stage.move_flag == False:
                     return
                 self.y_stage.move_relative(interval_y)
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
-                self.x_stage.wait_on_ready()        
+                self.x_stage.wait_on_ready()    
+                print("002")
         elif scan_mode == "Distance Mode":    
             while self.y_pos < max_y.value - 1e-3:
                 QCoreApplication.instance().processEvents()
@@ -436,7 +440,7 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                 self.z_stage.wait_on_ready()
 
 
-        self.sig_scan_stopped.emit()
+        self.sig_scan_stopped.emit()   
         self.sig_send_message.emit("Scan STOPPED", 3)
 
     @QPSLObjectBase.log_decorator()
@@ -482,18 +486,24 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.btn_open_all : QPSLToggleButton = self.findChild(QPSLToggleButton, "btn_open_all")
         self.btn_home_all : QPSLPushButton = self.findChild(QPSLPushButton, "btn_home_all")
         self.btn_stop_all : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_all")
+        ##================================ X axis widgets =================================
+        self.cbox_set_x : QPSLComboBox = self.findChild(QPSLComboBox, "cbox_set_x")
         self.label_pos_x : QPSLLabel = self.findChild(QPSLLabel, "label_pos_x")
         self.btn_stop_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_x")
         self.btn_minus_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_x")
         self.btn_plus_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_plus_x")
         self.sbox_move_x : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_move_x")
         self.btn_move_x : QPSLPushButton = self.findChild(QPSLPushButton, "btn_move_x")
+        ##================================  Y axis widgets =================================
+        self.cbox_set_y : QPSLComboBox = self.findChild(QPSLComboBox, "cbox_set_y")
         self.label_pos_y : QPSLLabel = self.findChild(QPSLLabel, "label_pos_y")
         self.btn_stop_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_y")
         self.btn_minus_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_y")
         self.btn_plus_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_plus_y")
         self.sbox_move_y : QPSLDoubleSpinBox = self.findChild(QPSLDoubleSpinBox, "sbox_move_y")
         self.btn_move_y : QPSLPushButton = self.findChild(QPSLPushButton, "btn_move_y")
+        ##================================  Z axis widgets =================================
+        self.cbox_set_z : QPSLComboBox = self.findChild(QPSLComboBox, "cbox_set_z")
         self.label_pos_z : QPSLLabel = self.findChild(QPSLLabel, "label_pos_z")
         self.btn_stop_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_stop_z")
         self.btn_minus_z : QPSLPushButton = self.findChild(QPSLPushButton, "btn_minus_z")
@@ -562,7 +572,6 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
                        self.m_worker.home_all)
         connect_direct(self.btn_stop_all.sig_clicked,
                        self.m_worker.stop_all)
-    
         # Information refresh
         # connect_direct(self.timer.timeout,
         #                self.plot_position)
@@ -651,6 +660,9 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         connect_direct(self.sbox_max_z.sig_value_changed,
                        self.utils_capturing_times)
         
+        connect_direct(self.cbox_set_x.currentTextChanged, self.on_change_x_pair)
+        connect_direct(self.cbox_set_y.currentTextChanged, self.on_change_y_pair)
+        connect_direct(self.cbox_set_z.currentTextChanged, self.on_change_z_pair)
         self.m_worker.start_thread()
 
     @QPSLObjectBase.log_decorator()
@@ -711,6 +723,13 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.sbox_vel_y.setSingleStep(0.1)
         self.sbox_vel_z.setSingleStep(0.1)
 
+        self.cbox_set_x.addItems(SERIAL_NUMBERS)
+        self.cbox_set_y.addItems(SERIAL_NUMBERS)
+        self.cbox_set_z.addItems(SERIAL_NUMBERS)
+        self.cbox_set_x.setCurrentText(self.cbox_set_x.cur_text)
+        self.cbox_set_y.setCurrentText(self.cbox_set_y.cur_text)
+        self.cbox_set_z.setCurrentText(self.cbox_set_z.cur_text)
+        
         self.btn_start_scan.setEnabled(False)
         self.cbox_scan_mode.addItems(["Loop Mode","Distance Mode","ETL Mode"])
         self.frame_max_x.hide()
@@ -730,6 +749,18 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
         self.text_logger.moveCursor(QTextCursor.End)
         cursor = self.text_logger.textCursor()
         cursor.insertText("{0}\t{1}\n".format(dt.now().time().replace(microsecond=0),log_message), charformat)
+
+    @QPSLObjectBase.log_decorator()
+    def on_change_x_pair(self, serial_number:str):
+       self.m_worker.x_stage.m_serial_number = c_char_p(serial_number.encode("utf-8"))
+
+    @QPSLObjectBase.log_decorator()
+    def on_change_y_pair(self, serial_number:str):
+       self.m_worker.y_stage.m_serial_number = c_char_p(serial_number.encode("utf-8"))
+    
+    @QPSLObjectBase.log_decorator()
+    def on_change_z_pair(self, serial_number:str):
+       self.m_worker.z_stage.m_serial_number = c_char_p(serial_number.encode("utf-8"))
 
     @QPSLObjectBase.log_decorator()
     def on_move_absolute_x(self):
@@ -754,9 +785,9 @@ class Thorlabs_MTS50PluginUI(QPSLVSplitter,QPSLPluginBase):
     # @QPSLObjectBase.log_decorator()
     def refresh_pos(self):
         self.m_worker.get_position()
-        self.label_pos_x.setText("Current position(mm): %.4f" %self.m_worker.x_pos)
-        self.label_pos_y.setText("Current position(mm): %.4f" %self.m_worker.y_pos)
-        self.label_pos_z.setText("Current position(mm): %.4f" %self.m_worker.z_pos)
+        self.label_pos_x.setText(": %.4f mm" %self.m_worker.x_pos)
+        self.label_pos_y.setText(": %.4f mm" %self.m_worker.y_pos)
+        self.label_pos_z.setText(": %.4f mm" %self.m_worker.z_pos)
 
     @QPSLObjectBase.log_decorator()
     def plot_init(self):

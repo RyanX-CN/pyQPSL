@@ -11,23 +11,30 @@ class QPSLComboBox(QComboBox, QPSLWidgetBase):
         if size_adjust_policy is None:
             size_adjust_policy = self.default_size_adjust_policy()
         self.setSizeAdjustPolicy(size_adjust_policy)
+        self.cur_text = json.get("cur_text")
+        if self.cur_text is not None:
+            self.setCurrentText(self.cur_text)
 
     def to_json(self):
         res: Dict = super().to_json()
         if self.sizeAdjustPolicy() != self.default_size_adjust_policy():
             res.update({"size_adjust_policy": self.sizeAdjustPolicy()})
+        res.update({"cur_text": self.currentText()})
         return res
 
     def load_attr(
             self,
             size_adjust_policy: Optional[QComboBox.SizeAdjustPolicy] = None,
             h_size_policy: Optional[QSizePolicy.Policy] = None,
-            v_size_policy: Optional[QSizePolicy.Policy] = None):
+            v_size_policy: Optional[QSizePolicy.Policy] = None,
+            cur_text: Optional[str] = None,):
         super().load_attr(h_size_policy=h_size_policy,
                           v_size_policy=v_size_policy)
         if size_adjust_policy is None:
             size_adjust_policy = self.default_size_adjust_policy()
         self.setSizeAdjustPolicy(size_adjust_policy)
+        if cur_text is not None:
+            self.setCurrentText(cur_text)
         return self
 
     @classmethod

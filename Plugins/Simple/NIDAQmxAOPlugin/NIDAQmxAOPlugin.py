@@ -193,6 +193,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self = ctypes.cast(callback_data, POINTER(py_object)).contents.value
         self: NIDAQmxAOPluginWorker
         self.on_stop_task()
+        self.reset() #reset after done
         task_status_controller.m_task_dict['ao_task'] = State.Done
         return status
 

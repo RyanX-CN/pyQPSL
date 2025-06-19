@@ -215,8 +215,10 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         widget: QPSLWidgetBase = _class()
         try:
             widget.load_attr()
-            if _class.__name__ == 'Hamamatsu_camera_PluginUI':
-                self.resize(2000,1000)
+            if _class.__name__ == "Hamamatsu_camera_PluginUI":
+                self.resize(2000, 1000)
+            elif _class.__name__ == "DoubleDCAMPluginUI":
+                self.resize(400, 800)
             return widget
         except BaseException as e:
             widget.to_delete()

@@ -18,7 +18,7 @@ from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_co
 shm_device = shared_memory.SharedMemory(create=True, size=10)
 shm_device_buf = shm_device.buf
 shm_device_buf[:3] = bytearray([0,0,0])
-# 下标0-2分别表示相机0存储状态，相机1开启状态，位移台运动状态
+# 下标0-2分别表示相机0存储状态，相机1存储状态，位移台运动状态
 shm_status = shared_memory.SharedMemory(create=True,size=10)
 shm_status_buf = shm_status.buf
 shm_status_buf[:3] = bytes([0,0,0])
@@ -27,16 +27,19 @@ TARGET_MIN = 0
 TARGET_MAX = 65535
 SAVE_BATCH_SIZE = 100
 
-class DCAMLiveWorker(QPSLWorker):
+class DCAMInterlayer(QPSLWorker):
     '''
-    Create a thread for living image
+    Create a thread as a interlayer for receiving data from camera
     '''
-    sig_report_ndarray_cam0 = pyqtSignal(np.ndarray)
-    sig_report_ndarray_cam1 = pyqtSignal(np.ndarray)
+    sig_report_save_cam0 = pyqtSignal(np.ndarray)
+    sig_report_save_cam1 = pyqtSignal(np.ndarray)
     sig_report_pixmap_cam0 = pyqtSignal(QPixmap)
     sig_report_pixmap_cam1 = pyqtSignal(QPixmap)
-    sig_report_ndarray_difference = pyqtSignal(np.ndarray)
+    sig_report_live_difference = pyqtSignal(np.ndarray)
     sig_report_pixmap_difference = pyqtSignal(QPixmap)
+    sig_report_live_cam0 = pyqtSignal(np.ndarray)
+    sig_report_live_cam1 = pyqtSignal(np.ndarray)
+    sig_report_3d_live = pyqtSignal(np.ndarray)
 
     def __init__(self):
         super().__init__()
@@ -49,6 +52,7 @@ class DCAMLiveWorker(QPSLWorker):
         self.m_muti_ratio = [20]*2
         self.m_mirror_cam1 = True
         self.m_difference_flag = False
+        self.m_3d_flag = False
         self.m_data_queues = [deque(), deque()]
         self.m_tmp0:np.uint16 = np.zeros((256*4,256*4))
         self.m_tmp1:np.uint16 = np.zeros((256*4,256*4))
@@ -68,36 +72,41 @@ class DCAMLiveWorker(QPSLWorker):
         # =============== Emit ndarray data to save as TIFF file ===============
         if self.m_save_flag:
             if index == 0:
-                self.sig_report_ndarray_cam0.emit(framebuffer_cam)
+                self.sig_report_save_cam0.emit(framebuffer_cam)
             elif index == 1:
-                self.sig_report_ndarray_cam1.emit(framebuffer_cam)
+                self.sig_report_save_cam1.emit(framebuffer_cam)
         self.m_id_image[index] += 1
         # =============== Downsample data to show on UI ===============        
         if self.m_live_flag:
-            if self.m_id_image[index]%self.m_downsample_rate == 0:
-                framebuffer_cam = framebuffer_cam[::2,::2]
+            if self.m_id_image[index] % self.m_downsample_rate == 0:
+                framebuffer_cam = framebuffer_cam[::self.m_downsample_rate,::self.m_downsample_rate]
                 if self.m_difference_flag:
                     if index == 0:
                         self.m_tmp0 = np.uint16(framebuffer_cam * self.m_muti_ratio[0])
                     elif index == 1:
                         self.m_tmp1 = np.uint16(framebuffer_cam * self.m_muti_ratio[1])
-                        self.m_tmp1 = np.flip(self.m_tmp1,0)
+                        self.m_tmp1 = np.flip(self.m_tmp1, 0)
+                        self.m_tmp1 = np.flip(self.m_tmp1, 1)
                     self.calculate_difference()
+                if self.m_3d_flag:
+                    self.sig_report_3d_live.emit(framebuffer_cam)
                 else:
                     if index == 0:
-                        framebuffer_cam = np.uint16(framebuffer_cam * self.m_muti_ratio[0])
-                        qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
-                            framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16)
-                        pixmap_cam = QPixmap.fromImage(qimg_cam)
-                        self.sig_report_pixmap_cam0.emit(pixmap_cam)
+                        self.sig_report_live_cam0.emit(framebuffer_cam)
+                        # framebuffer_cam = np.uint16(framebuffer_cam * self.m_muti_ratio[0])
+                        # qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
+                        #     framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16)
+                        # pixmap_cam = QPixmap.fromImage(qimg_cam)
+                        # self.sig_report_pixmap_cam0.emit(pixmap_cam)
                         
                     elif index == 1:
-                        framebuffer_cam = np.uint16(framebuffer_cam * self.m_muti_ratio[1])
-                        qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
-                            framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16) 
-                        qimg_cam_mirror = qimg_cam.mirrored(True, True)
-                        pixmap_cam = QPixmap.fromImage(qimg_cam_mirror)
-                        self.sig_report_pixmap_cam1.emit(pixmap_cam)               
+                        self.sig_report_live_cam1.emit(framebuffer_cam)               
+                        # framebuffer_cam = np.uint16(framebuffer_cam * self.m_muti_ratio[1])
+                        # qimg_cam = QImage(framebuffer_cam.data,framebuffer_cam.shape[1], framebuffer_cam.shape[0],
+                        #     framebuffer_cam.shape[1] * 2, QImage.Format.Format_Grayscale16) 
+                        # qimg_cam_mirror = qimg_cam.mirrored(True, True)
+                        # pixmap_cam = QPixmap.fromImage(qimg_cam_mirror)
+                        # self.sig_report_pixmap_cam1.emit(pixmap_cam)
         
         data_cam = ctypes.cast(data_cam,c_void_p)
         Delete_Data_pointer(data_cam)
@@ -106,16 +115,109 @@ class DCAMLiveWorker(QPSLWorker):
     def calculate_difference(self):
         tmp0 = self.m_tmp0
         tmp1 = self.m_tmp1
-        tmp = tmp0 + tmp1
-        tmp[tmp<0] = 0
-        tmp[tmp>65535] = 65535
-        #tmp = (tmp0/(np.max(tmp0)-np.min(tmp0)) - tmp1/(np.max(tmp1)-np.min(tmp1)))*65535        
+        tmp = tmp0 - tmp1
+        tmp[tmp < 0] = 0
+        # tmp[tmp > 65535] = 65535
+        # tmp = (tmp0/(np.max(tmp0)-np.min(tmp0)) - tmp1/(np.max(tmp1)-np.min(tmp1)))*65535        
         image_difference = np.uint16(tmp)
-        qimg_difference = QImage(image_difference.copy(),image_difference.shape[1], image_difference.shape[0],
-                      image_difference.shape[1]*2, QImage.Format.Format_Grayscale16)
-        pixmap_cam = QPixmap.fromImage(qimg_difference)
-        # self.sig_report_ndarray_difference.emit(image_difference)
-        self.sig_report_pixmap_difference.emit(pixmap_cam)
+        self.sig_report_live_difference.emit(image_difference)
+        # qimg_difference = QImage(image_difference.copy(),image_difference.shape[1], image_difference.shape[0],
+        #               image_difference.shape[1]*2, QImage.Format.Format_Grayscale16)
+        # pixmap_cam = QPixmap.fromImage(qimg_difference)
+        # self.sig_report_pixmap_difference.emit(pixmap_cam)
+
+
+class DCAMLiveWorker(QPSLWidgetBase):
+    def __init__(self):
+        super().__init__()
+        self.m_napari = napari.Viewer(title="Camera Viewer")
+        self.m_napari.theme = "light"
+        layer_control = self.m_napari.window._qt_viewer.dockLayerControls
+        layer_list = self.m_napari.window._qt_viewer.dockLayerList
+        self.m_napari.window.add_dock_widget(layer_control, area="right")
+        self.m_napari.window.add_dock_widget(layer_list, area="right")
+        self.cam0_img_layer = None
+        self.cam1_img_layer = None
+        self.diff_img_layer = None
+        
+        ##================== 三维显示配置 ==================
+        self.m_3d_flag = False
+        self._3d_img_layer = None
+        self.current_index = 0
+        self.mmap_file = "image_data.dat"
+        self.mmap = None
+
+    def load_attr(self):
+        return super().load_attr()
+    
+    def to_delete(self):
+        self.close_mmap()
+        self.m_napari.close()
+        return super().to_delete()
+    
+    def set_3d_para(self, max_images:int = 100,  downsample_rate:int = 1):
+        self.max_images = max_images
+        self.image_shape = (2048 // downsample_rate, 2048 // downsample_rate)
+        self.mmap_size = self.max_images * np.prod(self.image_shape) * np.dtype(np.uint16).itemsize
+        if os.path.exists(self.mmap_file): 
+            os.remove(self.mmap_file)        
+        with open(self.mmap_file, 'wb') as f:
+            f.write(b'\x00' * self.mmap_size)
+        self.mmap = np.memmap(self.mmap_file, dtype=np.uint16, mode='r+', shape=(self.max_images, *self.image_shape))
+    
+    @QPSLObjectBase.log_decorator()
+    def refresh_cam0_viewer(self, cam0_img:np.ndarray):
+        if self.cam0_img_layer is None or 'cam0_img' not in self.m_napari.layers:
+            self.cam0_img_layer = self.m_napari.add_image(cam0_img, name="cam0_img")
+        else:
+            self.cam0_img_layer.data = cam0_img    
+    
+    @QPSLObjectBase.log_decorator()
+    def refresh_cam1_viewer(self, cam1_img:np.ndarray):
+        if self.cam1_img_layer is None or 'cam1_img' not in self.m_napari.layers:
+            self.cam1_img_layer = self.m_napari.add_image(cam1_img, name="cam1_img")
+        else:
+            self.cam1_img_layer.data = cam1_img
+
+    @QPSLObjectBase.log_decorator()
+    def refresh_diff_viewer(self, diff_img:np.ndarray):
+        if self.diff_img_layer is None or 'diff_img' not in self.m_napari.layers:
+            self.diff_img_layer = self.m_napari.add_image(diff_img, name="diff_img")
+        else:
+            self.diff_img_layer.data = diff_img
+
+    @QPSLObjectBase.log_decorator()
+    def refresh_3d_viewer(self, cam_image:np.ndarray):   
+        self.mmap[self.current_index % self.max_images] = cam_image
+        self.current_index += 1
+
+        num_images = min(self.current_index, self.max_images)
+        updated_data = self.mmap[:num_images]
+
+        if self._3d_img_layer is None or '3d_image' not in self.m_napari.layers:
+            # self.m_napari.add_labels
+            self._3d_img_layer = self.m_napari.add_image(updated_data, name='3d_image')
+        else:
+            self._3d_img_layer.data = updated_data
+
+    def close_mmap(self):
+        if self.mmap is not None:
+            self.mmap._mmap.close()
+            self.mmap = None
+        if os.path.exists(self.mmap_file):
+            os.remove(self.mmap_file)
+        print("Memory-mapped file closed and deleted.")
+    
+    def clear_mmap(self):
+        self.close_mmap()
+        with open(self.mmap_file, 'wb') as f:
+            f.write(b'\x00' * self.mmap_size)
+        self.mmap = np.memmap(self.mmap_file, dtype=np.uint16, mode='r+', shape=(self.max_images, *self.image_shape))
+        self.current_index = 0
+        self._3d_img_layer = None
+        if '3d_image' in self.m_napari.layers:
+            self.m_napari.layers.remove('3d_image')
+        print("3D viewer cleared, ready for new data.")
 
 
 class DCAMSaveWorker(QPSLWorker):
@@ -171,7 +273,7 @@ class DCAMSaveWorker(QPSLWorker):
                 shm_status_buf[0] = 1
             elif self.index == 1:
                 shm_status_buf[1] = 1
-            print("相机%d图像存储完成"%self.index,array.array('b',shm_status_buf))
+            print("\r相机%d图像存储完成"%self.index,array.array('b',shm_status_buf))
             self.m_index_image = 0
         # =============== Save tiff files as batch ===============
         # self.m_save_buffer[self.m_index_image] = data
@@ -223,7 +325,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
 
     def load_attr(self, index:int):
         super().load_attr()
-        self.is_virtual = True
+        self.is_virtual = False
         self.index = index
         cam_info = [c_void_p(),c_int(index)]
         self.m_cam = DCAMController(*cam_info)
@@ -415,13 +517,13 @@ class DoubleDCAMPluginWorker(QPSLWorker):
                 if shm_device_buf[2]: # Thorlabs stages is opened
                     if shm_device_buf[0] and not shm_device_buf[1]:# Only cam0 opened
                         while not shm_status_buf[0] or not shm_status_buf[2]:
-                            print("相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))
+                            print("\r相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))
                     elif not shm_device_buf[0] and shm_device_buf[1]:# Only cam1 opened
                         while not shm_status_buf[1] or not shm_status_buf[2]:
-                            print("相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))                 
+                            print("\r相机%d等待上轮采集完成ing"%self.index, array.array('b',shm_status_buf))                                  
                     elif shm_device_buf[0] and shm_device_buf[1]: # Both cam are opened
                         while not shm_status_buf[0] or not shm_status_buf[1] or not shm_status_buf[2]:
-                            print("双相机等待上轮采集完成ing", array.array('b',shm_status_buf))
+                            print("\r双相机等待上轮采集完成ing")
                 # sleep_for(15000)
                 if i != self.m_loop_round-1:
                     self.sig_single_round_scan_done.emit(i+1)
@@ -452,7 +554,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         return 0
 
 
-class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
+class DoubleDCAMPluginUI(QPSLVFrameList,QPSLPluginBase):
     def load_by_json(self,json:Dict):
         super().load_by_json(json)  
         self.setup_style()
@@ -466,6 +568,7 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         super().__init__()
         self.m_worker_cam0 = DoubleDCAMPluginWorker().load_attr(0)
         self.m_worker_cam1 = DoubleDCAMPluginWorker().load_attr(1)
+        self.m_interlayer = DCAMInterlayer().load_attr()
         self.m_live_worker = DCAMLiveWorker().load_attr()
         self.m_save_worker_cam0 = DCAMSaveWorker().load_attr(0)
         self.m_save_worker_cam1 = DCAMSaveWorker().load_attr(1)
@@ -486,7 +589,8 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.m_worker_cam0.to_delete()
         self.m_worker_cam1.stop_thread()
         self.m_worker_cam1.to_delete()
-        self.m_live_worker.stop_thread()
+        self.m_interlayer.stop_thread()
+        self.m_interlayer.to_delete()
         self.m_live_worker.to_delete()
         self.m_save_worker_cam0.stop_thread()
         self.m_save_worker_cam0.to_delete()
@@ -562,13 +666,17 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.btn_init_API: QPSLPushButton = self.findChild(QPSLPushButton, "btn_init_API")        
         self.btn_uninit_API: QPSLPushButton = self.findChild(QPSLPushButton, "btn_uninit_API")        
         self.text_logger: QPSLTextEdit = self.findChild(QPSLTextEdit, "text_logger")
-        self.view_cam0: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_cam0")
-        self.view_cam1: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_cam1")
-        self.view_combined: QPSLDCAMView = self.findChild(QPSLDCAMView, "view_combined")
-        print(type(self.view_combined))
+        self.cbox_choose_3d: QPSLCheckBox = self.findChild(QPSLCheckBox, "cbox_choose_3d")
+        self.cbox_choose_diff: QPSLCheckBox = self.findChild(QPSLCheckBox, "cbox_choose_diff")
+        self.btn_clear_cache: QPSLPushButton = self.findChild(QPSLPushButton, "btn_clear_cache")
+        self.sbox_axial_len: QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_axial_len")
+        self.sbox_downsample_rate: QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_downsample_rate")
+        self.sbox_ratio_cam0: QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_ratio_cam0")
+        self.sbox_ratio_cam1: QPSLSpinBox = self.findChild(QPSLSpinBox, "sbox_ratio_cam1")
         
     def setup_style(self):
         self.get_named_widgets()
+        self.resize(800, 200)
         self.cbox_trigger_cam0.addItems(["Internal","External","Syncreadout"])
         self.cbox_trigger_cam1.addItems(["Internal","External","Syncreadout"])
         self.scan_radiobuttongroup1 = QtWidgets.QButtonGroup(self)
@@ -581,12 +689,6 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.scan_radiobuttongroup2.addButton(self.btn_scan_loop_cam1)
         self.line_path_cam0.setText("E:/Custom_Control_Software/Test")
         self.line_path_cam1.setText("E:/Custom_Control_Software/Test")
-        self.view_cam0.sbox_ratio_2.hide()
-        self.view_cam0.label_ratio_2.hide()
-        self.view_cam1.sbox_ratio_2.hide()
-        self.view_cam1.label_ratio_2.hide()
-        self.view_combined.label_ratio_1.setText("ratio_cam0:")
-        self.view_combined.label_ratio_2.setText("  ratio_cam1:")
         for btn in self.btn_after_API_init:
             btn.setDisabled(True)
     
@@ -595,8 +697,6 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         # self.m_worker_cam0.load_attr()
         self.timer_temp_1 = QTimer(self)
         self.timer_temp_2 = QTimer(self)
-        connect_direct(self.tab_view.sig_index_changed_to,
-                       self.on_show_difference)
         '''============================================= DCAM-API ============================================='''
         connect_direct(self.btn_init_API.sig_clicked,
                        self.init_API)
@@ -625,21 +725,29 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         connect_queued(self.m_worker_cam0.sig_cam_lived,
                        self.btn_live_cam0.set_opened)
         connect_queued(self.m_worker_cam0.sig_send_data_to_live,
-                       self.m_live_worker.receive_data_from_cam)  
-        connect_queued(self.m_live_worker.sig_report_pixmap_cam0,
-                       self.refresh_live_view1)
+                       self.m_interlayer.receive_data_from_cam)  
+        # connect_queued(self.m_interlayer.sig_report_pixmap_cam0,
+        #                self.refresh_live_view1)
         connect_direct(self.btn_live_cam0.sig_close,
                        self.on_click_abort_cam0)    
         connect_queued(self.m_worker_cam0.sig_cam_aborted,
                        self.btn_live_cam0.set_closed)
-        connect_queued(self.view_cam0.sbox_ratio_1.sig_value_changed_to,
-                       self.on_change_live_ratio_cam0)
         connect_queued(self.m_worker_cam0.sig_refresh_frame_rate,
                        self.refresh_framerate_cam0)
+        connect_queued(self.m_interlayer.sig_report_live_cam0,
+                       self.m_live_worker.refresh_cam0_viewer)
+        connect_queued(self.m_interlayer.sig_report_live_cam1,
+                       self.m_live_worker.refresh_cam1_viewer)
+        connect_queued(self.m_interlayer.sig_report_3d_live,
+                       self.m_live_worker.refresh_3d_viewer)
+        connect_queued(self.m_interlayer.sig_report_live_difference,
+                       self.m_live_worker.refresh_diff_viewer)
+        connect_direct(self.sbox_downsample_rate.sig_value_changed_to,
+                       self.set_downsample_rate)
         # Scan/Stop
         connect_direct(self.btn_start_scan_cam0.sig_clicked,
                        self.on_clicked_scan_cam0)
-        connect_queued(self.m_live_worker.sig_report_ndarray_cam0,
+        connect_queued(self.m_interlayer.sig_report_save_cam0,
                        self.m_save_worker_cam0.save_tiff_file)
         connect_direct(self.btn_stop_scan_cam0.sig_clicked,
                        self.on_clicked_stop_cam0)
@@ -685,21 +793,19 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         connect_queued(self.m_worker_cam1.sig_cam_aborted,
                        self.btn_live_cam1.set_closed)
         connect_queued(self.m_worker_cam1.sig_send_data_to_live,
-                       self.m_live_worker.receive_data_from_cam)  
-        connect_queued(self.m_live_worker.sig_report_pixmap_cam1,
-                       self.refresh_live_view2)
+                       self.m_interlayer.receive_data_from_cam)  
+        # connect_queued(self.m_interlayer.sig_report_pixmap_cam1,
+        #                self.refresh_live_view2)
         connect_direct(self.btn_live_cam1.sig_close,
                        self.on_click_abort_cam1)    
         connect_queued(self.m_worker_cam1.sig_cam_aborted,
                        self.btn_live_cam1.set_closed)
-        connect_direct(self.view_cam1.sbox_ratio_1.sig_value_changed_to,
-                       self.on_change_live_ratio_cam1)
         connect_queued(self.m_worker_cam1.sig_refresh_frame_rate,
                        self.refresh_framerate_cam1)
         # Scan/Stop      
         connect_direct(self.btn_start_scan_cam1.sig_clicked,
                        self.on_clicked_scan_cam1)
-        connect_queued(self.m_live_worker.sig_report_ndarray_cam1,
+        connect_queued(self.m_interlayer.sig_report_save_cam1,
                        self.m_save_worker_cam1.save_tiff_file)
         connect_direct(self.btn_stop_scan_cam1.sig_clicked,
                        self.on_clicked_stop_cam1)
@@ -721,20 +827,42 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         connect_direct(self.btn_path_cam1.clicked,
                        self.choose_path_cam1)
 
-        connect_direct(self.view_combined.sbox_ratio_1.sig_value_changed_to,
+        connect_direct(self.sbox_ratio_cam0.sig_value_changed_to,
                        self.on_change_live_ratio_cam0)
-        connect_direct(self.view_combined.sbox_ratio_2.sig_value_changed_to,
+        connect_direct(self.sbox_ratio_cam1.sig_value_changed_to,
                        self.on_change_live_ratio_cam1)
-        connect_queued(self.m_live_worker.sig_report_pixmap_difference,
-                       self.refresh_live_view_difference)
+        connect_direct(self.cbox_choose_diff.stateChanged,
+                       self.on_show_difference)
+        # connect_queued(self.m_interlayer.sig_report_pixmap_difference,
+        #                self.refresh_live_view_difference)
         
+        #3D view
+        connect_direct(self.cbox_choose_3d.stateChanged,
+                          self.on_choose_3d_live)
+        connect_direct(self.btn_clear_cache.sig_clicked,
+                       self.m_live_worker.clear_mmap)
+
         self.m_worker_cam0.start_thread()
         self.m_worker_cam1.start_thread()
-        self.m_live_worker.start_thread()
+        self.m_interlayer.start_thread()
         self.m_save_worker_cam0.start_thread()
         self.m_save_worker_cam1.start_thread()
 
+    def set_downsample_rate(self, rate:int):
+        self.m_interlayer.m_downsample_rate = rate
+        self.sbox_downsample_rate.setValue(rate)
+
     '''============================================= CAMERA 0 =============================================''' 
+    @QPSLObjectBase.log_decorator()
+    def on_choose_3d_live(self, state:int):
+        if self.cbox_choose_3d.isChecked():
+            self.m_interlayer.m_3d_flag = True
+            self.m_interlayer.m_downsample_rate = self.sbox_downsample_rate.value()
+            self.m_live_worker.set_3d_para(self.sbox_axial_len.value(),
+                                           self.sbox_downsample_rate.value())
+        else:
+            self.m_interlayer.m_3d_flag = True
+    
     @QPSLObjectBase.log_decorator()
     def on_click_open_cam0(self):
         self.m_worker_cam0.sig_to_open_cam.emit()
@@ -756,17 +884,13 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam0(self):
-        self.m_live_worker.m_live_flag = True
-        self.m_live_worker.m_save_flag = False
+        self.m_interlayer.m_live_flag = True
+        self.m_interlayer.m_save_flag = False
         self.m_worker_cam0.sig_to_live_cam.emit()
     
     @QPSLObjectBase.log_decorator()
     def on_change_live_ratio_cam0(self, ratio:list):
-        self.m_live_worker.m_muti_ratio[0] = ratio
-
-    @QPSLObjectBase.log_decorator()
-    def refresh_live_view1(self, cam0_image:QPixmap):
-        self.view_cam0.on_show_pixmap(cam0_image)
+        self.m_interlayer.m_muti_ratio[0] = ratio
 
     @QPSLObjectBase.log_decorator()
     def on_click_abort_cam0(self):
@@ -802,8 +926,8 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
     
     @QPSLObjectBase.log_decorator()
     def on_click_setROI_cam0(self):        
-        self.m_live_worker.m_data_count[0] = self.sbox_width_cam0.value() * self.sbox_height_cam0.value()
-        self.m_live_worker.m_data_shape[0] = (self.sbox_height_cam0.value(),self.sbox_width_cam0.value())
+        self.m_interlayer.m_data_count[0] = self.sbox_width_cam0.value() * self.sbox_height_cam0.value()
+        self.m_interlayer.m_data_shape[0] = (self.sbox_height_cam0.value(),self.sbox_width_cam0.value())
         # self.m_save_worker_cam0.m_save_buffer = np.empty((SAVE_BATCH_SIZE,self.sbox_width_cam0.value(),self.sbox_height_cam0.value()), dtype=np.uint16)
         self.m_worker_cam0.sig_to_setROI_cam.emit(self.sbox_x0_cam0.value(),
                                               self.sbox_y0_cam0.value(),
@@ -830,11 +954,11 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_scan_cam0(self):
-        if not self.m_live_worker.m_save_flag:
-            self.m_live_worker.m_save_flag = True
+        if not self.m_interlayer.m_save_flag:
+            self.m_interlayer.m_save_flag = True
         self.m_save_worker_cam0.m_save_flag = True
         self.m_save_worker_cam0.m_index_image = 0
-        self.m_live_worker.m_live_flag = False
+        self.m_interlayer.m_live_flag = False
         if self.btn_scan_continous_cam0.isChecked():
             endframe = 50000
         elif self.btn_scan_endframe_cam0.isChecked():
@@ -855,8 +979,8 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
     def on_clicked_stop_cam0(self):
         self.m_worker_cam0.sig_to_stop_scan_cam.emit()
         self.m_save_worker_cam0.m_save_flag = False
-        if self.m_live_worker.m_save_flag:
-            self.m_live_worker.m_save_flag = False
+        if self.m_interlayer.m_save_flag:
+            self.m_interlayer.m_save_flag = False
 
     @QPSLObjectBase.log_decorator()
     def choose_path_cam0(self, event):
@@ -887,17 +1011,13 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_click_live_cam1(self):
-        self.m_live_worker.m_live_flag = True
-        self.m_live_worker.m_save_flag = False
+        self.m_interlayer.m_live_flag = True
+        self.m_interlayer.m_save_flag = False
         self.m_worker_cam1.sig_to_live_cam.emit()
 
     @QPSLObjectBase.log_decorator()
     def on_change_live_ratio_cam1(self, ratio:float):
-        self.m_live_worker.m_muti_ratio[1] = ratio
-
-    @QPSLObjectBase.log_decorator()
-    def refresh_live_view2(self, cam1_image:QPixmap):
-        self.view_cam1.on_show_pixmap(cam1_image)
+        self.m_interlayer.m_muti_ratio[1] = ratio
 
     @QPSLObjectBase.log_decorator()
     def on_click_abort_cam1(self):
@@ -933,8 +1053,8 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
     
     @QPSLObjectBase.log_decorator()
     def on_click_setROI_cam1(self):        
-        self.m_live_worker.m_data_count[1] = self.sbox_width_cam1.value() * self.sbox_height_cam1.value()
-        self.m_live_worker.m_data_shape[1] = (self.sbox_height_cam1.value(),self.sbox_width_cam1.value())
+        self.m_interlayer.m_data_count[1] = self.sbox_width_cam1.value() * self.sbox_height_cam1.value()
+        self.m_interlayer.m_data_shape[1] = (self.sbox_height_cam1.value(),self.sbox_width_cam1.value())
         self.m_worker_cam1.sig_to_setROI_cam.emit(self.sbox_x0_cam1.value(),
                                               self.sbox_y0_cam1.value(),
                                               self.sbox_width_cam1.value(),
@@ -960,11 +1080,11 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
 
     @QPSLObjectBase.log_decorator()
     def on_clicked_scan_cam1(self):
-        if not self.m_live_worker.m_save_flag:
-            self.m_live_worker.m_save_flag = True
+        if not self.m_interlayer.m_save_flag:
+            self.m_interlayer.m_save_flag = True
         self.m_save_worker_cam1.m_save_flag = True
         self.m_save_worker_cam1.m_index_image = 0
-        self.m_live_worker.m_live_flag = False
+        self.m_interlayer.m_live_flag = False
         if self.btn_scan_continous_cam1.isChecked():
             endframe = 50000
         elif self.btn_scan_endframe_cam1.isChecked():
@@ -985,8 +1105,8 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
     def on_clicked_stop_cam1(self):
         self.m_worker_cam1.sig_to_stop_scan_cam.emit()
         self.m_save_worker_cam1.m_save_flag = False
-        if self.m_live_worker.m_save_flag:
-            self.m_live_worker.m_save_flag = False
+        if self.m_interlayer.m_save_flag:
+            self.m_interlayer.m_save_flag = False
 
     @QPSLObjectBase.log_decorator()
     def choose_path_cam1(self, event):
@@ -1030,17 +1150,13 @@ class DoubleDCAMPluginUI(QPSLHSplitter,QPSLPluginBase):
         self.text_logger.moveCursor(QTextCursor.End)
         cursor = self.text_logger.textCursor()
         cursor.insertText(log_message+"\n",charformat)
-
-    @QPSLObjectBase.log_decorator()
-    def refresh_live_view_difference(self, cam_image_difference:QPixmap):
-        self.view_combined.on_show_pixmap(cam_image_difference)
     
     @QPSLObjectBase.log_decorator()
-    def on_show_difference(self,index:int):
-        if index == 0:
-            self.m_live_worker.m_difference_flag = False
-        elif index == 1:
-            self.m_live_worker.m_difference_flag = True
+    def on_show_difference(self,state:int):
+        if state:
+            self.m_interlayer.m_difference_flag = True
+        else:
+            self.m_interlayer.m_difference_flag = False
     
     @property    
     def btn_after_API_init(self) -> Iterable[QPSLPushButton]:

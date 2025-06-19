@@ -10,6 +10,7 @@ class QPSLWidgetBase(QWidget, QPSLObjectBase):
         super().load_by_json(json)
         font = json.get("font")
         backgroud_color = json.get("backgroud_color")
+        foregroud_color = json.get("foregroud_color")
         h_size_policy = json.get("h_size_policy")
         v_size_policy = json.get("v_size_policy")
         if font is None:
@@ -24,6 +25,8 @@ class QPSLWidgetBase(QWidget, QPSLObjectBase):
         self.setFont(font)
         if backgroud_color is not None:
             self.update_background_palette(QColor(backgroud_color))
+        if foregroud_color is not None:
+            self.update_foreground_palette(QColor(foregroud_color))
         self.setSizePolicy(h_size_policy, v_size_policy)
         self.set_custom_context_menu()
 
