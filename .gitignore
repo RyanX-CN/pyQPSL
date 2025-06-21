@@ -1,5 +1,5 @@
-.vscode
 __pycache__
+.vscode
 build
 Compile
 Log
@@ -9,4 +9,3 @@ test.ipynb
 Pipfile
 Pipfile.lock
 Code_test.py
-cache_data.dat

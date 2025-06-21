@@ -12,8 +12,8 @@ from ..UIClass.QPSLMenuBar import QPSLMenuBar
 #     loading_warning("no shared-memory-dict(status monitor is not available)")
 
 # '''多线程共享状态控制器初始化'''
-device_status_controller = DeviceStateController()
-task_status_controller = TaskStateController()
+dsc = DeviceStateController()
+tsc = TaskStateController()
 
 class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
     sig_plugin_closed = pyqtSignal()

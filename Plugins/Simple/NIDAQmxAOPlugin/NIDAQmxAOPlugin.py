@@ -2,7 +2,7 @@ from Tool import *
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
 from .NIDAQmxAOAPI import *
-from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
+from Utils.Classes.QPSLMainWindow import dsc,tsc
 
 
 class NIDAQmxAOPluginWorker(QPSLWorker):
@@ -60,7 +60,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
                                  self.on_stop_task)
         connect_queued(self.sig_to_start_show, self.on_start_show)
         connect_queued(self.sig_to_stop_show, self.on_stop_show)
-        connect_queued(task_status_controller.sig_to_start_task,
+        connect_queued(tsc.sig_to_start_task,
                         self.on_start_task_with_another_task)
 
     @QPSLObjectBase.log_decorator()
@@ -104,8 +104,8 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
             callback_data=byref(self.m_self))
         self.sig_task_inited.emit()
         self.add_warning("ao task inited")
-        device_status_controller.set_device_opened('nidaq')
-        task_status_controller.set_task_wait('ao_task')
+        dsc.set_device_opened('nidaq')
+        tsc.set_task_wait('ao_task')
 
     @QPSLObjectBase.log_decorator()
     def on_clear_task(self):
@@ -114,7 +114,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self.sig_task_clear.emit()
         del self.m_self
         self.add_warning("ao task cleared")
-        device_status_controller.set_device_closed('nidaq')
+        dsc.set_device_closed('nidaq')
 
 
     @QPSLObjectBase.log_decorator()
@@ -143,12 +143,9 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         # task_status_controller.m_task_dict['ao_task']['status'] = State.Done
         # self.add_warning("ao task done")
         print(task)
-        task_status_controller.set_task_wait('ao_task')
+        tsc.set_task_wait('ao_task')
         self.on_start_task()
-        task_status_controller.set_task_running('ao_task')
-        # task_status_controller.m_task_dict['ao_task']['status'] = State.Done
-
-
+        tsc.set_task_running('ao_task')
 
     @QPSLObjectBase.log_decorator()
     def on_stop_task(self):
@@ -194,7 +191,7 @@ class NIDAQmxAOPluginWorker(QPSLWorker):
         self: NIDAQmxAOPluginWorker
         self.on_stop_task()
         self.reset() #reset after done
-        task_status_controller.m_task_dict['ao_task'] = State.Done
+        tsc.m_task_dict['ao_task'] = State.Done
         return status
 
 

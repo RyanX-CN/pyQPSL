@@ -200,14 +200,18 @@ class State(enum.Enum):
     Done  = 5
 
 class DeviceStateController(QObject):
+    """
+    设备开关状态共享控制器
+
+    用于共享设备的开关状态，当设备状态发生变化时，可以通过该对象发出信号
+
+    """
     sig_value_changed = pyqtSignal(str)
 
     __slots__ = "m_device_dict"
-    """设备开关状态控制器
-
-    用于控制设备的开关状态，当设备状态发生变化时，可以通过该对象发出信号
-
-    """
+    class State(enum.Enum):
+        Closed = 0
+        Opened = 1
 
     def __init__(self):
         super().__init__()
@@ -229,16 +233,17 @@ class DeviceStateController(QObject):
         return self.m_device_dict
     
 class TaskStateController(QObject):
+    """
+    任务状态共享控制器
+
+    用于控制与共享任务的状态，当任务状态发生变化时，可以通过该对象发出信号
+
+    """
     sig_to_start_task = pyqtSignal(str)
     sig_task_done = pyqtSignal(str)
     sig_value_changed = pyqtSignal(str)
 
     __slots__ = "m_task_dict"
-    """设备任务状态控制器
-
-    用于控制设备的开关状态，当设备状态发生变化时，可以通过该对象发出信号
-
-    """
 
     def __init__(self):
         super().__init__()

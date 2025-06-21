@@ -6,7 +6,7 @@ from datetime import datetime as dt
 import pyqtgraph.opengl as gl
 import numpy as np
 from ..Hamamatsu_FlashV3.Hamamatsu_FlashV3 import shm_device_buf,shm_status_buf
-from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
+from Utils.Classes.QPSLMainWindow import dsc,tsc
 
 
 '''
@@ -242,23 +242,23 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
 
     @QPSLObjectBase.log_decorator()
     def open_devices(self): 
-        if device_status_controller.m_device_dict.get('dcam0') == State.Opened:
-            print("位移台运动将与滨松相机0采集同步")
-        if device_status_controller.m_device_dict.get('dcam1') == State.Opened:
-            print("位移台运动将与滨松相机1采集同步")
+        # if dsc.m_device_dict.get('camera_0') == State.Opened:
+        #     print("位移台运动将与滨松相机0采集同步")
+        # if dsc.m_device_dict.get('camera_1') == State.Opened:
+        #     print("位移台运动将与滨松相机1采集同步")
         self.x_stage.open_device()
         self.y_stage.open_device()
         self.z_stage.open_device()
-        device_status_controller.set_device_opened('stagez')
+        dsc.set_device_opened("stage_xyz")
         self.sig_device_opened.emit()
-        shm_device_buf[2]=1
+        # shm_device_buf[2]=1
 
     @QPSLObjectBase.log_decorator()
     def close_devices(self):
-        device_status_controller.set_device_opened('stagez')
         self.x_stage.close_device()
         self.y_stage.close_device()
         self.z_stage.close_device()
+        dsc.set_device_closed("stage_xyz") 
         self.sig_device_closed.emit()
 
     @QPSLObjectBase.log_decorator()
@@ -359,29 +359,45 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                     self.x_stage.move_relative(interval_x)
                     self.z_stage.wait_on_ready()
                     # sleep_for(30000)
-                    shm_status_buf[2] = 1
-                    print("位移台移动完成",array.array('b',shm_status_buf))
-                    while shm_device_buf[0] and not shm_status_buf[0]:
-                        print("等待相机0存储完成",array.array('b',shm_status_buf))  
-                    while shm_device_buf[1] and not shm_status_buf[1]:
-                        print("等待相机1存储完成",array.array('b',shm_status_buf))                         
-                    # while shm_status_buf[0] == 1 and (not shm_status_buf[2] or not shm_status_buf[3]):
-                    #     print("等待图像存储完成",array.array('b',shm_status_buf))
+                    # shm_status_buf[2] = 1
+                    #同步任务
+                    tsc.set_task_done('stage_xyz_move_task')
+                    print("位移台移动完成")
+                    # while shm_device_buf[0] and not shm_status_buf[0]:
+                    #     print("等待相机0存储完成")  
+                    # while shm_device_buf[1] and not shm_status_buf[1]:
+                    #     print("等待相机1存储完成")                         
+                    # # while shm_status_buf[0] == 1 and (not shm_status_buf[2] or not shm_status_buf[3]):
+                    # #     print("等待图像存储完成",array.array('b',shm_status_buf))
+                    while dsc.m_device_dict.get('camera_0') == State.Opened and \
+                        not tsc.m_task_dict.get('camera_0_save_task') == State.Done:
+                        print("等待相机0存储完成")
+                    while dsc.m_device_dict.get('camera_1') == State.Opened and \
+                        not tsc.m_task_dict.get('camera_1_save_task') == State.Done:
+                        print("等待相机1存储完成")
+                    
                     sleep_for(100)
-                    if shm_device_buf[0] or shm_device_buf[1]:
+                    # if shm_device_buf[0] or shm_device_buf[1]:
+                    #     self.sig_send_message.emit("A Round Save Done",2)
+                    #     shm_status_buf[0] = 0                  
+                    #     shm_status_buf[1] = 0
+                    #     shm_status_buf[2] = 0
+                    #     print("状态重置",array.array('b',shm_status_buf))
+                    if dsc.m_device_dict.get('camera_0') == State.Opened and \
+                        dsc.m_device_dict.get('camera_1') == State.Opened:
                         self.sig_send_message.emit("A Round Save Done",2)
-                        shm_status_buf[0] = 0                  
-                        shm_status_buf[1] = 0
-                        shm_status_buf[2] = 0
-                        print("状态重置",array.array('b',shm_status_buf))                  
-                print("001")
+                        tsc.set_task_wait('camera_0_save_task')
+                        tsc.set_task_wait('camera_1_save_task')
+                        tsc.set_task_wait('stage_xyz_move_task')
+                        print("状态重置")
+                                      
                 if self.y_stage.move_flag == False:
                     return
                 self.y_stage.move_relative(interval_y)
                 self.x_stage.move_absolute(min_x)
                 self.y_stage.wait_on_ready()
                 self.x_stage.wait_on_ready()    
-                print("002")
+
         elif scan_mode == "Distance Mode":    
             while self.y_pos < max_y.value - 1e-3:
                 QCoreApplication.instance().processEvents()
@@ -426,10 +442,10 @@ class Thorlabs_MTS50PluginWorker(QPSLWorker):
                         # self.z_stage.set_accleration_and_velocity(acc_z, vel_z)
                         self.z_stage.move_relative(interval_z)
                         self.z_stage.wait_on_ready()
-                        task_status_controller.set_task_done('z_stage_move')
-                        task_status_controller.to_task_start('ao_task')
+                        tsc.set_task_done('z_stage_move')
+                        tsc.to_task_start('ao_task')
                         sleep_for(10)
-                        while task_status_controller.m_task_dict['ao_task'] != State.Done:
+                        while tsc.m_task_dict['ao_task'] != State.Done:
                             print("等待AO任务结束")
                     self.x_stage.move_relative(interval_x)
                     self.z_stage.move_absolute(min_z)

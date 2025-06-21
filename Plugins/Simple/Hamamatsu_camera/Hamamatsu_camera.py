@@ -6,7 +6,7 @@ from datetime import datetime as dt
 from itertools import cycle
 # from nvidia import nvcomp
 
-from Utils.Classes.QPSLMainWindow import device_status_controller,task_status_controller
+from Utils.Classes.QPSLMainWindow import dsc,tsc
 from Tool import *
 
 os_path_append("./{0}/bin".format(__package__.replace('.', '/')))
@@ -714,13 +714,13 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
     def on_click_open_cam0(self):
         if self.is_virtual:
             self.add_log_message("CAM opened under virtual mode",2)
-            device_status_controller.set_device_opened('dcam_virtual')
+            dsc.set_device_opened('dcam_virtual')
         else:
             self.m_cam_worker.sig_to_open_cam.emit()
             sleep_for(1000)
             self.on_set_deviceID_cam0()
             self.timer_temp_1.start(1000)
-            device_status_controller.set_device_opened('dcam')
+            dsc.set_device_opened('dcam')
         
         for btn in self.btn_after_cam0_opened:
             btn.setEnabled(True)
@@ -729,14 +729,14 @@ class Hamamatsu_camera_PluginUI(QPSLHSplitter,QPSLPluginBase):
     def on_click_close_cam0(self):
         if self.is_virtual:
             self.add_log_message("CAM closed under virtual mode",2)
-            device_status_controller.set_device_closed('dcam_virtual')
+            dsc.set_device_closed('dcam_virtual')
         else:
             self.m_cam_worker.sig_to_open_cam.emit()
             self.timer_temp_1.stop()
             self.label_device_cam0.clear()
             self.label_temperature_cam0.clear()
             self.label_framerate_cam0.clear()
-            device_status_controller.set_device_closed('dcam')
+            dsc.set_device_closed('dcam')
 
         for btn in self.btn_after_cam0_opened:
             btn.setDisabled(True)

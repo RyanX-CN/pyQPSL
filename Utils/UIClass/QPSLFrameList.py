@@ -125,6 +125,7 @@ class QPSLFrameList(QPSLFrame):
 
     def add_widget(self, widget: QPSLWidgetBase):
         self.layout.add_widget(widget=widget)
+        return widget
 
     def add_widgets(self, widgets: List[QPSLWidgetBase]):
         self.layout.add_widgets(widgets=widgets)

@@ -133,6 +133,8 @@ class DemoPluginUI(QPSLVFrameList, QPSLPluginBase):
         return super().to_delete()
 
     def get_named_widgets(self):
+        self.button_for_test: QPSLPushButton = self.findChild(
+            QPSLPushButton, "button_for_test")
         self.slider: QPSLComboSlider = self.findChild(QPSLComboSlider,
                                                       "slider")
         self.toggle_button_open: QPSLToggleButton = self.findChild(
@@ -188,6 +190,9 @@ class DemoPluginUI(QPSLVFrameList, QPSLPluginBase):
         connect_direct(self.spin_move_distance.sig_value_changed,
                        self.on_move_by_spinbox_value)
 
+        connect_direct(self.button_for_test.sig_clicked,
+                       self.on_button_for_test_clicked)
+
         self.on_stage_state_changed(state=False)
         self.m_worker.start_thread()
 
@@ -202,6 +207,17 @@ class DemoPluginUI(QPSLVFrameList, QPSLPluginBase):
     @QPSLObjectBase.log_decorator()
     def on_move_by_spinbox_value(self):
         self.m_worker.sig_to_move.emit(self.spin_move_distance.value())
+
+    @QPSLObjectBase.log_decorator()
+    def on_button_for_test_clicked(self):
+        # print(what)
+        message = {"text": "This is a test task check window.",
+                   "title": "Test Task Check Window",
+                   "icon": "QPSLMessageBoxIcon.Information",
+                   "buttons": "QPSLMessageBoxButton.Ok"}
+        task_check_window = QPSLTaskCheckWindow().load_attr(**message)
+        task_check_window.setParent(self, Qt.WindowType.Window)
+        task_check_window.show()
 
 
 MainWidget = DemoPluginUI
