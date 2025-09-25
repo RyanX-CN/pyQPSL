@@ -2,6 +2,7 @@ from QPSLClass.Base import *
 from ..BaseClass import *
 from ..UIClass.QPSLDockWidget import QPSLDockWidget
 from ..UIClass.QPSLMenuBar import QPSLMenuBar
+from multiprocessing import Manager, freeze_support
 
 # '''多进程共享状态控制器初始化'''
 # try: 
@@ -11,7 +12,7 @@ from ..UIClass.QPSLMenuBar import QPSLMenuBar
 # except:
 #     loading_warning("no shared-memory-dict(status monitor is not available)")
 
-# '''多线程共享状态控制器初始化'''
+# '''多线程共享状态控制器初始化''
 dsc = DeviceStateController()
 tsc = TaskStateController()
 
@@ -25,6 +26,10 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             keys=("plugin_mode", "is_single_plugin"), value=False)
         self.setup_logic()
         self.setWindowIcon(QIcon('resources/logo.png'))
+        freeze_support()
+        manager = Manager()
+        dsc.m_device_dict = manager.dict()
+        tsc.m_task_dict = manager.dict()
         # side_window = QMainWindow(self)
         # side_window.setWindowTitle('Side Window')
         # main_window_width = self.width()
@@ -215,10 +220,10 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
         widget: QPSLWidgetBase = _class()
         try:
             widget.load_attr()
-            if _class.__name__ == "Hamamatsu_camera_PluginUI":
-                self.resize(2000, 1000)
-            elif _class.__name__ == "DoubleDCAMPluginUI":
-                self.resize(400, 800)
+            # if _class.__name__ == "Hamamatsu_camera_PluginUI":
+            #     # self.resize(2000, 1000)
+            # elif _class.__name__ == "DoubleDCAMPluginUI":
+            #     self.resize(400, 800)
             return widget
         except BaseException as e:
             widget.to_delete()
@@ -226,6 +231,7 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
             raise e
 
     def on_module_clicked(self, module_path: str):
+        print(module_path)
         widget = self.make_plugin_widget(module_path=module_path)
         if widget is None: return
         dock_widget = self.add_widget_in_dock(widget=widget)
@@ -269,3 +275,16 @@ class QPSLMainWindow(QMainWindow, QPSLWidgetBase):
                             value=tuple_to_str(
                                 (event.size().width(), event.size().height())))
         return super().resizeEvent(event)
+    
+
+    def load_plugins(self, devices, config, params):
+        # 根据设备加载插件
+
+        for device in devices:
+            module_path = config.get("Device Info").get(device, {}).get("module_path")
+            if module_path:
+                self.on_module_clicked(module_path=module_path)
+
+        # 设置窗口大小
+        # window_size = params.get("window_size", (1000, 500))
+        # self.resize(*window_size)

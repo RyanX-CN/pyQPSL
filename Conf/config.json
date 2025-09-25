@@ -1,0 +1,20 @@
+{
+    "Image Mode": {
+        "3D SCI": ["Three-axis electric stages(Thorlabs)", 
+            "Double sCMOS camera(Hamamatsu)"],
+        "ETL LSFM": ["NIDAQmx analog output",
+            "NIDAQmx digital output",
+            "Three-axis electric stages(Thorlabs)",
+            "Double sCMOS camera(Hamamatsu)"],
+        "Others": ["设备6"]
+    },
+    "Device Info":{
+        "Three-axis electric stages(Thorlabs)":{
+            "module_path":"Plugins.Simple.Thorlabs_MTS50"
+        },
+        "Double sCMOS camera(Hamamatsu)":{
+            "module_path":"Plugins.Simple.Hamamatsu_FlashV3"
+        }
+    }
+
+}

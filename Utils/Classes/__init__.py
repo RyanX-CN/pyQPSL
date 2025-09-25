@@ -10,3 +10,4 @@ from .QPSLVirtualStage import QPSLVirtualStage
 from .QPSLWaveDialog import QPSLWaveGenerator, QPSLWaveDialog, QWaveDialog
 from .QPSLWorker import QPSLWorker
 from .QPSLTaskCheckWindow import QPSLTaskCheckWindow
+from .QPSLInitialConfigDialog import QPSLInitialConfigDialog

@@ -24,10 +24,10 @@
                                     {
                                         "ObjectName": "btn_open_all",
                                         "Type": "QPSLToggleButton",
-                                        "backgroud_color": "#ffffff",
+                                        "backgroud_color": "#a2a2a2",
                                         "m_closed_text": "Open devices",
                                         "m_opened_text": "Close devices",
-                                        "m_text": "Close devices"
+                                        "m_text": "Open devices"
                                     },
                                     {
                                         "ObjectName": "btn_home_all",
@@ -115,7 +115,7 @@
                                                         "backgroud_color": "#fafafa",
                                                         "range": "-0.5; 50.5",
                                                         "v_size_policy": 4,
-                                                        "value": 9.0
+                                                        "value": 26.62
                                                     },
                                                     {
                                                         "ObjectName": "btn_move_x",
@@ -203,7 +203,7 @@
                                                         "backgroud_color": "#b2b2b2",
                                                         "range": "-0.5; 50.5",
                                                         "v_size_policy": 4,
-                                                        "value": 2.0
+                                                        "value": 10.7
                                                     },
                                                     {
                                                         "ObjectName": "btn_move_y",
@@ -291,7 +291,7 @@
                                                         "backgroud_color": "#b2b2b2",
                                                         "range": "-0.5; 50.5",
                                                         "v_size_policy": 4,
-                                                        "value": 28.89
+                                                        "value": 26.7
                                                     },
                                                     {
                                                         "ObjectName": "btn_move_z",
@@ -366,7 +366,7 @@
                                                         "Type": "QPSLDoubleSpinBox",
                                                         "backgroud_color": "#666666",
                                                         "v_size_policy": 4,
-                                                        "value": 2.0
+                                                        "value": 2.5
                                                     }
                                                 ]
                                             },
@@ -428,7 +428,7 @@
                                                                 "backgroud_color": "#666666",
                                                                 "range": "-0.5; 50.5",
                                                                 "v_size_policy": 4,
-                                                                "value": 35.5
+                                                                "value": 37.44
                                                             }
                                                         ]
                                                     },
@@ -501,7 +501,7 @@
                                                         "Type": "QPSLDoubleSpinBox",
                                                         "backgroud_color": "#666666",
                                                         "v_size_policy": 4,
-                                                        "value": 2.0
+                                                        "value": 2.5
                                                     }
                                                 ]
                                             },
@@ -563,7 +563,7 @@
                                                                 "backgroud_color": "#666666",
                                                                 "range": "-0.5; 50.5",
                                                                 "v_size_policy": 4,
-                                                                "value": 8.9
+                                                                "value": 10.98
                                                             }
                                                         ]
                                                     },
@@ -667,7 +667,7 @@
                                                                 "backgroud_color": "#666666",
                                                                 "range": "0.0; 2.4",
                                                                 "v_size_policy": 4,
-                                                                "value": 0.384
+                                                                "value": 0.096
                                                             }
                                                         ]
                                                     },
@@ -705,7 +705,7 @@
                                                                 "backgroud_color": "#666666",
                                                                 "range": "-0.5; 50.5",
                                                                 "v_size_policy": 4,
-                                                                "value": 26.0
+                                                                "value": 27.0
                                                             }
                                                         ]
                                                     },
@@ -724,7 +724,7 @@
                                                                 "backgroud_color": "#666666",
                                                                 "range": "-0.5; 50.5",
                                                                 "v_size_policy": 4,
-                                                                "value": 33.0
+                                                                "value": 29.0
                                                             }
                                                         ]
                                                     }
@@ -801,7 +801,7 @@
                                                 "ObjectName": "text_capturing_number",
                                                 "Type": "QPSLLabel",
                                                 "backgroud_color": "#666666",
-                                                "text": "665"
+                                                "text": "768"
                                             }
                                         ]
                                     }

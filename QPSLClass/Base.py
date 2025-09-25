@@ -32,25 +32,26 @@ loading_warning("pyQPSL initializing...")
 loading_info("python version = {0}".format(sys.version))
 try:
     from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
+    from PyQt5.QtCore import pyqtBoundSignal, pyqtSignal, pyqtSlot, Q_ARG, Q_RETURN_ARG
+    from PyQt5.QtCore import QAbstractItemModel, QByteArray, QCoreApplication, QDir, QEvent, QEventLoop, QItemSelection, QItemSelectionModel
+    from PyQt5.QtCore import QMetaObject, QModelIndex, QMutex, QObject, QPoint, QPointF, QProcess, QPropertyAnimation, QRect, QRectF, QRegExp, QRunnable
+    from PyQt5.QtCore import QSettings, QSize, Qt, QThread, QThreadPool, QTimer, QTimerEvent, QUrl, QVariant,QFileInfo
+    from PyQt5.QtWidgets import QAbstractItemView, QApplication, QAction, QActionGroup, QBoxLayout, QCheckBox, QColorDialog, QComboBox
+    from PyQt5.QtWidgets import QDesktopWidget, QDialog, QDialogButtonBox, QDockWidget, QDoubleSpinBox, QFileDialog, QFontComboBox, QFontDialog, QFrame
+    from PyQt5.QtWidgets import QGraphicsItem, QGraphicsLineItem, QGraphicsObject, QGraphicsRectItem, QGraphicsScene, QGraphicsTextItem, QGraphicsView, QGraphicsWidget
+    from PyQt5.QtWidgets import QGridLayout, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QLayout, QLayoutItem, QLineEdit, QListWidget, QListWidgetItem
+    from PyQt5.QtWidgets import QMainWindow, QMenu, QMenuBar, QMessageBox, QProgressBar, QProgressDialog, QPushButton, QRadioButton
+    from PyQt5.QtWidgets import QScrollArea, QScrollBar, QShortcut, QSizePolicy, QSlider, QSpacerItem, QSpinBox, QSplitter, QStatusBar, QStackedWidget, QStyleFactory
+    from PyQt5.QtWidgets import QTabBar, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit, QToolBox, QToolButton, QTreeView, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    from PyQt5.QtGui import QActionEvent, QBrush, QCloseEvent, QContextMenuEvent, QFocusEvent, QHoverEvent, QMouseEvent, QMoveEvent, QPaintEvent, QResizeEvent, QShowEvent, QWheelEvent
+    from PyQt5.QtGui import QColor, QCursor, QDoubleValidator, QFont, QFontMetrics, QIcon, QImage, QIntValidator, QKeyEvent, QKeySequence, QLinearGradient
+    from PyQt5.QtGui import QMovie, QPainter, QPainterPath, QPalette, QPen, QPixmap, QRegExpValidator, QScreen, QStandardItem, QStandardItemModel, QValidator, QWindow
     loading_info("Qt version = {0}".format(QT_VERSION_STR))
     loading_info("PyQt version = {0}".format(PYQT_VERSION_STR))
 except:
     loading_warning("PyQt version = ?")
 loading_info("working directory = {0}".format(QPSL_Working_Directory))
-from PyQt5.QtCore import pyqtBoundSignal, pyqtSignal, pyqtSlot, Q_ARG, Q_RETURN_ARG
-from PyQt5.QtCore import QAbstractItemModel, QByteArray, QCoreApplication, QDir, QEvent, QEventLoop, QItemSelection, QItemSelectionModel
-from PyQt5.QtCore import QMetaObject, QModelIndex, QMutex, QObject, QPoint, QPointF, QProcess, QPropertyAnimation, QRect, QRectF, QRegExp, QRunnable
-from PyQt5.QtCore import QSettings, QSize, Qt, QThread, QThreadPool, QTimer, QTimerEvent, QUrl, QVariant,QFileInfo
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QAction, QActionGroup, QBoxLayout, QCheckBox, QColorDialog, QComboBox
-from PyQt5.QtWidgets import QDesktopWidget, QDialog, QDialogButtonBox, QDockWidget, QDoubleSpinBox, QFileDialog, QFontComboBox, QFontDialog, QFrame
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsLineItem, QGraphicsObject, QGraphicsRectItem, QGraphicsScene, QGraphicsTextItem, QGraphicsView, QGraphicsWidget
-from PyQt5.QtWidgets import QGridLayout, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QLayout, QLayoutItem, QLineEdit, QListWidget, QListWidgetItem
-from PyQt5.QtWidgets import QMainWindow, QMenu, QMenuBar, QMessageBox, QProgressBar, QProgressDialog, QPushButton, QRadioButton
-from PyQt5.QtWidgets import QScrollArea, QScrollBar, QShortcut, QSizePolicy, QSlider, QSpacerItem, QSpinBox, QSplitter, QStatusBar, QStackedWidget, QStyleFactory
-from PyQt5.QtWidgets import QTabBar, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit, QToolBox, QToolButton, QTreeView, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
-from PyQt5.QtGui import QActionEvent, QBrush, QCloseEvent, QContextMenuEvent, QFocusEvent, QHoverEvent, QMouseEvent, QMoveEvent, QPaintEvent, QResizeEvent, QShowEvent, QWheelEvent
-from PyQt5.QtGui import QColor, QCursor, QDoubleValidator, QFont, QFontMetrics, QIcon, QImage, QIntValidator, QKeyEvent, QKeySequence, QLinearGradient
-from PyQt5.QtGui import QMovie, QPainter, QPainterPath, QPalette, QPen, QPixmap, QRegExpValidator, QScreen, QStandardItem, QStandardItemModel, QValidator, QWindow
+
 import numpy as np
 
 loading_info("numpy version = {0}".format(np.__version__))
@@ -215,7 +216,7 @@ class DeviceStateController(QObject):
 
     def __init__(self):
         super().__init__()
-        self.m_device_dict = dict()
+        self.m_device_dict = None
         connect_direct(self.sig_value_changed, self.print_status)
 
     def print_status(self,device:str):
@@ -239,33 +240,36 @@ class TaskStateController(QObject):
     用于控制与共享任务的状态，当任务状态发生变化时，可以通过该对象发出信号
 
     """
-    sig_to_start_task = pyqtSignal(str)
-    sig_task_done = pyqtSignal(str)
+    sig_to_start_task = pyqtSignal(str,str)
+    sig_task_done = pyqtSignal(str,str)
     sig_value_changed = pyqtSignal(str)
 
     __slots__ = "m_task_dict"
 
     def __init__(self):
         super().__init__()
-        self.m_task_dict = dict()
-        connect_direct(self.sig_value_changed, self.print_status)
+        self.m_task_dict = None
+        connect_direct(self.sig_to_start_task, self.print_status)
+        connect_direct(self.sig_task_done, self.print_status)
 
-    def print_status(self,device:str):
-        print(f"{device} is {self.m_task_dict[device]}")
+    def print_status(self,task:str,state:str):
+        print(f"{task} is {state}")
+        loading_warning(f"{task} is {state}")
 
     def set_task_wait(self, task:str):
         self.m_task_dict[task] = State.Wait
+        self.sig_task_done
     
     def to_task_start(self, task:str):
         self.m_task_dict[task]= State.Start
-        self.sig_to_start_task.emit(task)
+        self.sig_to_start_task.emit(task, "Start")
 
     def set_task_running(self, task:str):
         self.m_task_dict[task] = State.Running
 
     def set_task_done(self, task:str):
         self.m_task_dict[task] = State.Done
-        self.sig_task_done.emit(task)
+        self.sig_task_done.emit(task, "Done")
 
     def get_device_status_dict(self) -> dict:
         return self.m_task_dict

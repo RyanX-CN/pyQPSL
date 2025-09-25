@@ -200,7 +200,8 @@
                                         "ObjectName": "sbox_downsample_rate",
                                         "Type": "QPSLSpinBox",
                                         "backgroud_color": "#333333",
-                                        "value": 2
+                                        "value": 2,
+                                        "range":"1; 50"
                                     }
                                 ]
                             }
