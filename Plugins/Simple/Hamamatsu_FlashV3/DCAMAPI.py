@@ -6,7 +6,8 @@ DCAMERR_ABORT = -2147483390
 
 class ImageData(Structure):
     _fields_ = [('buffer',c_byte * BUFFERSIZE),
-                ('frame_id',c_int)]    
+                ('frame_id',c_int),
+                ('ts_ms',c_int32)]
     
 class DCAMWAIT_START(Structure):
     _fields_ = [('size',c_int32),

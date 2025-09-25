@@ -329,6 +329,7 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self.m_loop_round: int = 10
         self.m_timer_freq = QElapsedTimer()
         self.m_id = 0
+        self.m_timestamp_list = []
 
     def load_attr(self, index:int):
         super().load_attr()
@@ -563,7 +564,8 @@ class DoubleDCAMPluginWorker(QPSLWorker):
                 if i != self.m_loop_round-1:
                     self.sig_single_round_scan_done.emit(i+1)
         self.sig_send_message.emit(
-            "{0}\nCAM{1} scan DONE".format(dt.now().time().replace(microsecond=0),self.index),3)                              
+            "{0}\nCAM{1} scan DONE".format(dt.now().time().replace(microsecond=0),self.index),3)
+        self.output_timestamp()                              
     
     @QPSLObjectBase.log_decorator()
     def on_stop_scan_cam(self):
@@ -578,7 +580,8 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self = ctypes.cast(self, POINTER(py_object)).contents.value
         self: DoubleDCAMPluginWorker
         # self.add_warning("cam = {0}, img = {1}".format(self.index,self.m_id))
-        ctypes.cast(data,c_ImageData_p).contents.frame_id = self.m_id
+        # ctypes.cast(data,c_ImageData_p).contents.frame_id = self.m_id
+        self.m_timestamp_list.append(ctypes.cast(data,c_ImageData_p).contents.ts_ms)
         self.m_id += 1
         data = np.uint64(data)
         # print(self.m_cam.bufframe.width,self.m_cam.bufframe.height,self.m_cam.bufframe.rowbytes)
@@ -587,6 +590,15 @@ class DoubleDCAMPluginWorker(QPSLWorker):
         self.sig_send_data_to_live.emit(self.index, data)
         # self.sig_send_data_to_save.emit(data)
         return 0
+    
+    def output_timestamp(self):
+        if len(self.m_timestamp_list) > 0:
+            ts_start = 0
+            with open("cam{0}_timestamp.txt".format(self.index), "w") as f:
+                for ts in self.m_timestamp_list:
+                    f.write(str(ts - ts_start) + "\n")
+                    ts_start = ts
+            self.m_timestamp_list = []
 
 
 class DoubleDCAMPluginUI(QPSLVFrameList,QPSLPluginBase):

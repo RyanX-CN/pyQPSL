@@ -2,8 +2,10 @@
 #define __QPSL_DCAM__
 #include "dcamapi4.h"
 #include "dcamprop.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <chrono>
 #include <cstring>
 #if defined(UNICODE) || defined(_UNICODE)
 #define	_T(str)	L##str
@@ -37,6 +39,7 @@ struct DCAMController{
 struct ImageData{
     char buffer[BUFFERSIZE];
     int frameid;
+    int32 ts_ms; // timestamp in milliseconds
 };
 int32 deal_err(DCAMController *controller){
     if(failed(controller->err_code)){
@@ -192,7 +195,7 @@ int32 DLL_EXPORT QPSL_DCAM_Capture(DCAMController *controller){
     DCAMErrChk(dcamwait_abort(controller->hwait));
     return 0;
 }
-int32 get_single_frame(DCAMController *controller, char *databuf){
+int32 get_single_frame(DCAMController *controller, char *databuf, int32 timestamp){
     auto& waitstart = controller->waitstart;
     auto& bufframe = controller->bufframe;
     if(controller->hwait!=NULL){
@@ -213,6 +216,7 @@ int32 get_single_frame(DCAMController *controller, char *databuf){
     int32 cy = bufframe.height;
     int32 rowbytes = bufframe.rowbytes;
     int32 type = bufframe.type;
+    timestamp = bufframe.timestamp.microsec;
     if (type == DCAM_PIXELTYPE_MONO8) {
         int32 copyrowbytes = cx;
         char* pSrc = (char*)bufframe.buf + oy * bufframe.rowbytes + ox;
@@ -241,7 +245,7 @@ int32 get_single_frame(DCAMController *controller, char *databuf){
 typedef int32 (*DCAM_GetFramesCallback)(void*, void*);
 int32 DLL_EXPORT QPSL_DCAM_Get_single_frame(DCAMController *controller, void* pyWorker, DCAM_GetFramesCallback callback){
     auto data = new ImageData;
-    get_single_frame(controller, data->buffer);
+    get_single_frame(controller, data->buffer, data->ts_ms);
     callback(pyWorker,(void*)data);
     return 0;
 }
@@ -252,7 +256,7 @@ int32 DLL_EXPORT QPSL_Live_pre_processer(DCAMController *controller){
     waitopen.hdcam = controller->hdcam;
     DCAMErrChk(dcamwait_open(&waitopen))
     controller->hwait = waitopen.hwait;
-    DCAMErrChk(dcambuf_alloc(controller->hdcam,10));
+    DCAMErrChk(dcambuf_alloc(controller->hdcam,50));
     DCAMErrChk(dcamcap_start(controller->hdcam, DCAMCAP_START_SEQUENCE));
     return 0;
 }
